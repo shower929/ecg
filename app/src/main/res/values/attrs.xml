@@ -26,10 +26,10 @@
             <enum name="sweep" value="2" />
         </attr>
         <attr name="sweepColors" format="reference" />
-        <attr name="pointer" format="integer"/>
+        <attr name="pointer" format="integer" />
         <attr name="meterType" format="enum">
-            <enum name="energy" value="1"/>
-            <enum name="meter" value="2"/>
+            <enum name="energy" value="1" />
+            <enum name="meter" value="2" />
         </attr>
     </declare-styleable>
     <declare-styleable name="SwmBar">

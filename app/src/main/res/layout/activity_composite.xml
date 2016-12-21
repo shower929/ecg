@@ -8,7 +8,9 @@
     android:background="@android:color/black">
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true">
         <com.swm.core.CompositeView
             android:id="@+id/swm_composite_view"
             android:layout_width="match_parent"

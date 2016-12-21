@@ -123,4 +123,7 @@
     <string name="swm_menu_hrv_title">HRV</string>
     <string name="swm_menu_motion_title">Motion</string>
     <string name="swm_menu_ble_title">BLE</string>
+    <string name="swm_hrv_frequency">Frequency</string>
+    <string name="swm_hrv_poincare">Poincare</string>
+    <string name="title_activity_sdnn">SdnnActivity</string>
 </resources>

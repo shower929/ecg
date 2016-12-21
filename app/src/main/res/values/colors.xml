@@ -93,4 +93,6 @@
     <color name="swm_menu_background">#55aaaaaa</color>
     <color name="swm_menu_normal">#aaaaaaaa</color>
     <color name="swm_menu_pressed">#aaffffff</color>
+    <color name="swm_inactive_cta">#ff0190ac</color>
+    <color name="swm_inactive_cta_dark">#ff014f5f</color>
 </resources>
