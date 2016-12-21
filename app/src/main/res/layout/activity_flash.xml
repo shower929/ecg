@@ -1,0 +1,87 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/swm_flash"
+    tools:context="com.swm.app.emergency.FlashActivity">
+
+    <!-- The primary full-screen view. This can be replaced with whatever view
+         is needed to present your content, e.g. VideoView, SurfaceView,
+         TextureView, etc. -->
+    <RelativeLayout
+        android:id="@+id/fullscreen_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:keepScreenOn="true"
+        >
+        <TextView
+            android:id="@+id/swm_flash"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/swm_flash"
+            android:textColor="@color/swm_white"
+            android:textSize="36dp"
+            android:layout_centerInParent="true" />
+        <TextView
+            android:id="@+id/swm_flash_sub_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/swm_flash_sub_title"
+            android:textColor="@color/swm_descr"
+            android:textSize="20dp"
+            android:layout_below="@id/swm_flash"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="5dp"/>
+        <com.google.android.gms.common.SignInButton
+            android:id="@+id/sign_in_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/swm_flash"
+            android:layout_marginTop="45dp"
+            android:visibility="invisible"
+            />
+        <Button
+            android:id="@+id/swm_cta"
+            android:layout_width="130dp"
+            android:layout_height="50dp"
+            android:background="@drawable/swm_cta_button"
+            android:text="@string/swm_cta_go"
+            android:textColor="@color/swm_white"
+            android:textSize="24dp"
+            android:layout_below="@id/swm_flash"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="180dp"
+            android:visibility="invisible"
+            />
+    </RelativeLayout>
+    <!-- This FrameLayout insets its children based on system windows using
+         android:fitsSystemWindows. -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
+
+        <LinearLayout
+            android:id="@+id/fullscreen_content_controls"
+            style="?metaButtonBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:background="@color/black_overlay"
+            android:orientation="horizontal"
+            tools:ignore="UselessParent">
+
+            <Button
+                android:id="@+id/dummy_button"
+                style="?metaButtonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/dummy_button" />
+
+        </LinearLayout>
+    </FrameLayout>
+
+</FrameLayout>

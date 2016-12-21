@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <color name="black_overlay">#66000000</color>
+    <color name="swm_white">#FFFFFFFF</color>
+    <color name="swm_main">#FF007183</color>
+    <color name="swm_main_light">#ff008aa0</color>
+    <color name="swm_grey">#FFDDDDDD</color>
+    <color name="swm_cta">#ff04df9d</color>
+    <color name="swm_cta_dark">#ff00bd8c</color>
+    <color name="swm_cta_pressed">#ff21ffb1</color>
+    <color name="swm_text">#ff000000</color>
+    <color name="swm_ecg_color">#ff00ff00</color>
+    <color name="swm_ecg_plot_color">#ffffffff</color>
+    <color name="swm_ecg_background">#ff000000</color>
+    <color name="swm_breath_line_color">#ff00ffff</color>
+    <color name="swm_heart_beat_line_color">#ffff0000</color>
+    <color name="swm_device_status_connected">#ff00ffff</color>
+    <color name="swm_device_status_unconnect">#49ffffff</color>
+    <color name="swm_power_default">#49ffffff</color>
+    <color name="swm_run_power_excellent">#ff59ffa3</color>
+    <color name="swm_run_power_good">#ff59ffa3</color>
+    <color name="swm_good">#ff00ffff</color>
+    <color name="swm_run_power_poor">#ffff6f00</color>
+    <color name="swm_easy">#ffff6f00</color>
+    <color name="swm_danger">#ffff7575</color>
+    <color name="swm_red">#ffff7575</color>
+    <color name="swm_heart">#ffff7575</color>
+    <color name="swm_title">#ff000000</color>
+    <color name="swm_word">#ff888888</color>
+    <color name="swm_descr">#bbffffff</color>
+    <color name="swm_cta_button_text">#ffffffff</color>
+    <color name="swm_red_btn_pressed">#ffff9c9c</color>
+    <color name="swm_ripple">#88ffffff</color>
+    <color name="swm_big_card">#ff00a2b0</color>
+    <color name="swm_bar_background">#5b000000</color>
+    <color name="swm_bar_energy_poor">#ffff6f00</color>
+    <color name="swm_bar">#5b000000</color>
+    <color name="swm_heart_main_start_color">#ff000000</color>
+    <color name="swm_heart_main_end_color">#ff656565</color>
+    <color name="swm_mhr_E">#ff00e0ff</color>
+    <color name="swm_mhr_M">#ff57ff9e</color>
+    <color name="swm_mhr_T">#fffff770</color>
+    <color name="swm_mhr_I">#ffffac6c</color>
+    <color name="swm_mhr_R">#ffea6562</color>
+    <color name="swm_breath_rate_color">#ff00ffff</color>
+    <color name="swm_flash_main_dark">#ffcc0000</color>
+    <color name="swm_flash_main">#ffdd5555</color>
+    <color name="swm_intensity_easy">#ff00e0ff</color>
+    <color name="swm_intensity_normal">#ff57ff9e</color>
+    <color name="swm_intensity_strong">#fffff770</color>
+    <color name="swm_intensity_hard">#ffffac6c</color>
+    <color name="swm_intensity_heavy">#ffff625f</color>
+    <color name="swm_intensity_danger">#ffea1b1b</color>
+    <array name="swm_sport_intensity">
+        <item>@color/swm_intensity_danger</item>
+        <item>@color/swm_intensity_danger</item>
+        <item>@color/swm_intensity_danger</item>
+        <item>@color/swm_intensity_easy</item>
+        <item>@color/swm_intensity_easy</item>
+        <item>@color/swm_intensity_easy</item>
+        <item>@color/swm_intensity_easy</item>
+        <item>@color/swm_intensity_easy</item>
+        <item>@color/swm_intensity_easy</item>
+        <item>@color/swm_intensity_easy</item>
+        <item>@color/swm_intensity_easy</item>
+        <item>@color/swm_intensity_easy</item>
+        <item>@color/swm_intensity_normal</item>
+        <item>@color/swm_intensity_normal</item>
+        <item>@color/swm_intensity_normal</item>
+        <item>@color/swm_intensity_normal</item>
+        <item>@color/swm_intensity_strong</item>
+        <item>@color/swm_intensity_strong</item>
+        <item>@color/swm_intensity_strong</item>
+        <item>@color/swm_intensity_strong</item>
+        <item>@color/swm_intensity_hard</item>
+        <item>@color/swm_intensity_hard</item>
+        <item>@color/swm_intensity_heavy</item>
+        <item>@color/swm_intensity_danger</item>
+    </array>
+    <color name="swm_dialog_start">#ffffffff</color>
+    <color name="swm_dialog_end">#88ffffff</color>
+    <color name="swm_dialog_title">#000000</color>
+    <color name="swm_bar_middle">#59ffffff</color>
+    <color name="swm_training_cover">#cc000000</color>
+    <color name="swm_weak_cta">#33000000</color>
+    <color name="swm_weak_background">#77ffffff</color>
+    <color name="swm_light_background">#aaffffff</color>
+    <color name="swm_dark_background">#55ffffff</color>
+</resources>

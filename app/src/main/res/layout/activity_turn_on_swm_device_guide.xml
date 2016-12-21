@@ -1,0 +1,74 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/swm_main"
+    tools:context="com.swm.heart.com.swm.core.TurnOnSwmDeviceGuide">
+
+    <!-- The primary full-screen view. This can be replaced with whatever view
+         is needed to present your content, e.g. VideoView, SurfaceView,
+         TextureView, etc. -->
+    <RelativeLayout
+        android:id="@+id/fullscreen_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        >
+        <include
+            android:id="@+id/swm_logo"
+            layout="@layout/swm_logo_large"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_marginTop="100dp"
+            android:layout_centerHorizontal="true"/>
+        <TextView
+            android:layout_height="200dp"
+            android:layout_width="300dp"
+            android:text="@string/swm_ble_turn_on_device"
+            android:textColor="@color/swm_white"
+            android:textSize="18dp"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:layout_below="@id/swm_logo"
+            android:layout_centerHorizontal="true"/>
+        <Button
+            android:id="@+id/swm_ble_cta"
+            android:layout_height="60dp"
+            android:layout_width="match_parent"
+            android:text="@string/swm_cta_ok"
+            style="@style/SwmCtaBig"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="20dp"
+            android:layout_alignParentBottom="true"
+            />
+    </RelativeLayout>
+    <!-- This FrameLayout insets its children based on system windows using
+         android:fitsSystemWindows. -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
+
+        <LinearLayout
+            android:id="@+id/fullscreen_content_controls"
+            style="?metaButtonBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:background="@color/black_overlay"
+            android:orientation="horizontal"
+            tools:ignore="UselessParent">
+
+            <Button
+                android:id="@+id/dummy_button"
+                style="?metaButtonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/dummy_button" />
+
+        </LinearLayout>
+    </FrameLayout>
+
+</FrameLayout>

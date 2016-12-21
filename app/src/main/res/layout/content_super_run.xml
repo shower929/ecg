@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content_super_run"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.swm.app.superrun.SuperRunActivity"
+    tools:showIn="@layout/app_bar_super_run"
+    android:background="@drawable/swm_main">
+    <include layout="@layout/swm_info"/>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true">
+
+        <ImageView
+            android:id="@+id/swm_ripple"
+            android:layout_height="101dp"
+            android:layout_width="101dp"
+            android:layout_gravity="center"
+            android:src="@drawable/swm_ripple"
+            />
+
+        <Button
+            android:id="@+id/swm_cta_training_btn"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:background="@drawable/swm_cta_btn_oval"
+            android:text="@string/swm_cta_training"
+            android:textColor="@color/swm_white"
+            android:textSize="25dp"
+            android:layout_gravity="center"
+            android:elevation="1dp"
+            android:translationZ="2dp"/>
+
+
+    </FrameLayout>
+</RelativeLayout>

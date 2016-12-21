@@ -1,0 +1,44 @@
+<resources>
+
+    <!-- Declare custom theme attributes that allow changing which styles are
+         used for button bars depending on the API level.
+         ?android:attr/buttonBarStyle is new as of API 11 so this is
+         necessary to support previous API levels. -->
+    <declare-styleable name="ButtonBarContainerTheme">
+        <attr name="metaButtonBarStyle" format="reference" />
+        <attr name="metaButtonBarButtonStyle" format="reference" />
+    </declare-styleable>
+    <declare-styleable name="SwmMeter">
+        <attr name="innerCircleWidth" format="dimension" />
+        <attr name="innerCircleColor" format="color" />
+        <attr name="innerCircleRadius" format="dimension" />
+        <attr name="outerCircleWidth" format="dimension" />
+        <attr name="outerCircleColor" format="color" />
+        <attr name="outerCircleRadius" format="dimension" />
+        <attr name="secondWidth" format="dimension" />
+        <attr name="secondRadius" format="dimension" />
+        <attr name="secondTextSize" format="dimension" />
+        <attr name="secondValueSize" format="dimension" />
+        <attr name="secondText" format="string" />
+        <attr name="secondTextColor" format="color" />
+        <attr name="outerType" format="enum">
+            <enum name="normal" value="1" />
+            <enum name="sweep" value="2" />
+        </attr>
+        <attr name="sweepColors" format="reference" />
+        <attr name="pointer" format="integer"/>
+        <attr name="meterType" format="enum">
+            <enum name="energy" value="1"/>
+            <enum name="meter" value="2"/>
+        </attr>
+    </declare-styleable>
+    <declare-styleable name="SwmBar">
+        <attr name="innerWidth" format="dimension" />
+        <attr name="backgroundColor" format="color" />
+        <attr name="textSize" format="dimension" />
+        <attr name="type" format="enum">
+            <enum name="meter" value="1" />
+            <enum name="balancer" value="2" />
+        </attr>
+    </declare-styleable>
+</resources>

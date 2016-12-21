@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/swm_big_card">
+    <TextView
+        android:id="@+id/swm_training_title"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        tools:text="Exercise your body"
+        android:textColor="@color/swm_white"
+        android:textSize="25dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="10dp"/>
+
+    <TextView
+        android:id="@+id/swm_training_brief"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        tools:text="Keeping exercise"
+        android:textColor="@color/swm_descr"
+        android:textSize="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="15dp"
+        />
+
+    <TextView
+        android:id="@+id/swm_training_effect"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:text="@string/swm_course_effect"
+        android:textColor="@color/swm_white"
+        android:textSize="20dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="20dp"
+        android:visibility="gone"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginTop="20dp"
+        android:visibility="gone">
+        <TextView
+            android:id="@+id/swm_training_result_index"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            tools:text="@string/swm_training_result_index"
+            android:textColor="@color/swm_descr"
+            android:textSize="25dp"
+            />
+        <TextView
+            android:id="@+id/swm_training_result"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            tools:text="+1"
+            android:textColor="@color/swm_good"
+            android:textSize="25dp"
+            android:layout_marginLeft="20dp"
+            android:layout_toRightOf="@id/swm_training_result_index"
+            />
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/swm_cta"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/swm_cta_button"
+        android:text="@string/swm_cta_got_it"
+        android:textColor="@color/swm_cta_button_text"
+        android:textSize="25dp"
+        android:focusable="false"/>
+
+</LinearLayout>

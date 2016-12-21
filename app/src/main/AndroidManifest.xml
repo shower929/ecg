@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.swm.heart">
+
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <uses-feature
+        android:name="android.hardware.bluetooth_le"
+        android:required="true" />
+
+    <application
+        android:name=".SwmApplication"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_swm_launcher_icon"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="com.swm.core.DeviceDiscoverAndConnActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/swm_connect_ble"
+            android:theme="@style/FullscreenTheme" />
+        <activity
+            android:name=".SplashActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/app_name"
+            android:theme="@style/FullscreenTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.swm.core.TurnOnSwmDeviceGuide"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/app_name"
+            android:theme="@style/FullscreenTheme" />
+
+        <service
+            android:name="com.swm.core.SwmService"
+            android:exported="false" />
+
+        <activity android:name=".accelerator.AcceleratorActivity" />
+        <activity
+            android:name="com.swm.core.CompositeActivity"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize"
+            android:exported="false"
+            android:screenOrientation="landscape"
+            android:theme="@style/FullscreenTheme" />
+        <activity
+            android:name="com.swm.core.EngineeringActivity"
+            android:enabled="false"
+            android:label="@string/swm_engineering_mode" />
+        <activity
+            android:name="com.swm.app.superrun.SuperRunActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Fullscreen" />
+        <activity
+            android:name="com.swm.core.MotionActivity"
+            android:exported="false"
+            android:label="@string/swm_title_motion"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="com.swm.app.superrun.training.TrainingModelActivity"
+            android:label="@string/swm_training_course"
+            android:theme="@style/FullscreenTheme" />
+        <activity
+            android:name="com.swm.app.superrun.training.TrainingModelDetailActivity"
+            android:theme="@style/FullscreenTheme" />
+        <activity
+            android:name="com.swm.app.superrun.training.TrainingActivity"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize"
+            android:screenOrientation="portrait"
+            android:theme="@style/FullscreenTheme" />
+        <activity
+            android:name=".HeartActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_heart"
+            android:screenOrientation="portrait"
+            android:theme="@style/FullscreenTheme" />
+        <activity
+            android:name="com.swm.app.emergency.FlashActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_flash"
+            android:theme="@style/FullscreenTheme" />
+
+        <service
+            android:name="com.swm.app.emergency.EmergencyMessagingService"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <service
+            android:name="com.swm.app.emergency.EmergencyIDService"
+            android:enabled="true"
+            android:exported="true">
+            <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+        </service>
+        <service
+            android:name="com.swm.core.MyLocationService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/swm_logo" />
+
+        <receiver
+            android:name="com.swm.core.MyLocationService$LocationBroadcastReceiver"
+            android:enabled="true"
+            android:exported="true" />
+
+        <activity
+            android:name="com.swm.app.superrun.marathon.MarathonActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_marathon"
+            android:theme="@style/FullscreenTheme" />
+        <activity android:name="com.swm.app.superrun.SettingsActivity" />
+        <activity android:name="com.swm.app.superrun.SwmDeviceActivity" />
+        <activity android:name="com.swm.app.superrun.training.TrainingResultActivity" />
+        <activity android:name="com.swm.app.superrun.GenderAndAgeActivity" />
+        <activity android:name="com.swm.app.superrun.BodyInfoActivity"></activity>
+    </application>
+
+</manifest>

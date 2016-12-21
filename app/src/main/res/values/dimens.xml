@@ -1,0 +1,26 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="nav_header_vertical_spacing">16dp</dimen>
+    <dimen name="nav_header_height">160dp</dimen>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="swm_width_device_status">20dp</dimen>
+    <dimen name="swm_width_run_power">7dp</dimen>
+    <dimen name="swm_main_device_circle_radius">84dp</dimen>
+    <dimen name="swm_power_circle_radius">104dp</dimen>
+    <dimen name="swm_training_circle_width">10dp</dimen>
+    <dimen name="swm_total_circle_width">7dp</dimen>
+    <dimen name="swm_training_circle_radius">80dp</dimen>
+    <dimen name="swm_total_circle_radius">90dp</dimen>
+    <dimen name="swm_bar_width">21dp</dimen>
+    <dimen name="swm_bar_text_size">15dp</dimen>
+    <dimen name="swm_grid_width">130dp</dimen>
+    <dimen name="swm_grid_height">110dp</dimen>
+    <dimen name="swm_second_width">7dp</dimen>
+    <dimen name="swm_second_radius">54dp</dimen>
+    <dimen name="swm_second_value_size">40dp</dimen>
+    <dimen name="swm_second_text_size">15dp</dimen>
+    <dimen name="swm_label_values_gap">3dp</dimen>
+</resources>
