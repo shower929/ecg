@@ -1,3 +1,3 @@
-/Users/swm/Desktop/swm_source/SuperRun_1.3/app/.externalNativeBuild/cmake/customerDebug/x86_64/CMakeFiles/edit_cache.dir
-/Users/swm/Desktop/swm_source/SuperRun_1.3/app/.externalNativeBuild/cmake/customerDebug/x86_64/CMakeFiles/rebuild_cache.dir
-/Users/swm/Desktop/swm_source/SuperRun_1.3/app/.externalNativeBuild/cmake/customerDebug/x86_64/CMakeFiles/swm_ecg_algo.dir
+/Users/swm/Desktop/GitHub/ecg/ecg/app/.externalNativeBuild/cmake/customerDebug/x86_64/CMakeFiles/edit_cache.dir
+/Users/swm/Desktop/GitHub/ecg/ecg/app/.externalNativeBuild/cmake/customerDebug/x86_64/CMakeFiles/rebuild_cache.dir
+/Users/swm/Desktop/GitHub/ecg/ecg/app/.externalNativeBuild/cmake/customerDebug/x86_64/CMakeFiles/swm_ecg_algo.dir
