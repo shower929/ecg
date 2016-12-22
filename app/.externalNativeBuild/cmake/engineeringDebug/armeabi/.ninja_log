@@ -1,5 +1,0 @@
-# ninja log v5
-1	82	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/AlgorithmWare/SWM_Filter.cpp.o	3e2e096b8034b614
-0	98	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/swm_ecg_algo_jni.cpp.o	b88069047cb4b076
-0	149	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/AlgorithmWare/SWM_ECG_ALGO.cpp.o	24ea010252004192
-149	179	0	../obj/armeabi/libswm_ecg_algo.so	85453604f5c4589e

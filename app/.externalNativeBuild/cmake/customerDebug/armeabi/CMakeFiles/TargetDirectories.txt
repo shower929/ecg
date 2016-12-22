@@ -1,3 +1,0 @@
-/Users/swm/Desktop/GitHub/ecg/ecg/app/.externalNativeBuild/cmake/customerDebug/armeabi/CMakeFiles/edit_cache.dir
-/Users/swm/Desktop/GitHub/ecg/ecg/app/.externalNativeBuild/cmake/customerDebug/armeabi/CMakeFiles/rebuild_cache.dir
-/Users/swm/Desktop/GitHub/ecg/ecg/app/.externalNativeBuild/cmake/customerDebug/armeabi/CMakeFiles/swm_ecg_algo.dir

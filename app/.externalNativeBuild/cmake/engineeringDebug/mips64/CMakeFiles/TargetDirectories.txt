@@ -1,3 +1,0 @@
-/Users/swm/Desktop/GitHub/ecg/ecg/app/.externalNativeBuild/cmake/engineeringDebug/mips64/CMakeFiles/edit_cache.dir
-/Users/swm/Desktop/GitHub/ecg/ecg/app/.externalNativeBuild/cmake/engineeringDebug/mips64/CMakeFiles/rebuild_cache.dir
-/Users/swm/Desktop/GitHub/ecg/ecg/app/.externalNativeBuild/cmake/engineeringDebug/mips64/CMakeFiles/swm_ecg_algo.dir
