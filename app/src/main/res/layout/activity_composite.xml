@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     tools:context="com.swm.core.CompositeActivity"
     android:background="@android:color/black">
-
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -22,7 +21,7 @@
             android:textSize="10dp"
             android:text="0 bps"
             android:layout_marginTop="15dp"
-            android:layout_marginLeft="10dp"
+            android:layout_marginLeft="40dp"
             android:layout_gravity="top"
             />
         <TextView
@@ -192,7 +191,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             >
-
             <TextView
                 android:id="@+id/swm_accelerator"
                 android:layout_width="wrap_content"
@@ -336,6 +334,6 @@
                 />
 
         </RelativeLayout>
-
+        <include layout="@layout/swm_engineering_menu"/>
     </FrameLayout>
 </RelativeLayout>

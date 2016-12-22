@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/swm_menu_ecg"
+            android:title="@string/swm_menu_ecg_title" />
+        <item
+            android:id="@+id/swm_menu_hrv"
+            android:title="@string/swm_menu_hrv_title" />
+        <item
+            android:id="@+id/swm_menu_motion"
+            android:title="@string/swm_menu_motion_title"
+            />
+        <item
+            android:id="@+id/swm_menu_ble"
+            android:title="@string/swm_menu_ble_title"/>
+    </group>
+</menu>

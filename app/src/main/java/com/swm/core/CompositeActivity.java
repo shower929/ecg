@@ -4,7 +4,6 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.location.Location;
-import android.opengl.GLSurfaceView;
 import android.os.IBinder;
 import android.os.Bundle;
 import android.util.Log;
@@ -60,6 +59,8 @@ public class CompositeActivity extends SwmBaseActivity implements EcgListener
     private HeartBeatSound mHeartBeatSound;
     private Button mRecordBtn;
     private MyLocationService mLocationService;
+    private MenuController mMenuController;
+    private View mMenu;
 
     private ServiceConnection mLocationConnection = new ServiceConnection() {
         @Override
@@ -115,7 +116,7 @@ public class CompositeActivity extends SwmBaseActivity implements EcgListener
         setContentView(R.layout.activity_composite);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
+        mMenuController = new MenuController(this);
         mCompositeView = (CompositeView) findViewById(R.id.swm_composite_view);
         mHeartRateView = (TextView) findViewById(R.id.swm_current_heart_rate);
         mMaxHeartRateView = (TextView) findViewById(R.id.swm_max_heart_rate);
@@ -141,6 +142,12 @@ public class CompositeActivity extends SwmBaseActivity implements EcgListener
         mHeartBeatSound = new HeartBeatSound(this);
         mRecordBtn = (Button) findViewById(R.id.swm_record);
         mRecordBtn.setOnClickListener(this);
+        findViewById(R.id.swm_menu_icon).setOnClickListener(this);
+        mMenu = findViewById(R.id.swm_menu);
+        findViewById(R.id.swm_menu_ecg).setOnClickListener(this);
+        findViewById(R.id.swm_menu_hrv).setOnClickListener(this);
+        findViewById(R.id.swm_menu_motion).setOnClickListener(this);
+        findViewById(R.id.swm_menu_ble).setOnClickListener(this);
     }
 
 
@@ -254,6 +261,32 @@ public class CompositeActivity extends SwmBaseActivity implements EcgListener
 
     @Override
     public void onClick(View v) {
+        switch(v.getId()) {
+            case R.id.swm_record:
+                handleRecordEvent();
+                break;
+            case R.id.swm_menu_icon:
+                handleMenuVisibility();
+                break;
+            case R.id.swm_menu_ecg:
+            case R.id.swm_menu_hrv:
+            case R.id.swm_menu_motion:
+            case R.id.swm_menu_ble:
+                mMenuController.onSwitchMode(v.getId());
+                finish();
+                break;
+        }
+    }
+
+    private void handleMenuVisibility() {
+        if (mMenu.getVisibility() != View.VISIBLE)
+            mMenu.setVisibility(View.VISIBLE);
+        else {
+            mMenu.setVisibility(View.GONE);
+        }
+    }
+
+    private void handleRecordEvent() {
         if (!isRecording()) {
             mRecordBtn.setText(getString(R.string.swm_stop));
             mRecordBtn.setBackground(getResources().getDrawable(R.drawable.swm_stop_button));
@@ -273,7 +306,6 @@ public class CompositeActivity extends SwmBaseActivity implements EcgListener
             mElapseView.setVisibility(View.INVISIBLE);
         }
     }
-
     private boolean isRecording() {
         return SwmCore.getIns().isRecording()
                 && mLocationService.isRecording();

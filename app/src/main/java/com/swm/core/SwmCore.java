@@ -41,7 +41,8 @@ public class SwmCore {
     private static HeartRateService mHeartRateService;
     private static LinkedBlockingQueue<SwmData> mHeartBeatServiceQueue;
     private static final long TIME_FRAME = 1000;
-
+    static final long SAMPLE_RATE = 50; //Hz
+    static final long CLOCK = 1/SAMPLE_RATE * 1000;  //ms
     static boolean sRunning = true;
 
     private static Handler mProfilingHandler = new Handler();
