@@ -1,0 +1,7 @@
+app/.externalNativeBuild/
+build/
+ecg.iml
+local.properties
+.gradle/
+.idea/
+app/app.iml
