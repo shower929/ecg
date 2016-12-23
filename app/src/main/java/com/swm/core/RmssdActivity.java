@@ -4,19 +4,25 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.TextView;
 
+import com.swm.chart.RealtimeLineChart;
 import com.swm.heart.R;
 import com.swm.heart.SwmBaseActivity;
+import com.swm.heartbeat.HeartBeatHandler;
+import com.swm.heartbeat.HeartBeatListener;
+import com.swm.heartbeat.HeartBeatSound;
 import com.swm.hrv.HrvListener;
 
-public class RmssdActivity extends SwmBaseActivity implements HrvListener{
-    LineChartView mLineChart;
+public class RmssdActivity extends SwmBaseActivity implements HrvListener
+                                                    , HeartBeatListener{
+    RealtimeLineChart mLineChart;
     TextView mRmssdValue;
     SwmBinder mSwmBinder;
+    SwitchController mSwitchController;
+    private HeartBeatSound mHeartBeatSound;
+    private HeartBeatHandler mHeartBeatHandler;
 
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
@@ -24,6 +30,7 @@ public class RmssdActivity extends SwmBaseActivity implements HrvListener{
             mSwmBinder = (SwmBinder) service;
 
             try {
+                mSwmBinder.registerHeartRateListener(RmssdActivity.this);
                 mSwmBinder.registerHrvListener(RmssdActivity.this);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -41,8 +48,11 @@ public class RmssdActivity extends SwmBaseActivity implements HrvListener{
         Intent intent = new Intent(this, SwmService.class);
         bindService(intent, mConnection, BIND_AUTO_CREATE);
         setContentView(R.layout.activity_rmssd);
-        mLineChart = (LineChartView) findViewById(R.id.swm_rmssd);
+        mLineChart = (RealtimeLineChart) findViewById(R.id.swm_rmssd);
         mRmssdValue = (TextView) findViewById(R.id.swm_rmssd_value);
+        mSwitchController = new SwitchController(this, findViewById(R.id.swm_hrv_switch));
+        mHeartBeatSound = new HeartBeatSound(this);
+        mHeartBeatHandler = new HeartBeatHandler(findViewById(R.id.swm_heart), (TextView) findViewById(R.id.swm_heart_rate));
     }
 
     @Override
@@ -66,8 +76,10 @@ public class RmssdActivity extends SwmBaseActivity implements HrvListener{
     @Override
     protected void onPause() {
         super.onPause();
-        if(mSwmBinder != null)
+        if(mSwmBinder != null) {
+            mSwmBinder.removeHeartRateListener(this);
             mSwmBinder.removeHrvListener(this);
+        }
     }
 
     @Override
@@ -75,9 +87,22 @@ public class RmssdActivity extends SwmBaseActivity implements HrvListener{
         super.onResume();
         if(mSwmBinder != null)
             try {
+                mSwmBinder.registerHeartRateListener(this);
                 mSwmBinder.registerHrvListener(this);
             } catch (Exception e) {
                 e.printStackTrace();
             }
+    }
+
+    @Override
+    public void onHeartBeatDataAvailable(final HeartBeatData heartBeatData) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mHeartBeatSound.onHeartBeatDataAvailable(heartBeatData);
+                mHeartBeatHandler.onHeartBeat(heartBeatData.heartRate);
+
+            }
+        });
     }
 }

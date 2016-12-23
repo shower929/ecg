@@ -24,7 +24,7 @@ android {
     buildToolsVersion "24.0.2"
     defaultConfig {
         applicationId "com.swm.heart"
-        minSdkVersion 18
+        minSdkVersion 19
         targetSdkVersion 19
         versionCode 4
         versionName "1.1"
@@ -69,5 +69,6 @@ dependencies {
     compile 'com.android.support:support-v4:25.1.0'
     compile 'com.android.support:design:25.1.0'
     testCompile 'junit:junit:4.12'
+    compile project(':realtime-chart')
 }
 apply plugin: 'com.google.gms.google-services'

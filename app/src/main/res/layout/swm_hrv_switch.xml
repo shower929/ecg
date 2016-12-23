@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/swm_hrv_switch"
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -7,9 +8,9 @@
         android:id="@+id/swm_hrv_rri"
         android:layout_width="50dp"
         android:layout_height="30dp"
-        android:text="@string/swm_sdnn"
+        android:text="@string/swm_rri"
         android:textColor="@color/swm_white"
-        android:background="@drawable/swm_cta_button"
+        android:background="@drawable/swm_inactive_cta_button"
         android:layout_marginLeft="5dp"
         android:textSize="12dp"
         />

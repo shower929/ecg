@@ -126,4 +126,5 @@
     <string name="swm_hrv_frequency">Frequency</string>
     <string name="swm_hrv_poincare">Poincare</string>
     <string name="title_activity_sdnn">SdnnActivity</string>
+    <string name="swm_rri">RRI</string>
 </resources>
