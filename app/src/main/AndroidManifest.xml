@@ -141,7 +141,7 @@
             android:label="@string/title_activity_sdnn"
             android:theme="@style/FullscreenTheme"
             android:screenOrientation="landscape"/>
-        <activity android:name="com.swm.core.RmssdActivity"
+        <activity android:name="com.swm.core.SdnnAndRmssdActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize"
             android:exported="false"
             android:screenOrientation="landscape"

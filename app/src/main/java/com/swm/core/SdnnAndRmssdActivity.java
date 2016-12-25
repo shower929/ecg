@@ -15,9 +15,11 @@ import com.swm.heartbeat.HeartBeatListener;
 import com.swm.heartbeat.HeartBeatSound;
 import com.swm.hrv.HrvListener;
 
-public class RmssdActivity extends SwmBaseActivity implements HrvListener
+public class SdnnAndRmssdActivity extends SwmBaseActivity implements HrvListener
                                                     , HeartBeatListener{
-    RealtimeLineChart mLineChart;
+    RealtimeLineChart mSdnnLineChart;
+    TextView mSdnnValue;
+    RealtimeLineChart mRmssdLineChart;
     TextView mRmssdValue;
     SwmBinder mSwmBinder;
     SwitchController mSwitchController;
@@ -30,8 +32,8 @@ public class RmssdActivity extends SwmBaseActivity implements HrvListener
             mSwmBinder = (SwmBinder) service;
 
             try {
-                mSwmBinder.registerHeartRateListener(RmssdActivity.this);
-                mSwmBinder.registerHrvListener(RmssdActivity.this);
+                mSwmBinder.registerHeartRateListener(SdnnAndRmssdActivity.this);
+                mSwmBinder.registerHrvListener(SdnnAndRmssdActivity.this);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -47,8 +49,10 @@ public class RmssdActivity extends SwmBaseActivity implements HrvListener
         super.onCreate(savedInstanceState);
         Intent intent = new Intent(this, SwmService.class);
         bindService(intent, mConnection, BIND_AUTO_CREATE);
-        setContentView(R.layout.activity_rmssd);
-        mLineChart = (RealtimeLineChart) findViewById(R.id.swm_rmssd);
+        setContentView(R.layout.activity_sdnn_and_rmssd);
+        mSdnnLineChart = (RealtimeLineChart) findViewById(R.id.swm_sdnn);
+        mSdnnValue = (TextView) findViewById(R.id.swm_sdnn_value);
+        mRmssdLineChart = (RealtimeLineChart) findViewById(R.id.swm_rmssd);
         mRmssdValue = (TextView) findViewById(R.id.swm_rmssd_value);
         mSwitchController = new SwitchController(this, findViewById(R.id.swm_hrv_switch));
         mHeartBeatSound = new HeartBeatSound(this);
@@ -60,8 +64,11 @@ public class RmssdActivity extends SwmBaseActivity implements HrvListener
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                mSdnnLineChart.offerValue(hrvData.sdnn);
+                mSdnnValue.setText(String.valueOf(hrvData.sdnn) + " ms");
+
+                mRmssdLineChart.offerValue(hrvData.rmssd);
                 mRmssdValue.setText(String.valueOf(hrvData.rmssd) + " ms");
-                mLineChart.offerValue(hrvData.rmssd);
             }
         });
 
@@ -80,6 +87,7 @@ public class RmssdActivity extends SwmBaseActivity implements HrvListener
             mSwmBinder.removeHeartRateListener(this);
             mSwmBinder.removeHrvListener(this);
         }
+        mHeartBeatSound.release();
     }
 
     @Override
@@ -104,5 +112,17 @@ public class RmssdActivity extends SwmBaseActivity implements HrvListener
 
             }
         });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mHeartBeatSound.prepare();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mHeartBeatSound.release();
     }
 }

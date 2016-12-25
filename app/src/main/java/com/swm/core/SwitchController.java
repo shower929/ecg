@@ -18,20 +18,19 @@ class SwitchController implements View.OnClickListener {
         mView = view;
 
         View rri = activity.findViewById(R.id.swm_hrv_rri);
-        View sdnn = activity.findViewById(R.id.swm_hrv_sdnn);
-        View rmssd = activity.findViewById(R.id.swm_hrv_rmssd);
+        View sdnnAndRmssd = activity.findViewById(R.id.swm_hrv_sdnn_and_rmssd);
         View frequency = activity.findViewById(R.id.swm_hrv_frequency);
         View poincare = activity.findViewById(R.id.swm_hrv_poincare);
 
         rri.setOnClickListener(this);
-        sdnn.setOnClickListener(this);
-        rmssd.setOnClickListener(this);
+        sdnnAndRmssd.setOnClickListener(this);
+
         frequency.setOnClickListener(this);
         poincare.setOnClickListener(this);
 
-        if(activity instanceof RmssdActivity) {
-            rmssd.setOnClickListener(null);
-            rmssd.setBackground(activity.getResources().getDrawable(R.drawable.swm_cta_button));
+        if(activity instanceof SdnnAndRmssdActivity) {
+            sdnnAndRmssd.setOnClickListener(null);
+            sdnnAndRmssd.setBackground(activity.getResources().getDrawable(R.drawable.swm_cta_button));
         }
     }
 
@@ -42,11 +41,8 @@ class SwitchController implements View.OnClickListener {
             case R.id.swm_hrv_rri:
                 //switchToRriActivity();
                 break;
-            case R.id.swm_hrv_sdnn:
-                switchToSdnnActivity();
-                break;
-            case R.id.swm_hrv_rmssd:
-                //switchToRmssdActivity();
+            case R.id.swm_hrv_sdnn_and_rmssd:
+                switchToSdnnAndRmssdActivity();
                 break;
             case R.id.swm_hrv_frequency:
                 //switchToFrequency();
@@ -57,7 +53,7 @@ class SwitchController implements View.OnClickListener {
         }
     }
 
-    private void switchToSdnnActivity() {
+    private void switchToSdnnAndRmssdActivity() {
 
     }
 }

@@ -127,4 +127,5 @@
     <string name="swm_hrv_poincare">Poincare</string>
     <string name="title_activity_sdnn">SdnnActivity</string>
     <string name="swm_rri">RRI</string>
+    <string name="swm_sdnn_and_rmssd">SDNN/RMSSD</string>
 </resources>

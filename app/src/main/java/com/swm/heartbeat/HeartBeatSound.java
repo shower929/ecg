@@ -4,6 +4,7 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
 import android.os.Handler;
+import android.util.Log;
 
 import com.swm.core.HeartBeatData;
 
@@ -20,6 +21,7 @@ public class HeartBeatSound implements HeartBeatListener{
     private int mHeartBeatRate;
     private boolean mReleased = false;
     private int mCurrentVolume;
+    private Context mContext;
 
     private class BeatSound implements Runnable {
         protected Long executedTime;
@@ -37,14 +39,20 @@ public class HeartBeatSound implements HeartBeatListener{
     }
 
     public HeartBeatSound(Context context) {
-        AudioManager audio = (AudioManager) context.getSystemService(context.AUDIO_SERVICE);
+        mContext = context;
+    }
+
+    public void prepare() {
+        Log.d("Sound", "prepare");
+        AudioManager audio = (AudioManager) mContext.getSystemService(mContext.AUDIO_SERVICE);
         mCurrentVolume = audio.getStreamVolume(AudioManager.STREAM_RING);
         mSoundHandler = new Handler();
         mBeatSound = new ToneGenerator(AudioManager.STREAM_RING, mCurrentVolume);
-
     }
+
     @Override
     public void onHeartBeatDataAvailable(HeartBeatData heartBeatData) {
+        Log.d("Sound", "onHeartBeatDataAvailable");
         int heartBeatRate = heartBeatData.heartRate;
         if (heartBeatRate <= 0)
             return;

@@ -2,7 +2,6 @@ package com.swm.core;
 
 import android.content.Context;
 import android.content.Intent;
-import android.view.Menu;
 
 import com.swm.heart.R;
 
@@ -40,7 +39,7 @@ class MenuController {
     }
 
     void startHrvActivity() {
-        Intent intent = new Intent(mContext, RmssdActivity.class);
+        Intent intent = new Intent(mContext, SdnnAndRmssdActivity.class);
         mContext.startActivity(intent);
     }
 

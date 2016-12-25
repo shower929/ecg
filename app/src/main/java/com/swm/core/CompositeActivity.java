@@ -205,12 +205,12 @@ public class CompositeActivity extends SwmBaseActivity implements EcgListener
             mSwmBinder.removeHrvListener(this);
             mSwmBinder.removeMotionListener();
         }
-        mHeartBeatSound.release();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+        mHeartBeatSound.release();
         SwmCore.getIns().removeProfilingListener();
         if (mLocationService != null)
             mLocationService.removeLocationListener();
@@ -220,6 +220,7 @@ public class CompositeActivity extends SwmBaseActivity implements EcgListener
     @Override
     protected void onStart() {
         super.onStart();
+        mHeartBeatSound.prepare();
         SwmCore.getIns().setProfilingListener(this);
         if (mLocationService != null)
             mLocationService.setLocationListener(this);

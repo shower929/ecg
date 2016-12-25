@@ -211,7 +211,6 @@ public class SuperRunActivity extends SwmBaseActivity
             mSwmBinder.removeHeartRateListener(this);
             mSwmBinder.removeDeviceListener();
         }
-        mHeartBeatSound.release();
     }
 
     @Override
@@ -309,4 +308,15 @@ public class SuperRunActivity extends SwmBaseActivity
         mBtnBeatingAnim.playTogether(btnAnimSet, rippleAnimSet);
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mHeartBeatSound.prepare();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mHeartBeatSound.release();
+    }
 }
