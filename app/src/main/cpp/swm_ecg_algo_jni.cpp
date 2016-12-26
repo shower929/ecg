@@ -15,6 +15,7 @@ Java_com_swm_core_SwmCore_CalculateEcgMetaData(JNIEnv *env, jobject thiz,
     short heartRate = APPS_ECG_GetValueHR();
     short sdnn = APPS_HRV_GetValueSDNN();
     short rmssd = APPS_HRV_GetValueRMSSD();
+
     jclass clazz = env->GetObjectClass(obj);
     jfieldID heartRateParam = env->GetFieldID(clazz, "heartRate", "I");
     jfieldID  sdnnParam = env->GetFieldID(clazz, "sdnn", "I");

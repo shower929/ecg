@@ -20,6 +20,8 @@ add_library( # Specifies the name of the library.
              src/main/cpp/swm_ecg_algo_jni.cpp
              src/main/cpp/AlgorithmWare/SWM_ECG_ALGO.cpp
              src/main/cpp/AlgorithmWare/SWM_Filter.cpp
+             src/main/cpp/SWM_algo_HRV.cpp
+             src/main/cpp/mymath.cpp
             )
 find_library( # Defines the name of the path variable that stores the
               # location of the NDK library.
