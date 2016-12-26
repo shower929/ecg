@@ -177,15 +177,15 @@ import java.util.concurrent.LinkedBlockingQueue;
                 if(!BuildConfig.ENGINEERING)
                     return;
 
-                //if(service.getUuid().equals(MotionBleProfile.SERVICE)) {
-                    //mMotionBleProfile = new MotionBleProfile(service);
-                    //try {
-                        //mMotionBleProfile.enableNotification(gatt);
-                        //mMotionBleProfile.enableService();
-                    //} catch (Exception e) {
-                        //e.printStackTrace();
-                   //}
-                //}
+                if(service.getUuid().equals(MotionBleProfile.SERVICE)) {
+                    mMotionBleProfile = new MotionBleProfile(service);
+                    try {
+                        mMotionBleProfile.enableNotification(gatt);
+                        mMotionBleProfile.enableService();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                   }
+                }
 
             }
         }

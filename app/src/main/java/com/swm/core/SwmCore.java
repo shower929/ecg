@@ -179,7 +179,7 @@ public class SwmCore {
 
             if(BuildConfig.ENGINEERING)
                 synchronized (PROFILING_LOCK) {
-                    checkBitError(data.rawData);
+                    //checkBitError(data.rawData);
 
                     if (mMotionPackCount < 0) {
                         int starting = data.rawData[18];
@@ -217,7 +217,7 @@ public class SwmCore {
 
                     mEcgLatency+=latency;
 
-                    checkBitError(data.rawData);
+                    //checkBitError(data.rawData);
 
                     if (mEcgPackCount < 0) {
                         int starting = data.rawData[6];

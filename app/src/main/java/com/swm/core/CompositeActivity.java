@@ -340,7 +340,7 @@ public class CompositeActivity extends SwmBaseActivity implements EcgListener
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mLatencyView.setText(String.valueOf(latency));
+                mLatencyView.setText(String.valueOf(latency) + " ms");
             }
         });
     }
