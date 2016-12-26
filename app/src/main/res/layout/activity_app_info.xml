@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_app_info"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.swm.app.superrun.AppInfoActivity">
+    <TextView
+        android:id="@+id/swm_app_version_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/swm_app_version_label"
+        android:textSize="20dp"
+        android:textColor="@color/swm_title"
+        />
+    <TextView
+        android:id="@+id/swm_app_version"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="SWM_0.1_Alpha_01.01_build_201612261307"
+        android:textSize="15dp"
+        android:layout_below="@id/swm_app_version_label"
+        android:layout_marginTop="8dp"
+        />
+</RelativeLayout>
