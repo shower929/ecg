@@ -44,13 +44,19 @@ public class SwmCore {
 
     private static Handler mProfilingHandler = new Handler();
     private int mRxSize;
-    private int mMotionPackCount;
-    private int mEcgPackCount;
+
+    private boolean mFirstMotionPacket = true;
+    private int mPreMotionIndex = -1;
+    private float mReceivedMotionPacketCount = 0;
+    private int mTotalMotionPacketCount;
+
+    private boolean mFirstEcgPacket = true;
+    private int mPreEcgIndex = -1;
+    private int mEcgPackCount = -1;
+    private float mReceivedEcgPacketCount = 0;
+    private int mTotalEcgPacketCout;
+
     private boolean mInit = true;
-    private float mEcgPacketLoss;
-    private float mMotionPacketLoss;
-    private int mMotionTargetPacketCount;
-    private int mEcgTargetPacketCount;
     private Context mContext;
     private SuperRunCloudService mSuperRunCloudService;
     private EmergencyCloudService mEmergencyCloudService;
@@ -103,25 +109,26 @@ public class SwmCore {
                         mProfilingListener.onThroughput(mRxSize);
 
                     double lossRate = 0.0;
-                    if(mMotionTargetPacketCount > 0) {
-                        double motionLossRate = mMotionPacketLoss / mMotionTargetPacketCount * 100f;
+                    if(mTotalMotionPacketCount > 0) {
+                        double motionLossRate = (mTotalMotionPacketCount - mReceivedMotionPacketCount) / mTotalMotionPacketCount * 100f;
                         Log.w("Profiling", "Motion packet loss: " + motionLossRate);
                         lossRate += motionLossRate;
                     }
 
-                    if (mEcgTargetPacketCount > 0) {
-                        double ecgLossRate = mEcgPacketLoss / mMotionTargetPacketCount * 100f;
-                        Log.w("Profiling", "Motion packet loss: " + ecgLossRate);
+                    if (mTotalEcgPacketCout > 0) {
+                        double ecgLossRate = (mTotalEcgPacketCout - mReceivedEcgPacketCount) / mTotalEcgPacketCout * 100f;
+                        Log.w("Profiling", "Ecg packet loss: " + ecgLossRate);
                         lossRate += ecgLossRate;
                     }
 
                     mTotalPacketLoss+=lossRate;
+
                     if(mProfilingListener != null)
                         mProfilingListener.onPacketLoss(mTotalPacketLoss);
 
                     if (mErrorByte > 0) {
                         byteErrorRate = mErrorByte / TIME_FRAME * 100f;
-                        Log.w("Profiling", "BER: " + byteErrorRate);
+
                         if (mProfilingListener != null)
                             mProfilingListener.onByteError(byteErrorRate);
                         mErrorByte = 0;
@@ -136,10 +143,14 @@ public class SwmCore {
                     }
 
                     mRxSize = 0;
-                    mEcgPacketLoss = 0;
-                    mMotionPacketLoss = 0;
-                    mMotionTargetPacketCount = 0;
-                    mEcgTargetPacketCount = 0;
+
+                    mReceivedEcgPacketCount = 0;
+                    mTotalEcgPacketCout = 0;
+
+                    mReceivedMotionPacketCount = 0;
+                    mTotalMotionPacketCount = 0;
+
+                    mEcgPackCount = 0;
                     mEcgLatency = 0;
                 }
 
@@ -179,23 +190,22 @@ public class SwmCore {
 
             if(BuildConfig.ENGINEERING)
                 synchronized (PROFILING_LOCK) {
-                    //checkBitError(data.rawData);
+                    mRxSize += data.rawData.length;
 
-                    if (mMotionPackCount < 0) {
-                        int starting = data.rawData[18];
-                        mMotionPackCount = 127 - starting;
-                        mMotionTargetPacketCount += mMotionPackCount;
-                    }
-
-                    if (127 - data.rawData[18] == mMotionPackCount) {
-                        mRxSize = mRxSize + data.rawData.length;
+                    if (mFirstMotionPacket) {
+                        mFirstMotionPacket = false;
+                        mTotalMotionPacketCount++;
                     } else {
-                        mMotionPacketLoss++;
-                        mMotionPackCount--;
+                        int diff = Math.abs(data.rawData[18] - mPreMotionIndex);
+                        if (diff == 255)
+                            mTotalMotionPacketCount++;
+                        else
+                            mTotalMotionPacketCount+=diff;
                     }
 
-                    mMotionPackCount--;
+                    mReceivedMotionPacketCount++;
 
+                    mPreMotionIndex = data.rawData[18];
             }
 
         }
@@ -217,22 +227,21 @@ public class SwmCore {
 
                     mEcgLatency+=latency;
 
-                    //checkBitError(data.rawData);
+                    mRxSize += data.rawData.length;
 
-                    if (mEcgPackCount < 0) {
-                        int starting = data.rawData[6];
-                        mEcgPackCount = 127 - starting;
-                        mEcgTargetPacketCount += mEcgPackCount;
-                    }
-
-                    if (127 - data.rawData[6] == mEcgPackCount) {
-                        mRxSize = mRxSize + data.rawData.length;
+                    if (mFirstEcgPacket) {
+                        mFirstEcgPacket = false;
+                        mTotalEcgPacketCout++;
                     } else {
-                        mEcgPacketLoss++;
-                        mEcgPackCount--;
+                        int diff = Math.abs(data.rawData[6] - mPreEcgIndex);
+                        if (diff == 255)
+                            mTotalEcgPacketCout++;
+                        else
+                            mTotalEcgPacketCout+=diff;
                     }
 
-                    mEcgPackCount--;
+                    mReceivedEcgPacketCount++;
+                    mPreEcgIndex = data.rawData[6];
                 }
         }
     }
