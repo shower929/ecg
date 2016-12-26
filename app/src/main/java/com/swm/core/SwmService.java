@@ -43,7 +43,6 @@ public class SwmService extends Service {
     public IBinder onBind(Intent intent) {
         if(!SwmCore.getIns().getSuperRunCloudService().isMonitoring())
             SwmCore.getIns().getSuperRunCloudService().startMonitor(FirebaseAuth.getInstance().getCurrentUser());
-        SwmCore.APPSEcgInitialForModeChange();
         return mSwmBinder;
     }
 

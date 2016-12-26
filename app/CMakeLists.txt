@@ -18,15 +18,6 @@ add_library( # Specifies the name of the library.
 
              # Provides a relative path to your source file(s).
              src/main/cpp/swm_ecg_algo_jni.cpp
-             src/main/cpp/AlgorithmWare/SWM_ECG_ALGO.cpp
-             src/main/cpp/AlgorithmWare/SWM_Filter.cpp
+             src/main/cpp/SWM_ECG_ALGO.cpp
+             src/main/cpp/SWM_Filter.cpp
             )
-find_library( # Defines the name of the path variable that stores the
-              # location of the NDK library.
-              log-lib
-
-              # Specifies the name of the NDK library that
-              # CMake needs to locate.
-              log )
-
-target_link_libraries(swm_ecg_algo ${log-lib})

@@ -5,7 +5,6 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.os.Handler;
 import android.view.View;
-import android.widget.TextView;
 
 /**
  * Created by yangzhenyu on 2016/10/12.
@@ -22,15 +21,11 @@ public class HeartBeatHandler {
     private float mEnlargeXFactor = 80f / TOTAL;
     private float mShrinkXFactor = 50f / TOTAL;
     private float mOriXFactor = 50f / TOTAL;
-    private TextView mHeartRate;
 
-    public HeartBeatHandler(View heart, TextView heartRate) {
-        mHeart = heart;
-        mHeartRate = heartRate;
-        mHandler = new Handler();
-    }
     public HeartBeatHandler(View heart) {
-        this(heart, null);
+        mHeart = heart;
+
+        mHandler = new Handler();
     }
 
     private void initHeartBeatAnim(long totalDuration) {
@@ -51,11 +46,11 @@ public class HeartBeatHandler {
         mHeartBeatAnim.playSequentially(heartEnlargeXAnim,r, t);
     }
 
-    public void onHeartBeat(int heartRate) {
-        if (heartRate == 0)
+    public void onHeartBeat(int heartBeat) {
+        if (heartBeat == 0)
             return;
 
-        long time = 1 * 60 * 1000 / heartRate;
+        long time = 1 * 60 * 1000 / heartBeat;
         if (time == mTime) {
             return;
         }
@@ -75,8 +70,7 @@ public class HeartBeatHandler {
             };
             mHandler.postDelayed(mBeat, mTime);
         }
-        if (mHeartRate != null)
-            mHeartRate.setText(String.valueOf(heartRate));
+
 
     }
 }

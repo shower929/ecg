@@ -34,6 +34,12 @@ class HeartRateService {
 
     private Thread mCallbackWorker;
 
+    static {
+        System.loadLibrary("swm_ecg_algo");
+    }
+
+    private native int AppsEcgSimulationRTOS(int[] i32ECGRawBuffer);
+
     private Runnable mBeat = new Runnable() {
         private Long[] mData;
 
@@ -89,14 +95,12 @@ class HeartRateService {
                         g_i32ECGInBuffer[i] = value.intValue();
                         i++;
                     }
-                    EcgMetaData ecgMetaData = new EcgMetaData();
-                    SwmCore.CalculateEcgMetaData(ecgMetaData, g_i32ECGInBuffer);
-                    SwmCore.getIns().setEcgMetaData(ecgMetaData);
+                    int heartbeat = AppsEcgSimulationRTOS(g_i32ECGInBuffer);
 
-                    if (SwmCore.getIns().getEcgMetaData().heartRate == 0)
+                    if (heartbeat == 0)
                         continue;
 
-                    HeartBeatData heartBeatData = new HeartBeatData(SwmCore.getIns().getEcgMetaData().heartRate);
+                    HeartBeatData heartBeatData = new HeartBeatData(heartbeat);
                     if(mListeners != null)
                         mCallbackDataQueue.offer(heartBeatData);
 

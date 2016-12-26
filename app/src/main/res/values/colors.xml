@@ -90,9 +90,4 @@
     <color name="swm_weak_background">#77ffffff</color>
     <color name="swm_light_background">#aaffffff</color>
     <color name="swm_dark_background">#55ffffff</color>
-    <color name="swm_menu_background">#eeaaaaaa</color>
-    <color name="swm_menu_normal">#aaaaaaaa</color>
-    <color name="swm_menu_pressed">#aaffffff</color>
-    <color name="swm_inactive_cta">#ff0190ac</color>
-    <color name="swm_inactive_cta_dark">#ff014f5f</color>
 </resources>

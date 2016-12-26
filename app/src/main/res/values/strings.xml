@@ -117,15 +117,4 @@
     <string name="swm_body_info_hint">Take a deep breathe, relax and prepare to run</string>
     <string name="swm_gender_label">Gender</string>
     <string name="swm_pick_day">Pick a day</string>
-    <string name="swm_sdnn">SDNN</string>
-    <string name="swm_rmssd">RMSSD</string>
-    <string name="swm_menu_ecg_title">ECG</string>
-    <string name="swm_menu_hrv_title">HRV</string>
-    <string name="swm_menu_motion_title">Motion</string>
-    <string name="swm_menu_ble_title">BLE</string>
-    <string name="swm_hrv_frequency">Frequency</string>
-    <string name="swm_hrv_poincare">Poincare</string>
-    <string name="title_activity_sdnn">SdnnActivity</string>
-    <string name="swm_rri">RRI</string>
-    <string name="swm_sdnn_and_rmssd">SDNN/RMSSD</string>
 </resources>

@@ -8,4 +8,5 @@ interface ProfilingListener {
     void onPacketLoss(double rate);
     void onThroughput(double bps);
     void onByteError(double ber);
+    void onLatency(long latency);
 }

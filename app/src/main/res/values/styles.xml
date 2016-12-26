@@ -44,7 +44,6 @@
         <item name="android:textSize">24dp</item>
         <item name="android:textColor">@color/swm_white</item>
     </style>
-
     <style name="SwmDatePicker" parent="android:Widget.Material.Light.DatePicker">
         <item name="android:textColorPrimary">@color/swm_white</item>
     </style>

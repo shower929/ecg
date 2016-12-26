@@ -177,15 +177,15 @@ import java.util.concurrent.LinkedBlockingQueue;
                 if(!BuildConfig.ENGINEERING)
                     return;
 
-                if(service.getUuid().equals(MotionBleProfile.SERVICE)) {
-                    mMotionBleProfile = new MotionBleProfile(service);
-                    try {
-                        mMotionBleProfile.enableNotification(gatt);
-                        mMotionBleProfile.enableService();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                   }
-                }
+                //if(service.getUuid().equals(MotionBleProfile.SERVICE)) {
+                    //mMotionBleProfile = new MotionBleProfile(service);
+                    //try {
+                        //mMotionBleProfile.enableNotification(gatt);
+                        //mMotionBleProfile.enableService();
+                    //} catch (Exception e) {
+                        //e.printStackTrace();
+                   //}
+                //}
 
             }
         }
@@ -273,6 +273,7 @@ import java.util.concurrent.LinkedBlockingQueue;
         mBluetoothGatt = mDevice.connectGatt(mContext, true, mGattCallback);
         if (Build.VERSION.SDK_INT >= 21)
             mBluetoothGatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH);
+
     }
 
     private void savePrefDevice(BluetoothDevice device) {

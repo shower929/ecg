@@ -3,8 +3,11 @@ package com.swm.core;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.res.Configuration;
 import android.location.Location;
+import android.os.Handler;
 import android.os.IBinder;
+import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -17,7 +20,6 @@ import com.swm.heart.R;
 import com.swm.heart.SwmBaseActivity;
 import com.swm.heartbeat.HeartBeatListener;
 import com.swm.heartbeat.HeartBeatSound;
-import com.swm.hrv.HrvListener;
 import com.swm.motion.MotionListener;
 
 public class CompositeActivity extends SwmBaseActivity implements EcgListener
@@ -27,8 +29,7 @@ public class CompositeActivity extends SwmBaseActivity implements EcgListener
         , View.OnClickListener
         , MyLocationService.LocationListener
         , TimerListener
-        , ProfilingListener
-        , HrvListener{
+        , ProfilingListener{
     private static final String LOG_TAG = "ECG";
     private SwmBinder mSwmBinder;
     private CompositeView mCompositeView;
@@ -53,14 +54,11 @@ public class CompositeActivity extends SwmBaseActivity implements EcgListener
     private TextView mPacketLossView;
     private TextView mThroughputView;
     private TextView mByteErrorRateView;
-    private TextView mSdnnView;
-    private TextView mRmssdView;
+    private TextView mLatencyView;
 
     private HeartBeatSound mHeartBeatSound;
     private Button mRecordBtn;
     private MyLocationService mLocationService;
-    private MenuController mMenuController;
-    private View mMenu;
 
     private ServiceConnection mLocationConnection = new ServiceConnection() {
         @Override
@@ -90,7 +88,6 @@ public class CompositeActivity extends SwmBaseActivity implements EcgListener
             mSwmBinder.setBreathListener(CompositeActivity.this);
             try {
                 mSwmBinder.registerHeartRateListener(CompositeActivity.this);
-                mSwmBinder.registerHrvListener(CompositeActivity.this);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -116,7 +113,7 @@ public class CompositeActivity extends SwmBaseActivity implements EcgListener
         setContentView(R.layout.activity_composite);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        mMenuController = new MenuController(this);
+
         mCompositeView = (CompositeView) findViewById(R.id.swm_composite_view);
         mHeartRateView = (TextView) findViewById(R.id.swm_current_heart_rate);
         mMaxHeartRateView = (TextView) findViewById(R.id.swm_max_heart_rate);
@@ -137,17 +134,10 @@ public class CompositeActivity extends SwmBaseActivity implements EcgListener
         mPacketLossView = (TextView) findViewById(R.id.swm_packetloss_view);
         mThroughputView = (TextView) findViewById(R.id.swm_throughput_view);
         mByteErrorRateView = (TextView) findViewById(R.id.swm_byte_error_rate_view);
-        mSdnnView = (TextView) findViewById(R.id.swm_sdnn_value_view);
-        mRmssdView = (TextView) findViewById(R.id.swm_rmssd_value_view);
+        mLatencyView = (TextView) findViewById(R.id.swm_latency_view);
         mHeartBeatSound = new HeartBeatSound(this);
         mRecordBtn = (Button) findViewById(R.id.swm_record);
         mRecordBtn.setOnClickListener(this);
-        findViewById(R.id.swm_menu_icon).setOnClickListener(this);
-        mMenu = findViewById(R.id.swm_menu);
-        findViewById(R.id.swm_menu_ecg).setOnClickListener(this);
-        findViewById(R.id.swm_menu_hrv).setOnClickListener(this);
-        findViewById(R.id.swm_menu_motion).setOnClickListener(this);
-        findViewById(R.id.swm_menu_ble).setOnClickListener(this);
     }
 
 
@@ -174,7 +164,6 @@ public class CompositeActivity extends SwmBaseActivity implements EcgListener
             try {
                 mSwmBinder.registerEcgListener(this);
                 mSwmBinder.registerHeartRateListener(this);
-                mSwmBinder.registerHrvListener(this);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -202,15 +191,14 @@ public class CompositeActivity extends SwmBaseActivity implements EcgListener
             mSwmBinder.removeEcgListener(this);
             mSwmBinder.removeBreathListener();
             mSwmBinder.removeHeartRateListener(this);
-            mSwmBinder.removeHrvListener(this);
             mSwmBinder.removeMotionListener();
         }
+        mHeartBeatSound.release();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        mHeartBeatSound.release();
         SwmCore.getIns().removeProfilingListener();
         if (mLocationService != null)
             mLocationService.removeLocationListener();
@@ -220,7 +208,6 @@ public class CompositeActivity extends SwmBaseActivity implements EcgListener
     @Override
     protected void onStart() {
         super.onStart();
-        mHeartBeatSound.prepare();
         SwmCore.getIns().setProfilingListener(this);
         if (mLocationService != null)
             mLocationService.setLocationListener(this);
@@ -262,32 +249,6 @@ public class CompositeActivity extends SwmBaseActivity implements EcgListener
 
     @Override
     public void onClick(View v) {
-        switch(v.getId()) {
-            case R.id.swm_record:
-                handleRecordEvent();
-                break;
-            case R.id.swm_menu_icon:
-                handleMenuVisibility();
-                break;
-            case R.id.swm_menu_ecg:
-            case R.id.swm_menu_hrv:
-            case R.id.swm_menu_motion:
-            case R.id.swm_menu_ble:
-                mMenuController.onSwitchMode(v.getId());
-                finish();
-                break;
-        }
-    }
-
-    private void handleMenuVisibility() {
-        if (mMenu.getVisibility() != View.VISIBLE)
-            mMenu.setVisibility(View.VISIBLE);
-        else {
-            mMenu.setVisibility(View.GONE);
-        }
-    }
-
-    private void handleRecordEvent() {
         if (!isRecording()) {
             mRecordBtn.setText(getString(R.string.swm_stop));
             mRecordBtn.setBackground(getResources().getDrawable(R.drawable.swm_stop_button));
@@ -307,6 +268,7 @@ public class CompositeActivity extends SwmBaseActivity implements EcgListener
             mElapseView.setVisibility(View.INVISIBLE);
         }
     }
+
     private boolean isRecording() {
         return SwmCore.getIns().isRecording()
                 && mLocationService.isRecording();
@@ -374,12 +336,11 @@ public class CompositeActivity extends SwmBaseActivity implements EcgListener
     }
 
     @Override
-    public void onHrvDataAvailable(final HrvData hrvData) {
+    public void onLatency(final long latency) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mSdnnView.setText(String.valueOf(hrvData.sdnn) + " ms");
-                mRmssdView.setText(String.valueOf(hrvData.rmssd) + " ms");
+                mLatencyView.setText(String.valueOf(latency));
             }
         });
     }

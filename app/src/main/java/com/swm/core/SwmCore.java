@@ -1,14 +1,10 @@
 package com.swm.core;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Handler;
 import android.util.Log;
 
-import com.google.firebase.crash.FirebaseCrash;
-import com.google.firebase.database.FirebaseDatabase;
 import com.swm.heart.BuildConfig;
-import com.swm.hrv.HrvListener;
 
 import java.util.Arrays;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -21,6 +17,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class SwmCore {
     private static final String LOG_TAG = "SWM";
     private static SwmCore SWM_CORE;
+    private static final float CLOCK = 50f; //Hz
+    private static final float EXPECTED_TIME = 1f/CLOCK * 1000; //ms
 
     private static MotionService mMotionService;
     private static LinkedBlockingDeque<SwmData> mMotionDataQueue;
@@ -41,8 +39,7 @@ public class SwmCore {
     private static HeartRateService mHeartRateService;
     private static LinkedBlockingQueue<SwmData> mHeartBeatServiceQueue;
     private static final long TIME_FRAME = 1000;
-    static final long SAMPLE_RATE = 50; //Hz
-    static final long CLOCK = 1/SAMPLE_RATE * 1000;  //ms
+
     static boolean sRunning = true;
 
     private static Handler mProfilingHandler = new Handler();
@@ -50,8 +47,10 @@ public class SwmCore {
     private int mMotionPackCount;
     private int mEcgPackCount;
     private boolean mInit = true;
-    private float mPacketLoss;
-    private float mTargetPacket;
+    private float mEcgPacketLoss;
+    private float mMotionPacketLoss;
+    private int mMotionTargetPacketCount;
+    private int mEcgTargetPacketCount;
     private Context mContext;
     private SuperRunCloudService mSuperRunCloudService;
     private EmergencyCloudService mEmergencyCloudService;
@@ -65,25 +64,17 @@ public class SwmCore {
     private static final Object PROFILING_LOCK = new Object();
     private double mErrorByte;
     private Dump mDump;
-    private HrvService mHrvService;
-    private EcgMetaData mEcgMetaData;
-
-    static {
-        System.loadLibrary("swm_ecg_algo");
-    }
-
-    static native void APPSEcgInitialForModeChange();
-    static native int CalculateEcgMetaData(EcgMetaData ecgMetaData, int[] i32ECGRawBuffer);
+    private long mLastReceiveTime;
+    private long mEcgLatency;
+    private long mTotalPacketLoss;
 
     private SwmCore(Context context) {
         mContext = context;
-
         initMotionService();
         initEcgService();
         initHeartBeatService();
         initAcceleratorService();
         initBreathService();
-        initHrvService();
         SwmDeviceController.init(context);
         initEmergencyCloudService();
 
@@ -105,25 +96,51 @@ public class SwmCore {
 
                 synchronized (PROFILING_LOCK) {
                     Log.v("Profiling", "bps: " + mRxSize);
-                    double lossRate = 0;
+
                     double byteErrorRate = 0;
 
                     if (mProfilingListener != null)
                         mProfilingListener.onThroughput(mRxSize);
 
-                    if(mTargetPacket > 0) {
-                        lossRate = mPacketLoss / mTargetPacket * 100f;
-                        Log.w("Profiling", "Packet loss: " + lossRate);
-                        if (mProfilingListener != null)
-                            mProfilingListener.onPacketLoss(lossRate);
+                    double lossRate = 0.0;
+                    if(mMotionTargetPacketCount > 0) {
+                        double motionLossRate = mMotionPacketLoss / mMotionTargetPacketCount * 100f;
+                        Log.w("Profiling", "Motion packet loss: " + motionLossRate);
+                        lossRate += motionLossRate;
                     }
 
-                    if (mRecording) {
-                        mDump.putData(new BleDumpData(mRxSize, lossRate, byteErrorRate));
+                    if (mEcgTargetPacketCount > 0) {
+                        double ecgLossRate = mEcgPacketLoss / mMotionTargetPacketCount * 100f;
+                        Log.w("Profiling", "Motion packet loss: " + ecgLossRate);
+                        lossRate += ecgLossRate;
                     }
+
+                    mTotalPacketLoss+=lossRate;
+                    if(mProfilingListener != null)
+                        mProfilingListener.onPacketLoss(mTotalPacketLoss);
+
+                    if (mErrorByte > 0) {
+                        byteErrorRate = mErrorByte / TIME_FRAME * 100f;
+                        Log.w("Profiling", "BER: " + byteErrorRate);
+                        if (mProfilingListener != null)
+                            mProfilingListener.onByteError(byteErrorRate);
+                        mErrorByte = 0;
+                    }
+
+                    if (mEcgPackCount > 0) {
+                        float avgLatency = mEcgLatency / mEcgPackCount;
+
+                        if (mRecording) {
+                            mDump.putData(new BleDumpData(mRxSize, lossRate, byteErrorRate, avgLatency));
+                        }
+                    }
+
                     mRxSize = 0;
-                    mPacketLoss = 0;
-                    mTargetPacket = 0;
+                    mEcgPacketLoss = 0;
+                    mMotionPacketLoss = 0;
+                    mMotionTargetPacketCount = 0;
+                    mEcgTargetPacketCount = 0;
+                    mEcgLatency = 0;
                 }
 
                 if (sRunning) {
@@ -155,6 +172,7 @@ public class SwmCore {
     }
 
     void onBleDataAvailable(BleData data) {
+
         if (data.uuid.equals(MotionBleProfile.DATA)) {
 
             onMotionBleDataAvailable(data);
@@ -166,13 +184,13 @@ public class SwmCore {
                     if (mMotionPackCount < 0) {
                         int starting = data.rawData[18];
                         mMotionPackCount = 127 - starting;
-                        mTargetPacket += mMotionPackCount;
+                        mMotionTargetPacketCount += mMotionPackCount;
                     }
 
                     if (127 - data.rawData[18] == mMotionPackCount) {
                         mRxSize = mRxSize + data.rawData.length;
                     } else {
-                        mPacketLoss++;
+                        mMotionPacketLoss++;
                         mMotionPackCount--;
                     }
 
@@ -183,24 +201,34 @@ public class SwmCore {
         }
 
         if (data.uuid.equals(EcgBleProfile.DATA)) {
+
             onEcgBleDataAvailable(data);
             onAccDataAvailable(data);
             onBreathDataAvailable(data);
 
             if (BuildConfig.ENGINEERING)
                 synchronized (PROFILING_LOCK) {
+                    long now = System.currentTimeMillis();
+                    long latency = now - mLastReceiveTime;
+                    mLastReceiveTime = now;
+                    Log.d("Profiling", "Latency: " + latency);
+                    if(mProfilingListener != null)
+                        mProfilingListener.onLatency(latency);
+
+                    mEcgLatency+=latency;
+
                     checkBitError(data.rawData);
 
                     if (mEcgPackCount < 0) {
                         int starting = data.rawData[6];
                         mEcgPackCount = 127 - starting;
-                        mTargetPacket += mEcgPackCount;
+                        mEcgTargetPacketCount += mEcgPackCount;
                     }
 
                     if (127 - data.rawData[6] == mEcgPackCount) {
                         mRxSize = mRxSize + data.rawData.length;
                     } else {
-                        mPacketLoss++;
+                        mEcgPacketLoss++;
                         mEcgPackCount--;
                     }
 
@@ -251,7 +279,6 @@ public class SwmCore {
 
     private void initHeartBeatService() {
         if (mHeartRateService == null) {
-
             mHeartRateService = new HeartRateService();
             mHeartBeatServiceQueue = new LinkedBlockingQueue<>();
             Thread heartBeatQueueWorker = new Thread(new Runnable() {
@@ -377,10 +404,6 @@ public class SwmCore {
         return mEmergencyCloudService;
     }
 
-    HrvService getHrvService() {
-        return mHrvService;
-    }
-
     static synchronized void init(Context context) {
         if (SWM_CORE == null) {
             SWM_CORE = new SwmCore(context);
@@ -470,29 +493,5 @@ public class SwmCore {
 
     void removeProfilingListener() {
         mProfilingListener = null;
-    }
-
-    private void initHrvService() {
-        mHrvService = new HrvService();
-    }
-
-    void setHrvListener(HrvListener listener) {
-        try {
-            getHrvService().addListener(listener);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    void removeHrvListener(HrvListener listener) {
-        getHrvService().removeListener(listener);
-    }
-
-    void setEcgMetaData(EcgMetaData ecgMetaData) {
-        mEcgMetaData = ecgMetaData;
-    }
-
-    EcgMetaData getEcgMetaData() {
-        return mEcgMetaData;
     }
 }

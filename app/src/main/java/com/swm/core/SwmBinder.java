@@ -9,7 +9,6 @@ import com.swm.breath.BreathListener;
 import com.swm.device.SwmDeviceListener;
 import com.swm.emergency.UserQueryCallback;
 import com.swm.heartbeat.HeartBeatListener;
-import com.swm.hrv.HrvListener;
 import com.swm.motion.MotionListener;
 import com.swm.training.TrainingListener;
 
@@ -93,13 +92,5 @@ public class SwmBinder extends Binder {
 
     public void stopSport() {
         SwmCore.getIns().getSuperRunCloudService().logEvent(new UserEvent("stop_sport"));
-    }
-
-    public void registerHrvListener(HrvListener listener) throws Exception {
-        SwmCore.getIns().getHrvService().addListener(listener);
-    }
-
-    public void removeHrvListener(HrvListener listener) {
-        SwmCore.getIns().removeHrvListener(listener);
     }
 }
