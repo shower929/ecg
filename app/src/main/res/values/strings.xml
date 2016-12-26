@@ -128,4 +128,6 @@
     <string name="title_activity_sdnn">SdnnActivity</string>
     <string name="swm_rri">RRI</string>
     <string name="swm_sdnn_and_rmssd">SDNN/RMSSD</string>
+    <string name="swm_info">Info</string>
+    <string name="swm_app_version_label">App version</string>
 </resources>
