@@ -19,5 +19,9 @@
             android:id="@+id/nav_setting"
             android:icon="@drawable/ic_menu_setting"
             android:title="Setting"/>
+        <item
+            android:id="@+id/nav_app_info"
+            android:icon="@drawable/ic_menu_setting"
+            android:title="@string/swm_info"/>
     </group>
 </menu>

@@ -134,7 +134,8 @@
         <activity android:name="com.swm.app.superrun.SwmDeviceActivity" />
         <activity android:name="com.swm.app.superrun.training.TrainingResultActivity" />
         <activity android:name="com.swm.app.superrun.GenderAndAgeActivity" />
-        <activity android:name="com.swm.app.superrun.BodyInfoActivity"></activity>
+        <activity android:name="com.swm.app.superrun.BodyInfoActivity" />
+        <activity android:name="com.swm.app.superrun.AppInfoActivity"></activity>
     </application>
 
 </manifest>

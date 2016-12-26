@@ -117,4 +117,6 @@
     <string name="swm_body_info_hint">Take a deep breathe, relax and prepare to run</string>
     <string name="swm_gender_label">Gender</string>
     <string name="swm_pick_day">Pick a day</string>
+    <string name="swm_info">Info</string>
+    <string name="swm_app_version_label">App version</string>
 </resources>

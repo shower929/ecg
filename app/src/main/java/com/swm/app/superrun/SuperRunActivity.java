@@ -185,6 +185,9 @@ public class SuperRunActivity extends SwmBaseActivity
         } else if (id == R.id.nav_setting) {
             Intent intent = new Intent(this, SettingsActivity.class);
             startActivity(intent);
+        } else if (id == R.id.nav_app_info) {
+            Intent intent = new Intent(this, AppInfoActivity.class);
+            startActivity(intent);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
