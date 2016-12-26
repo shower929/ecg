@@ -20,9 +20,11 @@ Java_com_swm_core_SwmCore_CalculateEcgMetaData(JNIEnv *env, jobject thiz,
     jfieldID heartRateParam = env->GetFieldID(clazz, "heartRate", "I");
     jfieldID  sdnnParam = env->GetFieldID(clazz, "sdnn", "I");
     jfieldID  rmssdParam = env->GetFieldID(clazz, "rmssd", "I");
+    jfieldID rriParam = env->GetFieldID(clazz, "", "[I");
     env->SetIntField(obj, heartRateParam, heartRate);
     env->SetIntField(obj, sdnnParam, sdnn);
     env->SetIntField(obj, rmssdParam, rmssd);
+    env->Set
 
     env->ReleaseIntArrayElements(arr, data, 0);
 }
