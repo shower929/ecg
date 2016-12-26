@@ -6,3 +6,10 @@ local.properties
 .idea/
 app/app.iml
 .DS_Store
+app/src/.DS_Store
+app/src/main/.DS_Store
+app/src/main/java/.DS_Store
+app/src/main/java/com/.DS_Store
+app/src/main/java/com/swm/.DS_Store
+app/src/main/res/.DS_Store
+app/src/main/res/drawable-xhdpi/.DS_Store
