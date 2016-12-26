@@ -6,8 +6,8 @@ package com.swm.core;
 
 class BleDumpData extends DumpData {
     private final byte[] data;
-    BleDumpData(double bps, double lossRate, double byteErrorRate) {
-        data = new String(bps + "," + lossRate + "," + byteErrorRate).getBytes();
+    BleDumpData(double bps, double lossRate, double byteErrorRate, double latency) {
+        data = new String(bps + "," + lossRate + "," + byteErrorRate + "," + latency).getBytes();
     }
     @Override
     byte[] dump() {

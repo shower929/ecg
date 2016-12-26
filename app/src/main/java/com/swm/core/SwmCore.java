@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.util.Log;
 
 import com.swm.heart.BuildConfig;
+import com.swm.hrv.HrvListener;
 
 import java.util.Arrays;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -54,13 +55,15 @@ public class SwmCore {
     private int mPreEcgIndex = -1;
     private int mEcgPackCount = -1;
     private float mReceivedEcgPacketCount = 0;
-    private int mTotalEcgPacketCout;
+    private int mTotalEcgPacketCount;
+
+    private double mTotalPacketLoss;
+
+    private long mLastReceiveTime;
+    private float mEcgLatency;
 
     private boolean mInit = true;
-    private float mEcgPacketLoss;
-    private float mMotionPacketLoss;
-    private int mMotionTargetPacketCount;
-    private int mEcgTargetPacketCount;
+
     private Context mContext;
     private SuperRunCloudService mSuperRunCloudService;
     private EmergencyCloudService mEmergencyCloudService;
@@ -126,8 +129,8 @@ public class SwmCore {
                         lossRate += motionLossRate;
                     }
 
-                    if (mTotalEcgPacketCout > 0) {
-                        double ecgLossRate = (mTotalEcgPacketCout - mReceivedEcgPacketCount) / mTotalEcgPacketCout * 100f;
+                    if (mTotalEcgPacketCount > 0) {
+                        double ecgLossRate = (mTotalEcgPacketCount - mReceivedEcgPacketCount) / mTotalEcgPacketCount * 100f;
                         Log.w("Profiling", "Ecg packet loss: " + ecgLossRate);
                         lossRate += ecgLossRate;
                     }
@@ -156,7 +159,7 @@ public class SwmCore {
                     mRxSize = 0;
 
                     mReceivedEcgPacketCount = 0;
-                    mTotalEcgPacketCout = 0;
+                    mTotalEcgPacketCount = 0;
 
                     mReceivedMotionPacketCount = 0;
                     mTotalMotionPacketCount = 0;
@@ -233,8 +236,6 @@ public class SwmCore {
                     long latency = now - mLastReceiveTime;
                     mLastReceiveTime = now;
                     Log.d("Profiling", "Latency: " + latency);
-                    if(mProfilingListener != null)
-                        mProfilingListener.onLatency(latency);
 
                     mEcgLatency+=latency;
 
@@ -242,13 +243,13 @@ public class SwmCore {
 
                     if (mFirstEcgPacket) {
                         mFirstEcgPacket = false;
-                        mTotalEcgPacketCout++;
+                        mTotalEcgPacketCount++;
                     } else {
                         int diff = Math.abs(data.rawData[6] - mPreEcgIndex);
                         if (diff == 255)
-                            mTotalEcgPacketCout++;
+                            mTotalEcgPacketCount++;
                         else
-                            mTotalEcgPacketCout+=diff;
+                            mTotalEcgPacketCount+=diff;
                     }
 
                     mReceivedEcgPacketCount++;
