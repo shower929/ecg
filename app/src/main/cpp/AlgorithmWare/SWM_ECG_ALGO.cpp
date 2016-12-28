@@ -59,7 +59,7 @@ short 	g_i16RealTimeMonitorHRVFlag = 1;				///< 2016.05.08 Clark Add
 short 	g_i16CurrentRRIBuf[MAX_RRI_BUF] = {0};			///< 2016.05.08 Clark Add
 short 	g_i16TempHRVRPeakBuf[MAX_RRI_BUF] = {0};		///< 2016.06.22 Clark Add
 HISTORY_INFO g_sHistoryInfo;
-
+short g_count = 0;
 //LPF 30Hz
 static short LPF_FIR_COEFF[31] = 
 {
@@ -1510,4 +1510,12 @@ void APPS_ECG_Main(long *i32ProcessingBuf, long i32DataLength)
 void APPS_RealTime_OS(long *i32ProcessingBuf) {
 	APPS_ECG_RPeakDetection(i32ProcessingBuf);
 	g_sHistoryInfo.i32FinalHRBuf[g_sHistoryInfo.i32TimeFrameIdx] = g_i16FinalAvgHR;
+}
+
+void APPS_READ_RRI_DATA(long *rriOutput) {
+	int i = 0;
+
+	for (i = 0; i < HRV_RRI_LIMIT_BUF; i++) {
+		rriOutput[i] = g_sHistoryInfo.i16RecordHRVRRIBuf[i];
+	}
 }

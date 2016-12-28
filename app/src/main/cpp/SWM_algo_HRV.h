@@ -16,7 +16,7 @@ void dft1_Freq(double Freq[], long nfft, long samplerate);
 
 
 // HRV Frequency
-void SWM_HRV_Frequency(double RRI[],double DataBuf_RRITime[], long pDataSize,double samplerate, double Output_Frequency[5]);
+void SWM_HRV_Frequency(double RRI[],double DataBuf_RRITime[]/*bin start time*/, long pDataSize/*Num of rri*/, double samplerate /*10 up sampling*/, double Output_Frequency[5]);
 /*
 Output_Frequency[0]=aVLF;
 Output_Frequency[1]=aLF;

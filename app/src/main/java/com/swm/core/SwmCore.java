@@ -86,6 +86,7 @@ public class SwmCore {
 
     static native void APPSEcgInitialForModeChange();
     static native int CalculateEcgMetaData(EcgMetaData ecgMetaData, int[] i32ECGRawBuffer);
+    static native void ReadRriData(int[] rriOutput);
 
     private SwmCore(Context context) {
         mContext = context;

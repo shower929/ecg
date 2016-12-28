@@ -36,6 +36,9 @@ class HrvService {
 
                     try {
                         EcgMetaData ecgMetaData = SwmCore.getIns().getEcgMetaData();
+                        int[] rriOutput = new int[SWM_COM_HEADER.HRV_RRI_LIMIT_BUF];
+                        SwmCore.ReadRriData(rriOutput);
+
                         if(ecgMetaData != null){
                             HrvData hrvData = new HrvData(ecgMetaData.sdnn, ecgMetaData.rmssd);
 
@@ -68,12 +71,10 @@ class HrvService {
                             for(HrvListener listener : mListeners) {
                                 listener.onHrvDataAvailable(hrvData);
                             }
-
                         }
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-
                 }
             }
         });
