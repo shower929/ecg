@@ -146,6 +146,9 @@ import java.util.concurrent.LinkedBlockingQueue;
                 if(!gatt.discoverServices())
                     Log.e(LOG_TAG, "Bluetooth device is busy");
                 sConnected = true;
+                if (Build.VERSION.SDK_INT >= 21)
+                    mBluetoothGatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH);
+
                 if(mListener != null) {
                     mListener.onConnectStateChanged(SwmDeviceListener.CONNECTED);
                 }
@@ -271,8 +274,6 @@ import java.util.concurrent.LinkedBlockingQueue;
         savePrefDevice(device);
         Log.i(LOG_TAG, "Connect to bluetooth device");
         mBluetoothGatt = mDevice.connectGatt(mContext, true, mGattCallback);
-        if (Build.VERSION.SDK_INT >= 21)
-            mBluetoothGatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH);
 
     }
 
