@@ -72,7 +72,7 @@ public class SwmCore {
     private Dump mDump;
     private long mLastReceiveTime;
     private long mEcgLatency;
-    private long mTotalPacketLoss;
+    private double mTotalPacketLoss;
 
     private SwmCore(Context context) {
         mContext = context;
@@ -121,7 +121,7 @@ public class SwmCore {
                         lossRate += ecgLossRate;
                     }
 
-                    mTotalPacketLoss+=lossRate;
+                    mTotalPacketLoss = lossRate;
 
                     if(mProfilingListener != null)
                         mProfilingListener.onPacketLoss(mTotalPacketLoss);
@@ -143,12 +143,6 @@ public class SwmCore {
                     }
 
                     mRxSize = 0;
-
-                    mReceivedEcgPacketCount = 0;
-                    mTotalEcgPacketCout = 0;
-
-                    mReceivedMotionPacketCount = 0;
-                    mTotalMotionPacketCount = 0;
 
                     mEcgPackCount = 0;
                     mEcgLatency = 0;
