@@ -497,4 +497,18 @@ public class SwmCore {
     void removeProfilingListener() {
         mProfilingListener = null;
     }
+
+    void resetBleStatistics() {
+        synchronized (PROFILING_LOCK) {
+            mRxSize = 0;
+
+            mFirstEcgPacket = true;
+            mReceivedEcgPacketCount = 0;
+            mTotalEcgPacketCout = 0;
+
+            mFirstMotionPacket = true;
+            mReceivedMotionPacketCount = 0;
+            mTotalMotionPacketCount = 0;
+        }
+    }
 }

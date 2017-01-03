@@ -158,6 +158,7 @@ import java.util.concurrent.LinkedBlockingQueue;
                 if (mListener != null) {
                     mListener.onConnectStateChanged(SwmDeviceListener.DISCONNECTED);
                 }
+                SwmCore.getIns().resetBleStatistics();
             }
         }
 
