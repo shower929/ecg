@@ -31,4 +31,7 @@ find_library( # Defines the name of the path variable that stores the
               # CMake needs to locate.
               log )
 
-target_link_libraries(swm_ecg_algo ${log-lib})
+add_library( libstlport_static
+             STATIC
+             IMPORTED )
+target_link_libraries(swm_ecg_algo ${log-lib} ${stlport-lib})

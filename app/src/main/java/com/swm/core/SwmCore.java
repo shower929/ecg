@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.util.Log;
 
 import com.swm.heart.BuildConfig;
+import com.swm.hrv.HrvListener;
 
 import java.util.Arrays;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -68,11 +69,22 @@ public class SwmCore {
     private SportService mSportService;
     private ProfilingListener mProfilingListener;
     private static final Object PROFILING_LOCK = new Object();
-    private double mErrorByte;
     private Dump mDump;
     private long mLastReceiveTime;
     private long mEcgLatency;
     private double mTotalPacketLoss;
+
+    private HrvService mHrvService;
+    private EcgMetaData mEcgMetaData;
+
+    static {
+        System.loadLibrary("swm_ecg_algo");
+    }
+
+    static native void APPSEcgInitialForModeChange();
+    static native int CalculateEcgMetaData(EcgMetaData ecgMetaData, int[] i32ECGRawBuffer);
+    static native int GetBinSize();
+    static native void GetRriBins(double[] rriCount, double[] rriTime);
 
     private SwmCore(Context context) {
         mContext = context;
@@ -81,6 +93,7 @@ public class SwmCore {
         initHeartBeatService();
         initAcceleratorService();
         initBreathService();
+        initHrvService();
         SwmDeviceController.init(context);
         initEmergencyCloudService();
 
@@ -126,14 +139,6 @@ public class SwmCore {
                     if(mProfilingListener != null)
                         mProfilingListener.onPacketLoss(mTotalPacketLoss);
 
-                    if (mErrorByte > 0) {
-                        byteErrorRate = mErrorByte / TIME_FRAME * 100f;
-
-                        if (mProfilingListener != null)
-                            mProfilingListener.onByteError(byteErrorRate);
-                        mErrorByte = 0;
-                    }
-
                     if (mEcgPackCount > 0) {
                         float avgLatency = mEcgLatency / mEcgPackCount;
 
@@ -165,15 +170,6 @@ public class SwmCore {
 
     void initSportService() {
         mSportService = new SportService();
-    }
-
-    private void checkBitError(byte[] data) {
-        byte correctBitValue = data[18];
-        int len = data.length;
-        for (int i = 0; i < len; i++) {
-            if (data[i] != correctBitValue)
-                mErrorByte++;
-        }
     }
 
     void onBleDataAvailable(BleData data) {
@@ -407,6 +403,13 @@ public class SwmCore {
         return mEmergencyCloudService;
     }
 
+    synchronized HrvService getHrvService() {
+        if(mHrvService == null)
+            initHrvService();
+
+        return mHrvService;
+    }
+
     static synchronized void init(Context context) {
         if (SWM_CORE == null) {
             SWM_CORE = new SwmCore(context);
@@ -496,5 +499,29 @@ public class SwmCore {
 
     void removeProfilingListener() {
         mProfilingListener = null;
+    }
+
+    private void initHrvService() {
+        mHrvService = new HrvService();
+    }
+
+    void setHrvListener(HrvListener listener) {
+        try {
+            getHrvService().addListener(listener);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    void removeHrvListener(HrvListener listener) {
+        getHrvService().removeListener(listener);
+    }
+
+    void setEcgMetaData(EcgMetaData ecgMetaData) {
+        mEcgMetaData = ecgMetaData;
+    }
+
+    EcgMetaData getEcgMetaData() {
+        return mEcgMetaData;
     }
 }

@@ -8,17 +8,17 @@ import android.os.IBinder;
 import android.widget.TextView;
 
 import com.swm.chart.RealtimeHistogram;
-import com.swm.chart.RealtimeLineChart;
 import com.swm.heart.R;
 import com.swm.heart.SwmBaseActivity;
 import com.swm.heartbeat.HeartBeatHandler;
 import com.swm.heartbeat.HeartBeatListener;
 import com.swm.heartbeat.HeartBeatSound;
-import com.swm.hrv.HrvListener;
+import com.swm.hrv.RriListener;
 
-public class RriActivity extends SwmBaseActivity implements HrvListener
+public class RriActivity extends SwmBaseActivity implements RriListener
                                                     , HeartBeatListener{
     RealtimeHistogram mRriHistogram;
+
     SwmBinder mSwmBinder;
     SwitchController mSwitchController;
     private HeartBeatSound mHeartBeatSound;
@@ -31,7 +31,7 @@ public class RriActivity extends SwmBaseActivity implements HrvListener
 
             try {
                 mSwmBinder.registerHeartRateListener(RriActivity.this);
-                mSwmBinder.registerHrvListener(RriActivity.this);
+                mSwmBinder.setRriListener(RriActivity.this);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -49,21 +49,9 @@ public class RriActivity extends SwmBaseActivity implements HrvListener
         bindService(intent, mConnection, BIND_AUTO_CREATE);
         setContentView(R.layout.activity_rri);
         mRriHistogram = (RealtimeHistogram) findViewById(R.id.swm_rri);
-
         mSwitchController = new SwitchController(this, findViewById(R.id.swm_hrv_switch));
         mHeartBeatSound = new HeartBeatSound(this);
         mHeartBeatHandler = new HeartBeatHandler(findViewById(R.id.swm_heart), (TextView) findViewById(R.id.swm_heart_rate));
-    }
-
-    @Override
-    public void onHrvDataAvailable(final HrvData hrvData) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mRriHistogram.offerData(hrvData.rriData);
-            }
-        });
-
     }
 
     @Override
@@ -77,7 +65,7 @@ public class RriActivity extends SwmBaseActivity implements HrvListener
         super.onPause();
         if(mSwmBinder != null) {
             mSwmBinder.removeHeartRateListener(this);
-            mSwmBinder.removeHrvListener(this);
+            mSwmBinder.removeRriListener();
         }
         mHeartBeatSound.release();
     }
@@ -88,7 +76,7 @@ public class RriActivity extends SwmBaseActivity implements HrvListener
         if(mSwmBinder != null)
             try {
                 mSwmBinder.registerHeartRateListener(this);
-                mSwmBinder.registerHrvListener(this);
+                mSwmBinder.setRriListener(this);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -116,5 +104,15 @@ public class RriActivity extends SwmBaseActivity implements HrvListener
     protected void onStop() {
         super.onStop();
         mHeartBeatSound.release();
+    }
+
+    @Override
+    public void onRriBinsDataAvailable(final double[] rriCount, final double[] rriTime) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mRriHistogram.offerValue(rriTime, rriCount);
+            }
+        });
     }
 }

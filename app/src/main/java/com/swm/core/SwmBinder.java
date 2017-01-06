@@ -10,6 +10,7 @@ import com.swm.device.SwmDeviceListener;
 import com.swm.emergency.UserQueryCallback;
 import com.swm.heartbeat.HeartBeatListener;
 import com.swm.hrv.HrvListener;
+import com.swm.hrv.RriListener;
 import com.swm.motion.MotionListener;
 import com.swm.training.TrainingListener;
 
@@ -56,9 +57,7 @@ public class SwmBinder extends Binder {
     }
 
     public void registerHeartRateListener(HeartBeatListener listener) throws Exception{
-
         SwmCore.getIns().getHeartBeatService().addListener(listener);
-
     }
 
     public void removeHeartRateListener(HeartBeatListener listener) {
@@ -101,5 +100,13 @@ public class SwmBinder extends Binder {
 
     public void removeHrvListener(HrvListener listener) {
         SwmCore.getIns().removeHrvListener(listener);
+    }
+
+    public void setRriListener(RriListener listener) {
+        SwmCore.getIns().getHrvService().setRriListener(listener);
+    }
+
+    public void removeRriListener() {
+        SwmCore.getIns().getHrvService().removeRriListener();
     }
 }

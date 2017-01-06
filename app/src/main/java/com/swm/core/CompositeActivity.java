@@ -364,13 +364,8 @@ public class CompositeActivity extends SwmBaseActivity implements EcgListener
     }
 
     @Override
-    public void onByteError(final double ber) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mByteErrorRateView.setText(String.valueOf(ber) + "%");
-            }
-        });
+    public void onLatency(double latency) {
+
     }
 
     @Override

@@ -136,13 +136,13 @@
         <activity android:name="com.swm.app.superrun.GenderAndAgeActivity" />
         <activity android:name="com.swm.app.superrun.BodyInfoActivity" />
         <activity
-            android:name="com.swm.core.SdnnActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_sdnn"
+            android:name="com.swm.core.SdnnAndRmssdActivity"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize"
+            android:exported="false"
             android:screenOrientation="landscape"
             android:theme="@style/FullscreenTheme" />
         <activity
-            android:name="com.swm.core.SdnnAndRmssdActivity"
+            android:name="com.swm.core.RriActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize"
             android:exported="false"
             android:screenOrientation="landscape"

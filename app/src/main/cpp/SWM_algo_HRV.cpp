@@ -9,7 +9,7 @@
 using namespace std;
 
 
-void SWM_HRV_Time_Histogram(double RRI[],double DataBuf_RRITime[], long pDataSize, double output[6], double *BinCount, double *BinTimeIndex)
+void SWM_HRV_Time_Histogram(double RRI[],double DataBuf_RRITime[], long pDataSize, double output[6], double* BinCount, double* BinTimeIndex)
 {
 	double maxRRI=findMaxValue(RRI,0, pDataSize);
 	double minRRI=findMinValue(RRI,0, pDataSize);
@@ -36,7 +36,7 @@ void SWM_HRV_Time_Histogram(double RRI[],double DataBuf_RRITime[], long pDataSiz
 
 		 for (int i=0; i<pDataSize;i++)
 			 if (RRI[i]>=BinStart & RRI[i]<BinEnd)
-				BinCount[count]++;
+				 BinCount[count]++;
 	
 		 ProbabilityofBin[count]=BinCount[count]/pDataSize;
 
@@ -108,8 +108,8 @@ void SWM_HRV_poincare(double RRI[], long pDataSize,double SD[2], double EigenVec
 		RRI_n[i]=RRI[i];
 		RRI_n1[i]=RRI[i+1];
 	}
-	Math_Vector_ZeroMean(RRI_n.data(), newpDataSize);
-	Math_Vector_ZeroMean(RRI_n1.data(), newpDataSize);
+	Math_Vector_ZeroMean(&RRI_n.front(), newpDataSize);
+	Math_Vector_ZeroMean(&RRI_n1.front(), newpDataSize);
 	////////
 	////// set the vector value to matrix
 	for (int i=0;i<newpDataSize;i++)
@@ -158,20 +158,20 @@ void SWM_HRV_Frequency(double RRI[],double DataBuf_RRITime[], long pDataSize,dou
 
 	// upsampling the RRI and RRItime by the Linear Interpolation.
 	SWM_algo_LinearInterpolation(DataBuf_RRITime,
-		new_DataBuf_RRITime.data(),
+		&new_DataBuf_RRITime.front(),
 		RRI,
-		newDataBuf_RRI.data(), 
+		&newDataBuf_RRI.front(),
 		&pDataSize, 
 		&pNewDataSize, 
 		samplerate);
 	
 	//RRI zero mean
-	 Math_Vector_ZeroMean(newDataBuf_RRI.data(), pNewDataSize);
+	 Math_Vector_ZeroMean(&newDataBuf_RRI.front(), pNewDataSize);
 	
 	// DTF compute the power spectrum
-	dft1(newDataBuf_RRI.data(), PowerSpectrum.data(), pNewDataSize);
+	dft1(&newDataBuf_RRI.front(), &PowerSpectrum.front(), pNewDataSize);
 	// The corresponding frequency band.
-	dft1_Freq(Freq.data(), pNewDataSize, samplerate);
+	dft1_Freq(&Freq.front(), pNewDataSize, samplerate);
 
 	// Extract the specific band power (VLF,LF,HF)
 	double tmp=0;

@@ -45,10 +45,10 @@ short g_i16HRV_RMSSD = 0;							///< 2016.05.13 Clark Add
 short g_i16HRV_SDNN = 0;							///< 2016.05.08 Clark Add
 short g_i16HRV_ON = 1;
 long  g_i32CalcultedLength = CAL_TIME_BUF * ECG_SAMPLE_RATE;
-long* g_i32ECGInBuffer = NULL;
-long* g_i32ECGOutBuffer = NULL;
-long* g_i32ECGWorkBuffer = NULL;
-QRS_PARAM* g_enQRSPairArray = NULL;
+long* g_i32ECGInBuffer = EMPTY;
+long* g_i32ECGOutBuffer = EMPTY;
+long* g_i32ECGWorkBuffer = EMPTY;
+QRS_PARAM* g_enQRSPairArray = EMPTY;
 short 	g_i16GroupMark[MAX_RRI_BUF] = {0};			///< 2016.04.02 Clark Add
 long 	g_i32detaHRArray[MAX_RRI_BUF] = {0};		///< 2016.04.02 Clark Add
 long	g_i32finalHRArray[MAX_RRI_BUF] = {0};		///< 2016.04.02 Clark Add
@@ -204,10 +204,10 @@ void APPS_ECG_NewBuffer(void)
 
 #if defined(USE_MATLAB_SIMULATE)
 
-	if(g_i32ECGWorkBuffer == NULL)
+	if(g_i32ECGWorkBuffer == EMPTY)
 		g_i32ECGWorkBuffer = (long*) malloc(sizeof(long) * g_i32CalcultedLength);
 
-	if(g_enQRSPairArray == NULL)
+	if(g_enQRSPairArray == EMPTY)
 		g_enQRSPairArray = (QRS_PARAM*) malloc(sizeof(QRS_PARAM) * LOCAL_MAX_POINTS_NUM);
 #endif
 
@@ -235,13 +235,13 @@ void APPS_ECG_DeleteBuffer(void)
 	if(g_i32ECGWorkBuffer)
 	{
 		free(g_i32ECGWorkBuffer);
-		g_i32ECGWorkBuffer = NULL;
+		g_i32ECGWorkBuffer = EMPTY;
 	}
 
 	if(g_enQRSPairArray)
 	{
 		free(g_enQRSPairArray);
-		g_enQRSPairArray = NULL;
+		g_enQRSPairArray = EMPTY;
 	}
 #endif
 
@@ -1512,10 +1512,11 @@ void APPS_RealTime_OS(long *i32ProcessingBuf) {
 	g_sHistoryInfo.i32FinalHRBuf[g_sHistoryInfo.i32TimeFrameIdx] = g_i16FinalAvgHR;
 }
 
-void APPS_READ_RRI_DATA(long *rriOutput) {
+void APPS_READ_RRI_DATA(double *rriOutput, double *rriTime) {
 	int i = 0;
 
 	for (i = 0; i < HRV_RRI_LIMIT_BUF; i++) {
 		rriOutput[i] = g_sHistoryInfo.i16RecordHRVRRIBuf[i];
+		rriTime[i] = g_sHistoryInfo.i32RecordHRVTimeBuf[i];
 	}
 }

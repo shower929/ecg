@@ -27,7 +27,7 @@
 #define OVER_FLOW_MAX			(60000)
 #define OVER_FLOW_MIN			(-60000)
 #define SHORT_MAX				(65535)
-#define NULL					(0)
+#define EMPTY					(0)
 
 #define CAL_TIME_BUF			(6)		
 #define KEEP_TIME_BUF			(3)		///< 2016.04.02 Clark Add

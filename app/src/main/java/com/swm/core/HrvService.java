@@ -3,6 +3,7 @@ package com.swm.core;
 import android.util.Log;
 
 import com.swm.hrv.HrvListener;
+import com.swm.hrv.RriListener;
 
 import java.util.Vector;
 import java.util.concurrent.BlockingQueue;
@@ -18,6 +19,8 @@ class HrvService {
 
     private Vector<HrvListener> mListeners;
     private BlockingQueue<HrvData> mCallbackDataQueue;
+
+    private RriListener mRriListener;
 
     private Thread mCallbackWorker;
 
@@ -36,8 +39,6 @@ class HrvService {
 
                     try {
                         EcgMetaData ecgMetaData = SwmCore.getIns().getEcgMetaData();
-                        int[] rriOutput = new int[SWM_COM_HEADER.HRV_RRI_LIMIT_BUF];
-                        SwmCore.ReadRriData(rriOutput);
 
                         if(ecgMetaData != null){
                             HrvData hrvData = new HrvData(ecgMetaData.sdnn, ecgMetaData.rmssd);
@@ -45,6 +46,14 @@ class HrvService {
                             if(mListeners != null)
                                 mCallbackDataQueue.offer(hrvData);
                         }
+
+                        int numOfBins = SwmCore.GetBinSize();
+                        double[] rriCount = new double[numOfBins];
+                        double[] rriTime = new double[numOfBins];
+                        SwmCore.GetRriBins(rriCount, rriTime);
+
+                        if(mRriListener != null)
+                            mRriListener.onRriBinsDataAvailable(rriCount, rriTime);
 
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
@@ -103,4 +112,11 @@ class HrvService {
             mHrvWorker.interrupt();
     }
 
+    void setRriListener(RriListener listener) {
+        mRriListener = listener;
+    }
+
+    void removeRriListener() {
+        mRriListener = null;
+    }
 }

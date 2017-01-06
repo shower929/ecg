@@ -300,7 +300,7 @@ MY_Perform1StepDiff(
 	i32Offset_S = i32DiffPoints/2 + i32Offset;
 	i32Offset_E = i32OutputSampleCount - i32DiffPoints - 1 - i32Offset;
 	
-	if(pi32Dest == NULL || pi32Src == NULL)
+	if(pi32Dest == EMPTY || pi32Src == EMPTY)
 	{	
         return -1;
     }

@@ -120,6 +120,6 @@ void MY_RemoveFalseQRSComplex(short	i16TotalCount, short i16SigmaThreshold, shor
 void MY_FindECGWave(long i32StartPoint, long  i32EndPoint, long* pi32DynamicRSSlopeThreshold, long* pi32QRSIndex, short* pi16Mean, short* pi16Sigma, short* pi16Count, long* pi32SrcBuf, long* pi32WorkBuf, QRS_PARAM* psQRSArray);
 void APPS_ECG_Main(long *i32ProcessingBuf, long i32DataLength);
 void APPS_RealTime_OS(long *i32ProcessingBuf);
-void APPS_READ_RRI_DATA(long *rriOutput);
+void APPS_READ_RRI_DATA(double *rriOutput, double *rriTime);
 #endif
 
