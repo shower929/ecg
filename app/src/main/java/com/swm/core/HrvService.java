@@ -2,6 +2,7 @@ package com.swm.core;
 
 import android.util.Log;
 
+import com.swm.hrv.FrequencyListener;
 import com.swm.hrv.HrvListener;
 import com.swm.hrv.RriListener;
 
@@ -21,6 +22,9 @@ class HrvService {
     private BlockingQueue<HrvData> mCallbackDataQueue;
 
     private RriListener mRriListener;
+
+    private FrequencyListener mFrequencyListener;
+
 
     private Thread mCallbackWorker;
 
@@ -54,6 +58,12 @@ class HrvService {
 
                         if(mRriListener != null)
                             mRriListener.onRriBinsDataAvailable(rriCount, rriTime);
+
+                        double[] frequencyData = new double[5];
+                        SwmCore.GetFrequencyData(frequencyData);
+
+                        if(mFrequencyListener != null)
+                            mFrequencyListener.onFrequencyDataAvailable(frequencyData);
 
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
@@ -118,5 +128,13 @@ class HrvService {
 
     void removeRriListener() {
         mRriListener = null;
+    }
+
+    void setFrequencyListener(FrequencyListener listener) {
+        mFrequencyListener = listener;
+    }
+
+    void removeFrequencyListener() {
+        mFrequencyListener = null;
     }
 }

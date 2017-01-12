@@ -9,6 +9,7 @@ import com.swm.breath.BreathListener;
 import com.swm.device.SwmDeviceListener;
 import com.swm.emergency.UserQueryCallback;
 import com.swm.heartbeat.HeartBeatListener;
+import com.swm.hrv.FrequencyListener;
 import com.swm.hrv.HrvListener;
 import com.swm.hrv.RriListener;
 import com.swm.motion.MotionListener;
@@ -108,5 +109,13 @@ public class SwmBinder extends Binder {
 
     public void removeRriListener() {
         SwmCore.getIns().getHrvService().removeRriListener();
+    }
+
+    public void setFrequencyListener(FrequencyListener listener) {
+        SwmCore.getIns().getHrvService().setFrequencyListener(listener);
+    }
+
+    public void removeFrequencyListener() {
+        SwmCore.getIns().getHrvService().removeFrequencyListener();
     }
 }

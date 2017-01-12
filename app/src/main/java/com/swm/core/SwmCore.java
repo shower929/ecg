@@ -85,6 +85,7 @@ public class SwmCore {
     static native int CalculateEcgMetaData(EcgMetaData ecgMetaData, int[] i32ECGRawBuffer);
     static native int GetBinSize();
     static native void GetRriBins(double[] rriCount, double[] rriTime);
+    static native void GetFrequencyData(double[] frequencyData);
 
     private SwmCore(Context context) {
         mContext = context;

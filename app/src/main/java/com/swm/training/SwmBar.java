@@ -146,7 +146,7 @@ public class SwmBar extends View {
         canvas.drawRoundRect(mInnerRect, mInnerXRadius, mInnerYRadius, mInnerPaint);
     }
 
-    private void drawValue(Float value, Canvas canvas) {
+    private void drawBar(Float value, Canvas canvas) {
         if(mType == TYPE_BALANCER)
             drawBalancer(value, canvas);
         else
@@ -176,7 +176,7 @@ public class SwmBar extends View {
 
         synchronized (mValueBuffer) {
             for (Float value : mValueBuffer) {
-                drawValue(value, canvas);
+                drawBar(value, canvas);
             }
 
             if(mValueBuffer.size() == 0)

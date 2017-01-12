@@ -34,14 +34,4 @@
         android:layout_marginLeft="5dp"
         android:textSize="12dp"
         />
-    <Button
-        android:id="@+id/swm_hrv_poincare"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/swm_hrv_poincare"
-        android:textColor="@color/swm_white"
-        android:background="@drawable/swm_inactive_cta_button"
-        android:layout_marginLeft="5dp"
-        android:textSize="12dp"
-        />
 </LinearLayout>

@@ -40,6 +40,7 @@ Java_com_swm_core_SwmCore_CalculateEcgMetaData(JNIEnv *env, jobject thiz,
 
 double *rriCount = new double[HRV_RRI_LIMIT_BUF];
 double *rriTime = new double[HRV_RRI_LIMIT_BUF];
+double dataSize;
 
 JNIEXPORT jint JNICALL
 Java_com_swm_core_SwmCore_GetBinSize(JNIEnv *env, jobject thiz) {
@@ -49,8 +50,8 @@ Java_com_swm_core_SwmCore_GetBinSize(JNIEnv *env, jobject thiz) {
     //// HRV Time////
     double maxRRI=findMaxValue(rriCount,0, HRV_RRI_LIMIT_BUF);// used for estimated how many bins for Histogram
     double minRRI=findMinValue(rriCount,0, HRV_RRI_LIMIT_BUF);// used for estimated how many bins for Histogram
-    int NumofBin=int((maxRRI-minRRI)/7.8125)+2;				// used for estimated how many bins for Histogram
-    return NumofBin;
+    dataSize=int((maxRRI-minRRI)/7.8125)+2;				// used for estimated how many bins for Histogram
+    return dataSize;
 }
 
 JNIEXPORT void JNICALL
@@ -93,5 +94,16 @@ Java_com_swm_core_SwmCore_APPSHrvGetValueRMSSD(JNIEnv *env, jobject thiz) {
 JNIEXPORT void JNICALL
 Java_com_swm_core_SwmCore_APPSEcgInitialForModeChange(JNIEnv *env, jobject thiz) {
     APPS_ECG_InitialForModeChange(1);
+}
+
+JNIEXPORT void JNICALL
+Java_com_swm_core_SwmCore_GetFrequencyData(JNIEnv *env, jobject thiz, jdoubleArray frequencyData) {
+
+    ////// HRV Frequency//////////////////////
+    double Output[5]={0};
+    double samplerate=10;
+    SWM_HRV_Frequency(rriCount, rriTime, dataSize, samplerate, Output);
+
+    env->SetDoubleArrayRegion(frequencyData, 0, 5, Output);
 }
 }

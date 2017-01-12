@@ -130,4 +130,9 @@
     <string name="swm_sdnn_and_rmssd">SDNN/RMSSD</string>
     <string name="swm_info">Info</string>
     <string name="swm_app_version_label">App version</string>
+    <string name="swm_vlf">VLF</string>
+    <string name="swm_lf">LF</string>
+    <string name="swm_hf">HF</string>
+    <string name="swm_total_power">TP</string>
+    <string name="swm_lf_hf_ratio">L/H</string>
 </resources>
