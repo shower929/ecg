@@ -18,7 +18,7 @@ import com.swm.hrv.FrequencyListener;
 
 public class FrequencyActivity extends SwmBaseActivity implements HeartBeatListener
                                                     , FrequencyListener{
-    RealtimeLineChart mHrvFrequency;
+    RealtimeLineChart mHrvFrequencyChart;
     TextView mVeryLowFrequency;
     TextView mLowFrequency;
     TextView mHighFrequency;
@@ -28,11 +28,11 @@ public class FrequencyActivity extends SwmBaseActivity implements HeartBeatListe
     SwitchController mSwitchController;
     private HeartBeatSound mHeartBeatSound;
     private HeartBeatHandler mHeartBeatHandler;
-    private LineDataProvider<Double> mVeryLowFreqDataProvider;
-    private LineDataProvider<Double> mLowFreqDataProvider;
-    private LineDataProvider<Double> mHighFreqDataProvider;
-    private LineDataProvider<Double> mTotalPowerDataProvider;
-    private LineDataProvider<Double> mLfHfRatioDataProvider;
+    private LineDataProvider mVeryLowFreqDataProvider;
+    private LineDataProvider mLowFreqDataProvider;
+    private LineDataProvider mHighFreqDataProvider;
+    private LineDataProvider mTotalPowerDataProvider;
+    private LineDataProvider mLfHfRatioDataProvider;
 
 
     private ServiceConnection mConnection = new ServiceConnection() {
@@ -59,7 +59,7 @@ public class FrequencyActivity extends SwmBaseActivity implements HeartBeatListe
         Intent intent = new Intent(this, SwmService.class);
         bindService(intent, mConnection, BIND_AUTO_CREATE);
         setContentView(R.layout.activity_frequency);
-        mHrvFrequency = (RealtimeLineChart) findViewById(R.id.swm_hrv_frequency);
+        mHrvFrequencyChart = (RealtimeLineChart) findViewById(R.id.swm_hrv_frequency_chart);
         mVeryLowFrequency = (TextView) findViewById(R.id.swm_vlf_value);
         mLowFrequency = (TextView) findViewById(R.id.swm_lf_value);
         mHighFrequency = (TextView) findViewById(R.id.swm_hf_value);
@@ -69,17 +69,17 @@ public class FrequencyActivity extends SwmBaseActivity implements HeartBeatListe
         mHeartBeatSound = new HeartBeatSound(this);
         mHeartBeatHandler = new HeartBeatHandler(findViewById(R.id.swm_heart), (TextView) findViewById(R.id.swm_heart_rate));
 
-        mVeryLowFreqDataProvider = new LineDataProvider<>();
-        mLowFreqDataProvider = new LineDataProvider<>();
-        mHighFreqDataProvider = new LineDataProvider<>();
-        mTotalPowerDataProvider = new LineDataProvider<>();
-        mLfHfRatioDataProvider = new LineDataProvider<>();
+        mVeryLowFreqDataProvider = new LineDataProvider();
+        mLowFreqDataProvider = new LineDataProvider();
+        mHighFreqDataProvider = new LineDataProvider();
+        mTotalPowerDataProvider = new LineDataProvider();
+        mLfHfRatioDataProvider = new LineDataProvider();
 
-        mHrvFrequency.addLineDataProvider(mVeryLowFreqDataProvider);
-        mHrvFrequency.addLineDataProvider(mLowFreqDataProvider);
-        mHrvFrequency.addLineDataProvider(mHighFreqDataProvider);
-        mHrvFrequency.addLineDataProvider(mTotalPowerDataProvider);
-        mHrvFrequency.addLineDataProvider(mLfHfRatioDataProvider);
+        mHrvFrequencyChart.addLineDataProvider(mVeryLowFreqDataProvider);
+        mHrvFrequencyChart.addLineDataProvider(mLowFreqDataProvider);
+        mHrvFrequencyChart.addLineDataProvider(mHighFreqDataProvider);
+        mHrvFrequencyChart.addLineDataProvider(mTotalPowerDataProvider);
+        mHrvFrequencyChart.addLineDataProvider(mLfHfRatioDataProvider);
     }
 
     @Override
@@ -136,11 +136,11 @@ public class FrequencyActivity extends SwmBaseActivity implements HeartBeatListe
 
     @Override
     public void onFrequencyDataAvailable(double[] frequencyData) {
-        mVeryLowFreqDataProvider.offerData(frequencyData[0]);
-        mLowFreqDataProvider.offerData(frequencyData[1]);
-        mHighFreqDataProvider.offerData(frequencyData[2]);
-        mTotalPowerDataProvider.offerData(frequencyData[3]);
-        mLfHfRatioDataProvider.offerData(frequencyData[4]);
+        mVeryLowFreqDataProvider.offerData((float) frequencyData[0]);
+        mLowFreqDataProvider.offerData((float) frequencyData[1]);
+        mHighFreqDataProvider.offerData((float) frequencyData[2]);
+        mTotalPowerDataProvider.offerData((float) frequencyData[3]);
+        mLfHfRatioDataProvider.offerData((float) frequencyData[4]);
     }
 
 

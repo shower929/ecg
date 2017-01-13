@@ -4,16 +4,16 @@
     android:id="@+id/activity_rmssd"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.swm.core.SdnnAndRmssdActivity">
+    tools:context="com.swm.core.FrequencyActivity">
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="260dp"
-        android:layout_marginTop="50dp"
-        android:layout_marginRight="50dp"
-        android:layout_marginLeft="50dp"
+        android:layout_height="300dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginLeft="30dp"
         >
         <com.swm.chart.RealtimeLineChart
-            android:id="@+id/swm_hrv_frequency"
+            android:id="@+id/swm_hrv_frequency_chart"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentLeft="true"

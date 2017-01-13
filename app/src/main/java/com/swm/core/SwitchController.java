@@ -35,6 +35,11 @@ class SwitchController implements View.OnClickListener {
             rri.setOnClickListener(null);
             rri.setBackground(activity.getResources().getDrawable(R.drawable.swm_cta_button));
         }
+
+        if (activity instanceof FrequencyActivity) {
+            frequency.setOnClickListener(null);
+            frequency.setBackground(activity.getResources().getDrawable(R.drawable.swm_cta_button));
+        }
     }
 
 
@@ -48,7 +53,7 @@ class SwitchController implements View.OnClickListener {
                 switchToSdnnAndRmssdActivity();
                 break;
             case R.id.swm_hrv_frequency:
-                //switchToFrequency();
+                switchToFrequency();
                 break;
         }
     }
@@ -61,6 +66,12 @@ class SwitchController implements View.OnClickListener {
 
     private void switchToRriActivity() {
         Intent intent = new Intent(mActivity, RriActivity.class);
+        mActivity.startActivity(intent);
+        mActivity.finish();
+    }
+
+    private void switchToFrequency() {
+        Intent intent = new Intent(mActivity, FrequencyActivity.class);
         mActivity.startActivity(intent);
         mActivity.finish();
     }

@@ -39,7 +39,7 @@ class MenuController {
     }
 
     void startHrvActivity() {
-        Intent intent = new Intent(mContext, SdnnAndRmssdActivity.class);
+        Intent intent = new Intent(mContext, RriActivity.class);
         mContext.startActivity(intent);
     }
 
