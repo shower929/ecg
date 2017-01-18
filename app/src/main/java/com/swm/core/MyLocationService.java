@@ -122,6 +122,9 @@ public class MyLocationService extends Service implements GoogleApiClient.Connec
         if (!mTracking)
             return;
 
+        if (!mGoogleApiClient.isConnected())
+            return;
+
         LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, mPendingIntent);
         mGoogleApiClient.disconnect();
     }
