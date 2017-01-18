@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.widget.TextView;
 
-import com.swm.chart.LineDataProvider;
+import com.swm.chart.SignalGenerator;
 import com.swm.chart.RealtimeLineChart;
 import com.swm.heart.R;
 import com.swm.heart.SwmBaseActivity;
@@ -28,12 +28,7 @@ public class FrequencyActivity extends SwmBaseActivity implements HeartBeatListe
     SwitchController mSwitchController;
     private HeartBeatSound mHeartBeatSound;
     private HeartBeatHandler mHeartBeatHandler;
-    private LineDataProvider mVeryLowFreqDataProvider;
-    private LineDataProvider mLowFreqDataProvider;
-    private LineDataProvider mHighFreqDataProvider;
-    private LineDataProvider mTotalPowerDataProvider;
-    private LineDataProvider mLfHfRatioDataProvider;
-
+    private SignalGenerator mSignalGenerator;
 
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
@@ -69,17 +64,10 @@ public class FrequencyActivity extends SwmBaseActivity implements HeartBeatListe
         mHeartBeatSound = new HeartBeatSound(this);
         mHeartBeatHandler = new HeartBeatHandler(findViewById(R.id.swm_heart), (TextView) findViewById(R.id.swm_heart_rate));
 
-        mVeryLowFreqDataProvider = new LineDataProvider();
-        mLowFreqDataProvider = new LineDataProvider();
-        mHighFreqDataProvider = new LineDataProvider();
-        mTotalPowerDataProvider = new LineDataProvider();
-        mLfHfRatioDataProvider = new LineDataProvider();
+        mSignalGenerator = new SignalGenerator();
 
-        mHrvFrequencyChart.addLineDataProvider(mVeryLowFreqDataProvider);
-        mHrvFrequencyChart.addLineDataProvider(mLowFreqDataProvider);
-        mHrvFrequencyChart.addLineDataProvider(mHighFreqDataProvider);
-        mHrvFrequencyChart.addLineDataProvider(mTotalPowerDataProvider);
-        mHrvFrequencyChart.addLineDataProvider(mLfHfRatioDataProvider);
+        mSignalGenerator.setListener(mHrvFrequencyChart);
+
     }
 
     @Override
@@ -135,12 +123,19 @@ public class FrequencyActivity extends SwmBaseActivity implements HeartBeatListe
     }
 
     @Override
-    public void onFrequencyDataAvailable(double[] frequencyData) {
-        mVeryLowFreqDataProvider.offerData((float) frequencyData[0]);
-        mLowFreqDataProvider.offerData((float) frequencyData[1]);
-        mHighFreqDataProvider.offerData((float) frequencyData[2]);
-        mTotalPowerDataProvider.offerData((float) frequencyData[3]);
-        mLfHfRatioDataProvider.offerData((float) frequencyData[4]);
+    public void onFrequencyDataAvailable(final double[] frequencyData) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mVeryLowFrequency.setText(String.valueOf(frequencyData[0]));
+                mLowFrequency.setText(String.valueOf(frequencyData[1]));
+                mHighFrequency.setText(String.valueOf(frequencyData[2]));
+                mTotalPower.setText(String.valueOf(frequencyData[3]));
+                mLfHfRatio.setText(String.valueOf(frequencyData[4]));
+            }
+        });
+
+        mSignalGenerator.offerData(frequencyData);
     }
 
 
