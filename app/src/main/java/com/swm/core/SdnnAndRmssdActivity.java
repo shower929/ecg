@@ -7,8 +7,6 @@ import android.os.IBinder;
 import android.os.Bundle;
 import android.widget.TextView;
 
-import com.swm.chart.LineDataProvider;
-import com.swm.chart.RealtimeLineChart;
 import com.swm.chart.RealtimeSingleLineChart;
 import com.swm.heart.R;
 import com.swm.heart.SwmBaseActivity;
