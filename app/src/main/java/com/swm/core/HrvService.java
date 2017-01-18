@@ -42,28 +42,11 @@ class HrvService {
                         return;
 
                     try {
-                        EcgMetaData ecgMetaData = SwmCore.getIns().getEcgMetaData();
+                        monitorHrv();
 
-                        if(ecgMetaData != null){
-                            HrvData hrvData = new HrvData(ecgMetaData.sdnn, ecgMetaData.rmssd);
+                        getRriDistribution();
 
-                            if(mListeners != null)
-                                mCallbackDataQueue.offer(hrvData);
-                        }
-
-                        int numOfBins = SwmCore.GetBinSize();
-                        double[] rriCount = new double[numOfBins];
-                        double[] rriTime = new double[numOfBins];
-                        SwmCore.GetRriBins(rriCount, rriTime);
-
-                        if(mRriListener != null)
-                            mRriListener.onRriBinsDataAvailable(rriCount, rriTime);
-
-                        double[] frequencyData = new double[5];
-                        SwmCore.GetFrequencyData(frequencyData);
-
-                        if(mFrequencyListener != null)
-                            mFrequencyListener.onFrequencyDataAvailable(frequencyData);
+                        getFrequencyData();
 
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
@@ -99,6 +82,44 @@ class HrvService {
         });
         mCallbackWorker.start();
 
+    }
+
+    private void getFrequencyData() {
+        if(mFrequencyListener == null)
+            return;
+
+        double[] frequencyData = new double[5];
+        SwmCore.GetFrequencyData(frequencyData);
+
+        if(mFrequencyListener == null)
+            return;
+
+        mFrequencyListener.onFrequencyDataAvailable(frequencyData);
+    }
+
+    private void getRriDistribution() {
+        if(mRriListener == null)
+            return;
+
+        int numOfBins = SwmCore.GetBinSize();
+        double[] rriCount = new double[numOfBins];
+        double[] rriTime = new double[numOfBins];
+        SwmCore.GetRriBins(rriCount, rriTime);
+
+        mRriListener.onRriBinsDataAvailable(rriCount, rriTime);
+
+    }
+
+    private void monitorHrv() {
+        if(mListeners == null)
+            return;
+
+        EcgMetaData ecgMetaData = SwmCore.getIns().getEcgMetaData();
+
+        if(ecgMetaData != null){
+            HrvData hrvData = new HrvData(ecgMetaData.sdnn, ecgMetaData.rmssd);
+            mCallbackDataQueue.offer(hrvData);
+        }
     }
 
     synchronized void addListener(HrvListener listener) throws Exception {
