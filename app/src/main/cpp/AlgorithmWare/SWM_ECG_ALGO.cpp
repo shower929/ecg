@@ -45,10 +45,10 @@ short g_i16HRV_RMSSD = 0;							///< 2016.05.13 Clark Add
 short g_i16HRV_SDNN = 0;							///< 2016.05.08 Clark Add
 short g_i16HRV_ON = 1;
 long  g_i32CalcultedLength = CAL_TIME_BUF * ECG_SAMPLE_RATE;
-long* g_i32ECGInBuffer = EMPTY;
-long* g_i32ECGOutBuffer = EMPTY;
-long* g_i32ECGWorkBuffer = EMPTY;
-QRS_PARAM* g_enQRSPairArray = EMPTY;
+long* g_i32ECGInBuffer = NULL;
+long* g_i32ECGOutBuffer = NULL;
+long* g_i32ECGWorkBuffer = NULL;
+QRS_PARAM* g_enQRSPairArray = NULL;
 short 	g_i16GroupMark[MAX_RRI_BUF] = {0};			///< 2016.04.02 Clark Add
 long 	g_i32detaHRArray[MAX_RRI_BUF] = {0};		///< 2016.04.02 Clark Add
 long	g_i32finalHRArray[MAX_RRI_BUF] = {0};		///< 2016.04.02 Clark Add
@@ -159,6 +159,8 @@ void APPS_ECG_Initial(void)
 {
 	short i = 0;
 	
+	memset(g_i32ECGInBuffer, 0, sizeof(g_i32ECGInBuffer));
+	memset(g_i32ECGOutBuffer, 0, sizeof(g_i32ECGOutBuffer));
 	memset(g_i32ECGWorkBuffer, 0, sizeof(long) * LOCAL_MAX_POINTS_NUM);
 	
 	for(i=0; i<LOCAL_MAX_POINTS_NUM; i++)
@@ -193,23 +195,18 @@ void APPS_ECG_Initial(void)
 
 void APPS_ECG_NewBuffer(void)
 {
-#if defined(USE_PC_SIMULATE)
 
 	if(g_i32ECGWorkBuffer == NULL)
 		g_i32ECGWorkBuffer = new long[g_i32CalcultedLength];
 
 	if(g_enQRSPairArray == NULL)
 		g_enQRSPairArray = new QRS_PARAM[LOCAL_MAX_POINTS_NUM];
-#endif
 
-#if defined(USE_MATLAB_SIMULATE)
+	if(g_i32ECGInBuffer == NULL)
+		g_i32ECGInBuffer = new long[g_i32CalcultedLength];
 
-	if(g_i32ECGWorkBuffer == EMPTY)
-		g_i32ECGWorkBuffer = (long*) malloc(sizeof(long) * g_i32CalcultedLength);
-
-	if(g_enQRSPairArray == EMPTY)
-		g_enQRSPairArray = (QRS_PARAM*) malloc(sizeof(QRS_PARAM) * LOCAL_MAX_POINTS_NUM);
-#endif
+	if(g_i32ECGOutBuffer == NULL)
+		g_i32ECGOutBuffer = new long[g_i32CalcultedLength];
 
 }
 
@@ -1439,7 +1436,7 @@ APPS_ShowHRResult(
 #endif
 }
 
-short APPS_ECG_RPeakDetection(long *i32ProcessingBuf)
+short APPS_ECG_RPeakDetection(long *i32ECGRawBuffer)
 {	
 	short checkRRIMean = 0;
 	short checkRRISigma = 0;
@@ -1453,7 +1450,56 @@ short APPS_ECG_RPeakDetection(long *i32ProcessingBuf)
 
 	//Initial these buffer which is used to calculated in RTOS.
 	APPS_ECG_Initial();
-	
+
+	//Step 2: Put in the raw data to g_i32ECGInBuffer from i32ECGRawBuffer.
+	for(i=0; i<g_i32CalcultedLength; i++)
+	{
+		g_i32ECGInBuffer[i]= i32ECGRawBuffer[i];
+	}
+
+	//Step 3: Perform the signal pre-processing in RTOS.
+
+	//Step 3-1: Perofrm the Overflow protection
+	MY_PerformOFProtect(	g_i32ECGOutBuffer,
+							g_i32ECGInBuffer,
+							g_i32CalcultedLength);
+
+    //Step 3-2: Perofrm the Median Filter to remove the part of "BaseLine Wonder" & "Muscle Artifact" part  
+	MY_PerformECGMedian(g_i32ECGInBuffer,
+						g_i32ECGOutBuffer,
+						g_i32CalcultedLength,
+						g_i32CalcultedLength,
+						ECG_MEDIAN_POINT);
+
+	//Step 3-3: Perofrm the FIR Filter to remove the "High Frequency" component
+	MY_PerformECGFIR(	g_i32ECGOutBuffer,
+						g_i32ECGInBuffer,
+						g_i32CalcultedLength,
+						g_i32CalcultedLength,
+						31,
+						LPF_FIR_COEFF);
+
+	//Step 3-4: Perofrm the Mean Filter to smooth the curve
+	MY_PerformECGMean(	g_i32ECGInBuffer,
+						g_i32ECGOutBuffer,
+						g_i32CalcultedLength,
+						g_i32CalcultedLength,
+						ECG_MEAN_POINT);
+#if 0 // non-use
+	//Step 3-5: Perofrm the Special Filter to avoid the overflow for local area
+	MY_PerformSpecialFiter(	g_i32ECGOutBuffer,
+							g_i32ECGInBuffer,
+							g_i32CalcultedLength,
+							0);
+
+	//Step 3-6: Perofrm the Differential Filter to check the maximum slope
+	MY_Perform1StepDiff(	g_i32ECGInBuffer,
+							g_i32ECGOutBuffer,
+							1,
+							g_i32CalcultedLength,
+							g_i32CalcultedLength);
+#endif
+	//Step 4: Perform the ECG Algorithm in RTOS.
 	MY_FindECGWave( 0,
 					g_i32CalcultedLength,
 					&i32DynamicRSSlopeThreshold,
@@ -1461,10 +1507,11 @@ short APPS_ECG_RPeakDetection(long *i32ProcessingBuf)
 					&checkRRIMean,
 					&checkRRISigma,
 					&checkRRICount,
-					i32ProcessingBuf,
+					g_i32ECGInBuffer,
 					g_i32ECGWorkBuffer,
 					g_enQRSPairArray);
 
+	//Step 5: Judge the HR result during the time frame
 	APPS_JudgeHRResult(	checkRRICount,
 						checkRRIMean,
 						&g_i16OriginalAvgHR,
