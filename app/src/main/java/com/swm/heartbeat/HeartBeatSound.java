@@ -24,7 +24,6 @@ public class HeartBeatSound implements HeartBeatListener{
     private Context mContext;
 
     private class BeatSound implements Runnable {
-        protected Long executedTime;
 
         @Override
         public void run() {
@@ -32,7 +31,6 @@ public class HeartBeatSound implements HeartBeatListener{
                 return;
             mBeatSound.startTone(ToneGenerator.TONE_PROP_BEEP, 50);
             synchronized (mLen) {
-                executedTime = System.currentTimeMillis();
                 mSoundHandler.postDelayed(this, mLen);
             }
         }
@@ -61,21 +59,6 @@ public class HeartBeatSound implements HeartBeatListener{
             return;
 
         mHeartBeatRate = heartBeatRate;
-
-        synchronized (mLen) {
-            mLen = Long.valueOf(60 * 1000 / mHeartBeatRate);
-
-            if (mBeatSoundRunnable != null) {
-                long now  = System.currentTimeMillis();
-
-                if (mBeatSoundRunnable.executedTime < now) {
-                    mSoundHandler.removeCallbacks(mBeatSoundRunnable);
-                    long elapseTime = now - mBeatSoundRunnable.executedTime;
-                    long remain = mLen - elapseTime;
-                    mSoundHandler.postDelayed(mBeatSoundRunnable, remain);
-                }
-            }
-        }
 
         if (mBeatSoundRunnable == null) {
             mBeatSound = new ToneGenerator(AudioManager.STREAM_RING, mCurrentVolume);
