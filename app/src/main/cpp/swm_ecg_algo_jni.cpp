@@ -98,6 +98,16 @@ Java_com_swm_core_SwmCore_APPSEcgInitialForModeChange(JNIEnv *env, jobject thiz)
 
 JNIEXPORT void JNICALL
 Java_com_swm_core_SwmCore_GetFrequencyData(JNIEnv *env, jobject thiz, jdoubleArray frequencyData) {
+    double *rriCount = new double[HRV_RRI_LIMIT_BUF];
+    double *rriTime = new double[HRV_RRI_LIMIT_BUF];
+    double dataSize;
+
+    APPS_READ_RRI_DATA(rriCount, rriTime);
+
+    //// HRV Time////
+    double maxRRI=findMaxValue(rriCount,0, HRV_RRI_LIMIT_BUF);// used for estimated how many bins for Histogram
+    double minRRI=findMinValue(rriCount,0, HRV_RRI_LIMIT_BUF);// used for estimated how many bins for Histogram
+    dataSize=int((maxRRI-minRRI)/7.8125)+2;
 
     ////// HRV Frequency//////////////////////
     double Output[5]={0};
