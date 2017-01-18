@@ -5,6 +5,14 @@
 #include "mymath.h"
 #include "SWM_algo_HRV.h"
 #include "matrix.h"
+#include <android/log.h>
+
+#define  LOG_TAG    "HRV"
+
+#define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
+#define  LOGW(...)  __android_log_print(ANDROID_LOG_WARN,LOG_TAG,__VA_ARGS__)
+#define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,LOG_TAG,__VA_ARGS__)
+#define  LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
 
 using namespace std;
 
@@ -161,7 +169,7 @@ void SWM_HRV_Frequency(double RRI[],double DataBuf_RRITime[], long pDataSize,dou
 		&new_DataBuf_RRITime.front(),
 		RRI,
 		&newDataBuf_RRI.front(),
-		&pDataSize, 
+		pDataSize,
 		&pNewDataSize, 
 		samplerate);
 	
@@ -177,6 +185,7 @@ void SWM_HRV_Frequency(double RRI[],double DataBuf_RRITime[], long pDataSize,dou
 	double tmp=0;
 	for(int k=0; k<pNewDataSize/2+1; k++){
 		tmp=PowerSpectrum[k];
+		LOGD("Freq[%d]=%d", k, Freq[k]);
 		if (Freq[k]>VLF_L && Freq[k]<=VLF_U)
 			aVLF=aVLF+tmp;
 
@@ -254,9 +263,9 @@ void dft1_Freq(double Freq[], long nfft, long samplerate)
 
 
 void SWM_algo_LinearInterpolation(double* pTimeBuf,	double* pNewTimeBuf, double* pData, double* pNewData,
-			long* pDataSize, long* pNewDataSize, double samplerate)
+			long pDataSize, long* pNewDataSize, double samplerate)
 {
-	double t_end=*(pTimeBuf+*pDataSize-1);
+	double t_end=*(pTimeBuf)+pDataSize-1;
 	double new_t=*pTimeBuf;
 	double steplength=(1/samplerate);
 	*pNewDataSize=0;
@@ -269,7 +278,7 @@ void SWM_algo_LinearInterpolation(double* pTimeBuf,	double* pNewTimeBuf, double*
 	///
 
 	int stratpoint=0;
-	for (int i=0; i<*pDataSize; i++)
+	for (int i=0; i<pDataSize; i++)
 	{
 		double tmp_new=0,tmp_old=0;
 		int tmpindex=0;
@@ -304,7 +313,7 @@ void SWM_algo_LinearInterpolation(double* pTimeBuf,	double* pNewTimeBuf, double*
 
 
 	int count_total=0;
-	for (int i=0;i<=*pDataSize-1;i++)
+	for (int i=0;i<=pDataSize-1;i++)
 	{
 
 		int range=int(pTimeBuf[i+1])-int(pTimeBuf[i]);
@@ -328,6 +337,6 @@ void SWM_algo_LinearInterpolation(double* pTimeBuf,	double* pNewTimeBuf, double*
 			}
 		}		
 	}
-	*(pNewData+count_total)=*(pData+*pDataSize-1); // Final element must include
+	*(pNewData+count_total)=*(pData)+pDataSize-1; // Final element must include
 
 }

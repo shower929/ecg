@@ -49,6 +49,6 @@ void SWM_HRV_poincare(double RRI[], long pDataSize,double SD[2], double EigenVec
 */
 
 // Linear Interpolation
-void SWM_algo_LinearInterpolation(double* pTimeBuf,double*  pNewTimeBuf,double* pData,double*  pNewData,long* pDataSize,long* pNewDataSize, double samplerate);
+void SWM_algo_LinearInterpolation(double* pTimeBuf,double*  pNewTimeBuf,double* pData,double*  pNewData,long pDataSize,long* pNewDataSize, double samplerate);
 
 
