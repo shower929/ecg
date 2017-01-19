@@ -127,11 +127,11 @@ public class FrequencyActivity extends SwmBaseActivity implements HeartBeatListe
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mVeryLowFrequency.setText(String.valueOf(frequencyData[0]));
-                mLowFrequency.setText(String.valueOf(frequencyData[1]));
-                mHighFrequency.setText(String.valueOf(frequencyData[2]));
-                mTotalPower.setText(String.valueOf(frequencyData[3]));
-                mLfHfRatio.setText(String.valueOf(frequencyData[4]));
+                mVeryLowFrequency.setText(String.valueOf(Math.round(frequencyData[0] * 100.0) / 100.0));
+                mLowFrequency.setText(String.valueOf(Math.round(frequencyData[1] * 100.0) / 100.0));
+                mHighFrequency.setText(String.valueOf(Math.round(frequencyData[2] * 100.0) / 100.0));
+                mTotalPower.setText(String.valueOf(Math.round(frequencyData[3] * 100.0) / 100.0));
+                mLfHfRatio.setText(String.valueOf(Math.round(frequencyData[4] * 100.0) / 100.0));
             }
         });
 

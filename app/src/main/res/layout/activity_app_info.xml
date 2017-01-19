@@ -21,7 +21,7 @@
         android:id="@+id/swm_app_version"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:text="SWM_0.1_Alpha_01.03_build_201612261637"
+        android:text="SWM_00.01.00_demo_01.03.00"
         android:textSize="15dp"
         android:layout_below="@id/swm_app_version_label"
         android:layout_marginTop="8dp"
