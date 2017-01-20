@@ -17,12 +17,23 @@ add_library( # Specifies the name of the library.
              SHARED
 
              # Provides a relative path to your source file(s).
-             src/main/cpp/swm_ecg_algo_jni.cpp
-             src/main/cpp/AlgorithmWare/SWM_ECG_ALGO.cpp
-             src/main/cpp/AlgorithmWare/SWM_Filter.cpp
-             src/main/cpp/SWM_algo_HRV.cpp
-             src/main/cpp/mymath.cpp
+             src/main/cpp/ecg/swm_ecg_algo_jni.cpp
+             src/main/cpp/ecg/SWM_ECG_ALGO.cpp
+             src/main/cpp/ecg/SWM_Filter.cpp
             )
+
+add_library( # Specifies the name of the library.
+             swm_ecg_hrv_algo
+
+             # Sets the library as a shared library.
+             SHARED
+
+             # Provides a relative path to your source file(s).
+             src/main/cpp/hrv/swm_ecg_hrv_algo_jni.cpp
+             src/main/cpp/hrv/SWM_algo_HRV.cpp
+             src/main/cpp/hrv/mymath.cpp
+            )
+
 find_library( # Defines the name of the path variable that stores the
               # location of the NDK library.
               log-lib
@@ -34,4 +45,7 @@ find_library( # Defines the name of the path variable that stores the
 add_library( libstlport_static
              STATIC
              IMPORTED )
-target_link_libraries(swm_ecg_algo ${log-lib} ${stlport-lib})
+
+target_link_libraries(swm_ecg_algo ${log-lib})
+
+target_link_libraries(swm_ecg_hrv_algo ${log-lib} ${stlport-lib})

@@ -27,8 +27,14 @@ class HrvService {
 
 
     private Thread mCallbackWorker;
+    static {
+        System.loadLibrary("swm_ecg_hrv_algo");
+    }
 
     private Thread mHrvWorker;
+    static native int GetRriDistributionSize(double[] rriAry);
+    static native void GetRriDistribution(double[] rriAry, double[] timeAry, double[] rriDistribution, double[] rriDistributionIdx, int distributionSize);
+    static native void GetFrequencyData(double[] rriAry, double[] timeAry, double[] frequencyData);
 
     HrvService() {
 

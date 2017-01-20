@@ -45,9 +45,17 @@ class HeartRateService {
 
                 synchronized (LOCK) {
                     if (mEcgBuffer.size() >= SWM_ECG_ALGO.g_i32CalcultedLength) {
+    static {
+        System.loadLibrary("swm_ecg_algo");
+    }
 
                         mData = new Long[SWM_ECG_ALGO.g_i32CalcultedLength];
                         mEcgBuffer.subList(0, SWM_ECG_ALGO.g_i32CalcultedLength).toArray(mData);
+    static native int CalculateHeartRate(int[] i32ECGRawBuffer);
+    static native void GetRtoRIntervalData(double[] rriAry, double[] timeAry);
+    static native float GetSdnn();
+    static native float GetRmssd();
+    static native int InitialForModeChange(int mode);
 
                         WorkData workData = new WorkData(mData);
                         mWorkDataQueue.offer(workData);

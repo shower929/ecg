@@ -75,13 +75,13 @@ public:
     data = new D [maxsize*actualsize];
   };
 
-  matrix() {};                  // private ctor's
+  matrix() {matrix(2,2);};                  // private ctor's
   matrix(int newmaxsize) {matrix(newmaxsize,newmaxsize);};
 
 
 	matrix(int newmaxsize, int newactualsize)  
 	{ // the only public ctor
-		
+		/*
 		if (newmaxsize <= 0) newmaxsize = 5;
 			maxsize = newmaxsize; 
 		if ((newactualsize <= newmaxsize)&&(newactualsize>0))
@@ -89,7 +89,8 @@ public:
 		else 
 			actualsize = newmaxsize;
 		// since allocate() will first call delete[] on data:
-		
+		*/
+
 		maxsize=newmaxsize;
 		actualsize=newactualsize;
 		data = 0;
@@ -97,6 +98,17 @@ public:
     };
 
 	~matrix() { delete[] data; };
+	
+	void setresize(int newmaxsize,int newactualsize)
+	{
+		maxsize=newmaxsize;
+		actualsize=newactualsize;
+		data = 0;
+		allocate();
+	}
+	
+	
+	
 	void comparetoidentity()  
 	{
 		int worstdiagonal = 0;
@@ -134,11 +146,6 @@ public:
 
 			}
 		}
-		//cout << "Worst diagonal value deviation from unity: "
-			//<< maxunitydeviation << " at row/column " << worstdiagonal << endl;
-		//cout << "Worst off-diagonal value deviation from zero: "
-			//<< maxzerodeviation << " at row = " << worstoffdiagonalrow
-			//<< ", column = " << worstoffdiagonalcolumn << endl;
 	}
 
 	void settoproduct(matrix& left, matrix& right)  
@@ -224,18 +231,12 @@ public:
 
 	bool setvalue(int row, int column, D newvalue)  
 	{
-		if ( (row >= maxsize) || (column >= maxsize) 
+		if ( (row >= maxsize) || (column >= actualsize) 
 			|| (row<0) || (column<0) ) return false;
 
-		if (maxsize <= actualsize)
-		{			
-			data[ row * maxsize + column ] = newvalue;
-		}
-		else
-		{
-			data[ row * actualsize + column ] = newvalue;
-		}
+		data[ row * actualsize + column ] = newvalue;
 		
+
 		return true;
 	};
 
