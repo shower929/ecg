@@ -2,6 +2,7 @@ package com.swm.core;
 
 import android.content.Context;
 import android.content.Intent;
+import android.view.View;
 
 import com.swm.heart.R;
 
@@ -11,9 +12,11 @@ import com.swm.heart.R;
 
 class MenuController {
     private Context mContext;
+    private View mMenu;
 
-    MenuController(Context context) {
+    MenuController(Context context, View menu) {
         mContext = context;
+        mMenu = menu;
     }
 
     void onSwitchMode(int menuId) {
@@ -39,12 +42,20 @@ class MenuController {
     }
 
     void startHrvActivity() {
-        Intent intent = new Intent(mContext, RriDistributionActivity.class);
+        Intent intent = new Intent(mContext, HrvActivity.class);
         mContext.startActivity(intent);
     }
 
     void startMotionActivity() {
         Intent intent = new Intent(mContext, MotionActivity.class);
         mContext.startActivity(intent);
+    }
+
+    void onToggle() {
+        if (mMenu.getVisibility() != View.VISIBLE)
+            mMenu.setVisibility(View.VISIBLE);
+        else {
+            mMenu.setVisibility(View.GONE);
+        }
     }
 }

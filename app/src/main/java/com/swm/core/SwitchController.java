@@ -1,7 +1,6 @@
 package com.swm.core;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.view.View;
 
 import com.swm.heart.R;
@@ -11,34 +10,36 @@ import com.swm.heart.R;
  */
 
 class SwitchController implements View.OnClickListener {
-    private Activity mActivity;
+    private static final int VIEW_RRI_DISTRIBUTION = 1;
+    private static final int VIEW_SDNN_AND_RMSSD = 2;
+    private static final int VIEW_RRI_FREQ = 3;
 
-    SwitchController(Activity activity, View view) {
+    private Activity mActivity;
+    private View mRriDistributionView;
+    private View mRriDistributionBtn;
+
+    private View mSdnnAndRmssdView;
+    private View mSdnnAndRmssdBtn;
+
+    private View mRriFreqView;
+    private View mRriFreqBtn;
+
+    SwitchController(Activity activity, View rriDistributionView, View sdnnandRmssdView, View rriFreqView) {
         mActivity = activity;
 
-        View rri = activity.findViewById(R.id.swm_hrv_rri);
-        View sdnnAndRmssd = activity.findViewById(R.id.swm_hrv_sdnn_and_rmssd);
-        View frequency = activity.findViewById(R.id.swm_hrv_frequency);
+        mRriDistributionView = rriDistributionView;
+        mRriDistributionBtn = activity.findViewById(R.id.swm_hrv_rri);
+        mRriDistributionBtn.setOnClickListener(null);
+        mRriDistributionBtn.setBackground(activity.getResources().getDrawable(R.drawable.swm_cta_button));
 
-        rri.setOnClickListener(this);
-        sdnnAndRmssd.setOnClickListener(this);
+        mSdnnAndRmssdView = sdnnandRmssdView;
+        mSdnnAndRmssdBtn = activity.findViewById(R.id.swm_hrv_sdnn_and_rmssd);
+        mSdnnAndRmssdBtn.setOnClickListener(this);
 
-        frequency.setOnClickListener(this);
+        mRriFreqView = rriFreqView;
+        mRriFreqBtn = activity.findViewById(R.id.swm_hrv_frequency);
+        mRriFreqBtn.setOnClickListener(this);
 
-        if(activity instanceof SdnnAndRmssdActivity) {
-            sdnnAndRmssd.setOnClickListener(null);
-            sdnnAndRmssd.setBackground(activity.getResources().getDrawable(R.drawable.swm_cta_button));
-        }
-
-        if (activity instanceof RriDistributionActivity) {
-            rri.setOnClickListener(null);
-            rri.setBackground(activity.getResources().getDrawable(R.drawable.swm_cta_button));
-        }
-
-        if (activity instanceof RriFrequencyActivity) {
-            frequency.setOnClickListener(null);
-            frequency.setBackground(activity.getResources().getDrawable(R.drawable.swm_cta_button));
-        }
     }
 
 
@@ -46,32 +47,28 @@ class SwitchController implements View.OnClickListener {
     public void onClick(View v) {
         switch(v.getId()) {
             case R.id.swm_hrv_rri:
-                switchToRriActivity();
+                switchTo(VIEW_RRI_DISTRIBUTION);
                 break;
             case R.id.swm_hrv_sdnn_and_rmssd:
-                switchToSdnnAndRmssdActivity();
+                switchTo(VIEW_SDNN_AND_RMSSD);
                 break;
             case R.id.swm_hrv_frequency:
-                switchToFrequency();
+                switchTo(VIEW_RRI_FREQ);
                 break;
         }
     }
 
-    private void switchToSdnnAndRmssdActivity() {
-        Intent intent = new Intent(mActivity, SdnnAndRmssdActivity.class);
-        mActivity.startActivity(intent);
-        mActivity.finish();
-    }
+    private void switchTo(int view) {
+        mRriDistributionBtn.setOnClickListener(view == VIEW_RRI_DISTRIBUTION ? null : this);
+        mSdnnAndRmssdBtn.setOnClickListener(view == VIEW_SDNN_AND_RMSSD ? null : this);
+        mRriFreqBtn.setOnClickListener(view == VIEW_RRI_FREQ ? null : this);
 
-    private void switchToRriActivity() {
-        Intent intent = new Intent(mActivity, RriDistributionActivity.class);
-        mActivity.startActivity(intent);
-        mActivity.finish();
-    }
+        mRriDistributionBtn.setBackground(mActivity.getResources().getDrawable(view == VIEW_RRI_DISTRIBUTION ? R.drawable.swm_cta_button : R.drawable.swm_inactive_cta_button));
+        mSdnnAndRmssdBtn.setBackground(mActivity.getResources().getDrawable(view == VIEW_SDNN_AND_RMSSD ? R.drawable.swm_cta_button : R.drawable.swm_inactive_cta_button));
+        mRriFreqBtn.setBackground(mActivity.getResources().getDrawable(view == VIEW_RRI_FREQ ? R.drawable.swm_cta_button : R.drawable.swm_inactive_cta_button));
 
-    private void switchToFrequency() {
-        Intent intent = new Intent(mActivity, RriFrequencyActivity.class);
-        mActivity.startActivity(intent);
-        mActivity.finish();
+        mRriDistributionView.setVisibility(view == VIEW_RRI_DISTRIBUTION ? View.VISIBLE : View.INVISIBLE);
+        mSdnnAndRmssdView.setVisibility(view == VIEW_SDNN_AND_RMSSD ? View.VISIBLE : View.INVISIBLE);
+        mRriFreqView.setVisibility(view == VIEW_RRI_FREQ ? View.VISIBLE : View.INVISIBLE);
     }
 }

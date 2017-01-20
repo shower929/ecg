@@ -116,7 +116,7 @@ public class CompositeActivity extends SwmBaseActivity implements EcgProviderCli
         setContentView(R.layout.activity_composite);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        mMenuController = new MenuController(this);
+
         mCompositeView = (CompositeView) findViewById(R.id.swm_composite_view);
         mHeartRateView = (TextView) findViewById(R.id.swm_current_heart_rate);
         mMaxHeartRateView = (TextView) findViewById(R.id.swm_max_heart_rate);
@@ -140,8 +140,8 @@ public class CompositeActivity extends SwmBaseActivity implements EcgProviderCli
         mHeartBeatSound = new HeartRateSound(this);
         mRecordBtn = (Button) findViewById(R.id.swm_record);
         mRecordBtn.setOnClickListener(this);
+        mMenuController = new MenuController(this, findViewById(R.id.swm_menu));
         findViewById(R.id.swm_menu_icon).setOnClickListener(this);
-        mMenu = findViewById(R.id.swm_menu);
         findViewById(R.id.swm_menu_ecg).setOnClickListener(this);
         findViewById(R.id.swm_menu_hrv).setOnClickListener(this);
         findViewById(R.id.swm_menu_motion).setOnClickListener(this);
@@ -263,7 +263,7 @@ public class CompositeActivity extends SwmBaseActivity implements EcgProviderCli
                 handleRecordEvent();
                 break;
             case R.id.swm_menu_icon:
-                handleMenuVisibility();
+                mMenuController.onToggle();
                 break;
             case R.id.swm_menu_ecg:
             case R.id.swm_menu_hrv:
@@ -272,14 +272,6 @@ public class CompositeActivity extends SwmBaseActivity implements EcgProviderCli
                 mMenuController.onSwitchMode(v.getId());
                 finish();
                 break;
-        }
-    }
-
-    private void handleMenuVisibility() {
-        if (mMenu.getVisibility() != View.VISIBLE)
-            mMenu.setVisibility(View.VISIBLE);
-        else {
-            mMenu.setVisibility(View.GONE);
         }
     }
 

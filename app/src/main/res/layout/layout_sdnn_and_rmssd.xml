@@ -7,10 +7,9 @@
     tools:context="com.swm.core.SdnnAndRmssdActivity">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="260dp"
+        android:layout_height="300dp"
         android:orientation="horizontal"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="50dp">
+        android:layout_alignParentTop="true">
         <RelativeLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -86,38 +85,4 @@
         </RelativeLayout>
     </LinearLayout>
 
-    <include layout="@layout/swm_hrv_switch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="20dp"/>
-
-    <include layout="@layout/swm_engineering_menu"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"/>
-
-    <LinearLayout
-        android:id="@+id/swm_heart_layout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="50dp"
-        android:layout_marginTop="10dp"
-        android:gravity="center_vertical">
-        <ImageView
-            android:id="@+id/swm_heart"
-            android:layout_width="42dp"
-            android:layout_height="42dp"
-            android:src="@drawable/swm_heart"
-            android:scaleType="center"/>
-        <TextView
-            android:id="@+id/swm_heart_rate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="00"
-            android:textColor="@color/swm_heart"
-            android:textSize="16dp"/>
-    </LinearLayout>
 </RelativeLayout>
