@@ -8,7 +8,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 
 class MY_PerformOFProtect extends Thread {
-    private BlockingQueue<WorkData> mQueue;
+    private BlockingQueue<WindowedEcgData> mQueue;
 
     MY_PerformOFProtect() {
         mQueue = new LinkedBlockingQueue();
@@ -22,7 +22,7 @@ class MY_PerformOFProtect extends Thread {
                 return;
 
             try {
-                WorkData data = mQueue.take();
+                WindowedEcgData data = mQueue.take();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

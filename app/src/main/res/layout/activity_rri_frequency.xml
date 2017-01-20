@@ -4,7 +4,7 @@
     android:id="@+id/activity_rmssd"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.swm.core.FrequencyActivity">
+    tools:context="com.swm.core.RriFrequencyActivity">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="300dp"
@@ -13,7 +13,7 @@
         android:layout_marginLeft="30dp"
         >
         <com.swm.chart.RealtimeLineChart
-            android:id="@+id/swm_hrv_frequency_chart"
+            android:id="@+id/swm_rri_frequency_chart"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentLeft="true"

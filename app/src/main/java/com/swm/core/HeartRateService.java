@@ -3,9 +3,10 @@ package com.swm.core;
 import android.os.Handler;
 import android.util.Log;
 
-import com.swm.heartbeat.HeartBeatListener;
+import com.swm.heartbeat.HeartRateListener;
+import com.swm.hrv.RmssdListener;
+import com.swm.hrv.SdnnListener;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.BlockingQueue;
@@ -17,70 +18,59 @@ import static com.swm.core.SWM_ECG_ALGO_HEADER.*;
  * Created by yangzhenyu on 2016/10/5.
  */
 
-class HeartRateService {
-    private static final String LOG_TAG = "HeartBeat";
+class HeartRateService implements EcgProviderClient{
+    private static final String LOG_TAG = "HeartRate";
 
     private HeartRateWorker mHeartRateWorker;
-    private BlockingQueue<WorkData> mWorkDataQueue;
-    Dump<HeartBeatData> mDump;
+    Dump<HeartRateData> mDump;
 
-    private List<Long> mEcgBuffer;
+    private Vector<Integer> mFirstLevelBuffer;
+    private Vector<Integer> mSecondLevelBuffer;
 
-    private Vector<HeartBeatListener> mListeners;
-    private BlockingQueue<HeartBeatData> mCallbackDataQueue;
+    private Vector<HeartRateListener> mListeners;
+    private BlockingQueue<HeartRateData> mCallbackDataQueue;
 
     private boolean mBeating = false;
     private Handler mProfillingHandler;
 
     private Thread mCallbackWorker;
 
-    private Runnable mBeat = new Runnable() {
-        private Long[] mData;
+    private RriCalculationService mRriCalculationService;
 
-        @Override
-        public void run() {
-            for (;;) {
-                if(!SwmCore.sRunning)
-                    return;
+    private SdnnService mSdnnService;
+    private RmssdService mRmssdService;
+    private int mClient;
 
-                synchronized (LOCK) {
-                    if (mEcgBuffer.size() >= SWM_ECG_ALGO.g_i32CalcultedLength) {
     static {
         System.loadLibrary("swm_ecg_algo");
     }
 
-                        mData = new Long[SWM_ECG_ALGO.g_i32CalcultedLength];
-                        mEcgBuffer.subList(0, SWM_ECG_ALGO.g_i32CalcultedLength).toArray(mData);
     static native int CalculateHeartRate(int[] i32ECGRawBuffer);
     static native void GetRtoRIntervalData(double[] rriAry, double[] timeAry);
     static native float GetSdnn();
     static native float GetRmssd();
     static native int InitialForModeChange(int mode);
 
-                        WorkData workData = new WorkData(mData);
-                        mWorkDataQueue.offer(workData);
-                        mEcgBuffer.subList(0, ECG_SAMPLE_RATE).clear();
-                    }
-                }
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-
-        }
-    };
 
     private Runnable mCheckQueueSize;
 
-    private Thread mHeartBeat = new Thread(mBeat);
-
     private final Object LOCK = new Object();
+
+    @Override
+    public void onEcgDataAvailable(final EcgData ecgData) {
+        synchronized (LOCK) {
+            for(Integer value : ecgData.values)
+                mSecondLevelBuffer.add(value);
+        }
+
+        if (!mBeating) {
+            mBeating = true;
+            mProfillingHandler.postDelayed(mCheckQueueSize, 1000);
+        }
+    }
 
 
     private class HeartRateWorker extends Thread{
-
 
         @Override
         public void run() {
@@ -90,27 +80,44 @@ class HeartRateService {
                     return;
 
                 try {
-                    WorkData workData = mWorkDataQueue.take();
-                    int[] g_i32ECGInBuffer = new int[workData.g_i32ECGInBuffer.length];
-                    int i = 0;
-                    for (Long value: workData.g_i32ECGInBuffer) {
-                        g_i32ECGInBuffer[i] = value.intValue();
-                        i++;
+
+                    Thread.sleep(1000);
+
+                    synchronized (mSecondLevelBuffer) {
+                        if (mSecondLevelBuffer.size() < SWM_ECG_ALGO.g_i32CalcultedLength)
+                            continue;
+
+                        mFirstLevelBuffer = new Vector<>(mSecondLevelBuffer);
+                        mSecondLevelBuffer.clear();
                     }
-                    EcgMetaData ecgMetaData = new EcgMetaData();
-                    SwmCore.CalculateEcgMetaData(ecgMetaData, g_i32ECGInBuffer);
-                    SwmCore.getIns().setEcgMetaData(ecgMetaData);
 
-                    if (SwmCore.getIns().getEcgMetaData().heartRate == 0)
-                        continue;
+                    Integer[] ecgData = new Integer[SWM_ECG_ALGO.g_i32CalcultedLength];
+                    int[] data = new int[SWM_ECG_ALGO.g_i32CalcultedLength];
 
-                    HeartBeatData heartBeatData = new HeartBeatData(SwmCore.getIns().getEcgMetaData().heartRate);
+                    List<Integer> tmp = mFirstLevelBuffer.subList(0, SWM_ECG_ALGO.g_i32CalcultedLength);
+                    tmp.toArray(ecgData);
+                    int len = ecgData.length;
+
+                    for (int i = 0; i < len; i++) {
+                        data[i] = ecgData[i].intValue();
+                    }
+
+                    int heartRate = CalculateHeartRate(data);
+
+                    HeartRateData heartRateData = new HeartRateData(heartRate);
+
                     if(mListeners != null)
-                        mCallbackDataQueue.offer(heartBeatData);
+                        mCallbackDataQueue.offer(heartRateData);
 
                     if (mDump != null) {
-                        mDump.putData(heartBeatData);
+                        mDump.putData(heartRateData);
                     }
+                    mFirstLevelBuffer.subList(0, ECG_SAMPLE_RATE).clear();
+
+                    synchronized (mSecondLevelBuffer) {
+                        mSecondLevelBuffer.addAll(0, mFirstLevelBuffer);
+                    }
+
                 } catch (InterruptedException e) {
                     Log.d(LOG_TAG, e.getMessage(), e);
                 }
@@ -119,9 +126,9 @@ class HeartRateService {
     }
 
     HeartRateService() {
-        mEcgBuffer = new ArrayList<>();
 
-        mWorkDataQueue = new LinkedBlockingQueue<>();
+        mSecondLevelBuffer = new Vector<>();
+
         mHeartRateWorker = new HeartRateWorker();
         mHeartRateWorker.start();
 
@@ -132,10 +139,11 @@ class HeartRateService {
             public void run() {
                 if(!SwmCore.sRunning)
                     return;
-                Log.d(LOG_TAG, "Heart beat processing buffer: " + mEcgBuffer.size());
+                Log.d(LOG_TAG, "Heart beat processing buffer: " + mSecondLevelBuffer.size());
                 mProfillingHandler.postDelayed(this, 1000);
             }
         };
+
         mCallbackWorker = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -144,10 +152,10 @@ class HeartRateService {
                         return;
 
                     try {
-                        HeartBeatData heartBeatData = mCallbackDataQueue.take();
+                        HeartRateData heartRateData = mCallbackDataQueue.take();
                         if (mListeners != null) {
-                            for(HeartBeatListener listener : mListeners) {
-                                listener.onHeartBeatDataAvailable(heartBeatData);
+                            for(HeartRateListener listener : mListeners) {
+                                listener.onHeartRateDataAvailable(heartRateData);
                             }
 
                         }
@@ -162,27 +170,7 @@ class HeartRateService {
 
     }
 
-    public void onSwmDataAvailable(SwmData swmData) {
-        synchronized (LOCK) {
-            int len = swmData.value.length;
-            for(int i = 0; i < len - 1; i = i + 2) {
-                long ecg = ((swmData.value[i + 1] & 0xFF) << 8) | (swmData.value[i] & 0xFF);
-                mEcgBuffer.add(ecg);
-            }
-        }
-
-        synchronized (mHeartBeat) {
-            if (!mBeating) {
-                mHeartBeat.start();
-                mBeating = true;
-                mProfillingHandler.postDelayed(mCheckQueueSize, 1000);
-            }
-        }
-
-
-    }
-
-    synchronized void addListener(HeartBeatListener listener) throws Exception {
+    synchronized void addListener(HeartRateListener listener) throws Exception {
         if (mListeners == null)
             mListeners = new Vector<>();
 
@@ -191,8 +179,11 @@ class HeartRateService {
         mListeners.add(listener);
     }
 
-    void removeListener(HeartBeatListener listener) {
-        if (mListeners != null)
+    void removeListener(HeartRateListener listener) {
+        if (mListeners == null)
+            return;
+
+        if(mListeners.contains(listener))
             mListeners.remove(listener);
     }
 
@@ -200,7 +191,7 @@ class HeartRateService {
         if (mDump != null)
             return;
 
-        mDump = new Dump<HeartBeatData>("Hrr");
+        mDump = new Dump<HeartRateData>("Hrr");
         mDump.start();
     }
 
@@ -217,7 +208,95 @@ class HeartRateService {
         if (mDump != null)
             mDump.stop();
         mCallbackWorker.interrupt();
-        mHeartBeat.interrupt();
         mHeartRateWorker.interrupt();
+    }
+
+    private synchronized void initRriCalculationService() {
+        if (mRriCalculationService == null)
+            mRriCalculationService = new RriCalculationService();
+
+    }
+
+    private synchronized void stopRriCalculationService() {
+        mRriCalculationService = null;
+    }
+
+    private synchronized void initSdnnService() {
+        if(mSdnnService == null)
+            mSdnnService = new SdnnService();
+    }
+
+    private synchronized void stopSdnnService() {
+        mSdnnService = null;
+    }
+
+    private synchronized void initRmssdService() {
+        if(mRmssdService == null)
+            mRmssdService = new RmssdService();
+    }
+
+    private synchronized void stopRmssdService() {
+        mRmssdService = null;
+    }
+
+    synchronized void startMonitorHrv() {
+        mClient++;
+        InitialForModeChange(1);
+        initRriCalculationService();
+        initSdnnService();
+        initRmssdService();
+
+        try {
+            addListener(mRriCalculationService);
+            addListener(mSdnnService);
+            addListener(mRmssdService);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    synchronized void stopMonitorHrv() {
+        mClient--;
+        if (mClient > 0)
+            return;
+        removeListener(mRmssdService);
+        removeListener(mSdnnService);
+        removeListener(mRriCalculationService);
+
+        stopRmssdService();
+        stopSdnnService();
+        stopRriCalculationService();
+        InitialForModeChange(0);
+    }
+
+    void setRriDataListener(RtoRintervalDataListener listener) {
+        mRriCalculationService.setListener(listener);
+    }
+
+    void removeRriDataListener() {
+        mRriCalculationService.removeListener();
+    }
+
+    void setSdnnListener(SdnnListener listener) {
+        if (mSdnnService == null) {
+            throw new RuntimeException("Must start monitor hrv first");
+        }
+        mSdnnService.setListener(listener);
+    }
+
+    void removeSdnnListener() {
+        mSdnnService.removeListener();
+    }
+
+    void setRmssdListener(RmssdListener listener) {
+        if (mRmssdService == null) {
+            throw new RuntimeException("Must start monitor hrv first");
+        }
+        mRmssdService.setListener(listener);
+    }
+
+    void removeRmssdListener() {
+        mRmssdService.removeListener();
     }
 }

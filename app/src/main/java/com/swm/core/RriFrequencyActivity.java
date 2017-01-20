@@ -12,13 +12,13 @@ import com.swm.chart.RealtimeLineChart;
 import com.swm.heart.R;
 import com.swm.heart.SwmBaseActivity;
 import com.swm.heartbeat.HeartBeatHandler;
-import com.swm.heartbeat.HeartBeatListener;
-import com.swm.heartbeat.HeartBeatSound;
-import com.swm.hrv.FrequencyListener;
+import com.swm.heartbeat.HeartRateListener;
+import com.swm.heartbeat.HeartRateSound;
+import com.swm.hrv.RriFrequencyListener;
 
-public class FrequencyActivity extends SwmBaseActivity implements HeartBeatListener
-                                                    , FrequencyListener{
-    RealtimeLineChart mHrvFrequencyChart;
+public class RriFrequencyActivity extends SwmBaseActivity implements HeartRateListener
+                                                    , RriFrequencyListener {
+    RealtimeLineChart mRriFrequencyChart;
     TextView mVeryLowFrequency;
     TextView mLowFrequency;
     TextView mHighFrequency;
@@ -26,7 +26,7 @@ public class FrequencyActivity extends SwmBaseActivity implements HeartBeatListe
     TextView mLfHfRatio;
     SwmBinder mSwmBinder;
     SwitchController mSwitchController;
-    private HeartBeatSound mHeartBeatSound;
+    private HeartRateSound mHeartBeatSound;
     private HeartBeatHandler mHeartBeatHandler;
     private SignalGenerator mSignalGenerator;
 
@@ -34,13 +34,13 @@ public class FrequencyActivity extends SwmBaseActivity implements HeartBeatListe
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             mSwmBinder = (SwmBinder) service;
-
             try {
-                mSwmBinder.registerHeartRateListener(FrequencyActivity.this);
-                mSwmBinder.setFrequencyListener(FrequencyActivity.this);
+                mSwmBinder.registerHeartRateListener(RriFrequencyActivity.this);
+                mSwmBinder.setRriFreqListener(RriFrequencyActivity.this);
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
         }
 
         @Override
@@ -53,20 +53,20 @@ public class FrequencyActivity extends SwmBaseActivity implements HeartBeatListe
         super.onCreate(savedInstanceState);
         Intent intent = new Intent(this, SwmService.class);
         bindService(intent, mConnection, BIND_AUTO_CREATE);
-        setContentView(R.layout.activity_frequency);
-        mHrvFrequencyChart = (RealtimeLineChart) findViewById(R.id.swm_hrv_frequency_chart);
+        setContentView(R.layout.activity_rri_frequency);
+        mRriFrequencyChart = (RealtimeLineChart) findViewById(R.id.swm_rri_frequency_chart);
         mVeryLowFrequency = (TextView) findViewById(R.id.swm_vlf_value);
         mLowFrequency = (TextView) findViewById(R.id.swm_lf_value);
         mHighFrequency = (TextView) findViewById(R.id.swm_hf_value);
         mTotalPower = (TextView) findViewById(R.id.swm_total_power_value);
         mLfHfRatio = (TextView) findViewById(R.id.swm_lf_hf_ratio_value);
         mSwitchController = new SwitchController(this, findViewById(R.id.swm_hrv_switch));
-        mHeartBeatSound = new HeartBeatSound(this);
+        mHeartBeatSound = new HeartRateSound(this);
         mHeartBeatHandler = new HeartBeatHandler(findViewById(R.id.swm_heart), (TextView) findViewById(R.id.swm_heart_rate));
 
         mSignalGenerator = new SignalGenerator();
 
-        mSignalGenerator.setListener(mHrvFrequencyChart);
+        mSignalGenerator.setListener(mRriFrequencyChart);
 
     }
 
@@ -81,7 +81,7 @@ public class FrequencyActivity extends SwmBaseActivity implements HeartBeatListe
         super.onPause();
         if(mSwmBinder != null) {
             mSwmBinder.removeHeartRateListener(this);
-            mSwmBinder.removeFrequencyListener();
+            mSwmBinder.removeRriFreqListener();
         }
         mHeartBeatSound.release();
     }
@@ -92,19 +92,19 @@ public class FrequencyActivity extends SwmBaseActivity implements HeartBeatListe
         if(mSwmBinder != null)
             try {
                 mSwmBinder.registerHeartRateListener(this);
-                mSwmBinder.setFrequencyListener(this);
+                mSwmBinder.setRriFreqListener(this);
             } catch (Exception e) {
                 e.printStackTrace();
             }
     }
 
     @Override
-    public void onHeartBeatDataAvailable(final HeartBeatData heartBeatData) {
+    public void onHeartRateDataAvailable(final HeartRateData heartRateData) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mHeartBeatSound.onHeartBeatDataAvailable(heartBeatData);
-                mHeartBeatHandler.onHeartBeat(heartBeatData.heartRate);
+                mHeartBeatSound.onHeartRateDataAvailable(heartRateData);
+                mHeartBeatHandler.onHeartBeat(heartRateData.heartRate);
 
             }
         });

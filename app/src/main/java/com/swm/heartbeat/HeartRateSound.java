@@ -6,14 +6,14 @@ import android.media.ToneGenerator;
 import android.os.Handler;
 import android.util.Log;
 
-import com.swm.core.HeartBeatData;
+import com.swm.core.HeartRateData;
 
 
 /**
  * Created by yangzhenyu on 2016/10/6.
  */
 
-public class HeartBeatSound implements HeartBeatListener{
+public class HeartRateSound implements HeartRateListener {
     private Long mLen = 1000L;
     private Handler mSoundHandler;
     private BeatSound mBeatSoundRunnable;
@@ -36,7 +36,7 @@ public class HeartBeatSound implements HeartBeatListener{
         }
     }
 
-    public HeartBeatSound(Context context) {
+    public HeartRateSound(Context context) {
         mContext = context;
     }
 
@@ -49,9 +49,9 @@ public class HeartBeatSound implements HeartBeatListener{
     }
 
     @Override
-    public void onHeartBeatDataAvailable(HeartBeatData heartBeatData) {
-        Log.d("Sound", "onHeartBeatDataAvailable");
-        int heartBeatRate = heartBeatData.heartRate;
+    public void onHeartRateDataAvailable(HeartRateData heartRateData) {
+        Log.d("Sound", "onHeartRateDataAvailable");
+        int heartBeatRate = heartRateData.heartRate;
         if (heartBeatRate <= 0)
             return;
 

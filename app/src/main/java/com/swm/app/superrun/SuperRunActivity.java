@@ -15,7 +15,6 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -26,13 +25,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.crash.FirebaseCrash;
 import com.swm.app.superrun.marathon.MarathonActivity;
 import com.swm.app.superrun.training.TrainingModelActivity;
 import com.swm.app.superrun.power.RunPowerMeterHandler;
 import com.swm.app.superrun.power.SwmMeter;
 import com.swm.core.CompositeActivity;
-import com.swm.core.HeartBeatData;
+import com.swm.core.HeartRateData;
 import com.swm.core.SwmBinder;
 import com.swm.core.SwmService;
 import com.swm.device.SwmDeviceListener;
@@ -40,19 +38,16 @@ import com.swm.heart.BuildConfig;
 import com.swm.heart.R;
 import com.swm.heart.SwmBaseActivity;
 import com.swm.heartbeat.HeartBeatHandler;
-import com.swm.heartbeat.HeartBeatListener;
-import com.swm.heartbeat.HeartBeatSound;
-import com.swm.power.PowerModel;
-import com.swm.power.PowerModule;
-import com.swm.power.PowerQueryCallback;
+import com.swm.heartbeat.HeartRateListener;
+import com.swm.heartbeat.HeartRateSound;
 
 public class SuperRunActivity extends SwmBaseActivity
-        implements NavigationView.OnNavigationItemSelectedListener, HeartBeatListener, SwmDeviceListener, View.OnClickListener {
+        implements NavigationView.OnNavigationItemSelectedListener, HeartRateListener, SwmDeviceListener, View.OnClickListener {
 
     private static final String LOG_TAG = "SuperRun";
 
     private SwmBinder mSwmBinder;
-    private HeartBeatSound mHeartBeatSound;
+    private HeartRateSound mHeartBeatSound;
     private HeartBeatHandler mHeartBeatHandler;
     private Handler mAniHandler;
     private ToneGenerator mConnectedSound;
@@ -120,7 +115,7 @@ public class SuperRunActivity extends SwmBaseActivity
         mRipple = (ImageView) findViewById(R.id.swm_ripple);
         ImageView heart = (ImageView) findViewById(R.id.swm_heart);
 
-        mHeartBeatSound = new HeartBeatSound(this);
+        mHeartBeatSound = new HeartRateSound(this);
         mHeartBeatHandler = new HeartBeatHandler(heart);
 
         //try {
@@ -225,14 +220,14 @@ public class SuperRunActivity extends SwmBaseActivity
     }
 
     @Override
-    public void onHeartBeatDataAvailable(final HeartBeatData heartBeatData) {
+    public void onHeartRateDataAvailable(final HeartRateData heartRateData) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mMeterHandler.setHeartRate(heartBeatData.heartRate);
+                mMeterHandler.setHeartRate(heartRateData.heartRate);
 
-                mHeartBeatSound.onHeartBeatDataAvailable(heartBeatData);
-                mHeartBeatHandler.onHeartBeat(heartBeatData.heartRate);
+                mHeartBeatSound.onHeartRateDataAvailable(heartRateData);
+                mHeartBeatHandler.onHeartBeat(heartRateData.heartRate);
                 if (mBtnAnimRunnable == null) {
                     mBtnAnimRunnable = new Runnable() {
                         @Override

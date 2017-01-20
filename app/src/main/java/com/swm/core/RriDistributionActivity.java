@@ -11,30 +11,33 @@ import com.swm.chart.RealtimeHistogram;
 import com.swm.heart.R;
 import com.swm.heart.SwmBaseActivity;
 import com.swm.heartbeat.HeartBeatHandler;
-import com.swm.heartbeat.HeartBeatListener;
-import com.swm.heartbeat.HeartBeatSound;
-import com.swm.hrv.RriListener;
+import com.swm.heartbeat.HeartRateListener;
+import com.swm.heartbeat.HeartRateSound;
+import com.swm.hrv.RriDistributionListener;
 
-public class RriActivity extends SwmBaseActivity implements RriListener
-                                                    , HeartBeatListener{
-    RealtimeHistogram mRriHistogram;
+public class RriDistributionActivity extends SwmBaseActivity implements RriDistributionListener
+                                                    , HeartRateListener {
+    RealtimeHistogram mRriDistributionHistogram;
 
     SwmBinder mSwmBinder;
     SwitchController mSwitchController;
-    private HeartBeatSound mHeartBeatSound;
+    private HeartRateSound mHeartBeatSound;
     private HeartBeatHandler mHeartBeatHandler;
 
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             mSwmBinder = (SwmBinder) service;
+            mSwmBinder.startMonitorHrv();
 
             try {
-                mSwmBinder.registerHeartRateListener(RriActivity.this);
-                mSwmBinder.setRriListener(RriActivity.this);
+                mSwmBinder.registerHeartRateListener(RriDistributionActivity.this);
+                mSwmBinder.setRriDistributionListener(RriDistributionActivity.this);
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
+
         }
 
         @Override
@@ -47,16 +50,18 @@ public class RriActivity extends SwmBaseActivity implements RriListener
         super.onCreate(savedInstanceState);
         Intent intent = new Intent(this, SwmService.class);
         bindService(intent, mConnection, BIND_AUTO_CREATE);
-        setContentView(R.layout.activity_rri);
-        mRriHistogram = (RealtimeHistogram) findViewById(R.id.swm_rri);
+        setContentView(R.layout.activity_rri_distribution);
+        mRriDistributionHistogram = (RealtimeHistogram) findViewById(R.id.swm_rri_distribution);
         mSwitchController = new SwitchController(this, findViewById(R.id.swm_hrv_switch));
-        mHeartBeatSound = new HeartBeatSound(this);
+        mHeartBeatSound = new HeartRateSound(this);
         mHeartBeatHandler = new HeartBeatHandler(findViewById(R.id.swm_heart), (TextView) findViewById(R.id.swm_heart_rate));
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if(mSwmBinder != null)
+            mSwmBinder.stopMonitorHrv();
         unbindService(mConnection);
     }
 
@@ -65,7 +70,7 @@ public class RriActivity extends SwmBaseActivity implements RriListener
         super.onPause();
         if(mSwmBinder != null) {
             mSwmBinder.removeHeartRateListener(this);
-            mSwmBinder.removeRriListener();
+            mSwmBinder.removeRriDistributionListener();
         }
         mHeartBeatSound.release();
     }
@@ -73,22 +78,23 @@ public class RriActivity extends SwmBaseActivity implements RriListener
     @Override
     protected void onResume() {
         super.onResume();
-        if(mSwmBinder != null)
+        if(mSwmBinder != null) {
             try {
                 mSwmBinder.registerHeartRateListener(this);
-                mSwmBinder.setRriListener(this);
+                mSwmBinder.setRriDistributionListener(this);
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
     }
 
     @Override
-    public void onHeartBeatDataAvailable(final HeartBeatData heartBeatData) {
+    public void onHeartRateDataAvailable(final HeartRateData heartRateData) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mHeartBeatSound.onHeartBeatDataAvailable(heartBeatData);
-                mHeartBeatHandler.onHeartBeat(heartBeatData.heartRate);
+                mHeartBeatSound.onHeartRateDataAvailable(heartRateData);
+                mHeartBeatHandler.onHeartBeat(heartRateData.heartRate);
 
             }
         });
@@ -107,11 +113,11 @@ public class RriActivity extends SwmBaseActivity implements RriListener
     }
 
     @Override
-    public void onRriBinsDataAvailable(final double[] rriCount, final double[] rriTime) {
+    public void onRriDistributionChanged(final double[] binAry, final double[] binIdx) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mRriHistogram.offerValue(rriTime, rriCount);
+                mRriDistributionHistogram.offerValue(binAry, binIdx);
             }
         });
     }

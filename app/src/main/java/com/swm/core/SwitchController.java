@@ -1,7 +1,6 @@
 package com.swm.core;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.view.View;
 
@@ -31,12 +30,12 @@ class SwitchController implements View.OnClickListener {
             sdnnAndRmssd.setBackground(activity.getResources().getDrawable(R.drawable.swm_cta_button));
         }
 
-        if (activity instanceof RriActivity) {
+        if (activity instanceof RriDistributionActivity) {
             rri.setOnClickListener(null);
             rri.setBackground(activity.getResources().getDrawable(R.drawable.swm_cta_button));
         }
 
-        if (activity instanceof FrequencyActivity) {
+        if (activity instanceof RriFrequencyActivity) {
             frequency.setOnClickListener(null);
             frequency.setBackground(activity.getResources().getDrawable(R.drawable.swm_cta_button));
         }
@@ -65,13 +64,13 @@ class SwitchController implements View.OnClickListener {
     }
 
     private void switchToRriActivity() {
-        Intent intent = new Intent(mActivity, RriActivity.class);
+        Intent intent = new Intent(mActivity, RriDistributionActivity.class);
         mActivity.startActivity(intent);
         mActivity.finish();
     }
 
     private void switchToFrequency() {
-        Intent intent = new Intent(mActivity, FrequencyActivity.class);
+        Intent intent = new Intent(mActivity, RriFrequencyActivity.class);
         mActivity.startActivity(intent);
         mActivity.finish();
     }

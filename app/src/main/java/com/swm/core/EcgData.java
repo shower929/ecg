@@ -8,13 +8,9 @@ import java.util.List;
  */
 
 public class EcgData {
-    public List<Integer> values = new ArrayList<>();
+    final Integer[] values;
 
-    EcgData() {
-
-    }
-
-    EcgData(List<Integer> values){
+    EcgData(Integer[] values){
         this.values = values;
     }
 

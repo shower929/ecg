@@ -1,12 +1,8 @@
 package com.swm.core;
 
-import android.util.Log;
+import com.swm.hrv.RriFrequencyListener;
+import com.swm.hrv.RriDistributionListener;
 
-import com.swm.hrv.FrequencyListener;
-import com.swm.hrv.HrvListener;
-import com.swm.hrv.RriListener;
-
-import java.util.Vector;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -15,153 +11,112 @@ import java.util.concurrent.LinkedBlockingQueue;
  * Created by yangzhenyu on 2016/12/13.
  */
 
-class HrvService {
-    private static final String LOG_TAG = "HeartBeat";
+class HrvService implements RtoRintervalDataListener{
+    private static final String LOG_TAG = "HRV";
 
-    private Vector<HrvListener> mListeners;
-    private BlockingQueue<HrvData> mCallbackDataQueue;
+    private BlockingQueue<RtoRintervalData> mRriDistributionServiceQueue;
+    private RriDistributionService mRriDistributionService;
+    private Thread mRriDistributionServiceQueueWorker;
 
-    private RriListener mRriListener;
+    private BlockingQueue<RtoRintervalData> mRriFrequencyServiceQueue;
+    private RriFrequencyService mRriFrequencyService;
+    private Thread mRriFreqServiceQueueWorker;
 
-    private FrequencyListener mFrequencyListener;
-
-
-    private Thread mCallbackWorker;
     static {
         System.loadLibrary("swm_ecg_hrv_algo");
     }
 
-    private Thread mHrvWorker;
     static native int GetRriDistributionSize(double[] rriAry);
     static native void GetRriDistribution(double[] rriAry, double[] timeAry, double[] rriDistribution, double[] rriDistributionIdx, int distributionSize);
     static native void GetFrequencyData(double[] rriAry, double[] timeAry, double[] frequencyData);
 
     HrvService() {
+    }
 
-        mHrvWorker = new Thread() {
-
+    private void initRriDistributionService() {
+        mRriDistributionServiceQueue = new LinkedBlockingQueue<>();
+        mRriDistributionService = new RriDistributionService();
+        mRriDistributionServiceQueueWorker = new Thread() {
             @Override
             public void run() {
                 super.run();
                 for(;;) {
-                    if (!SwmCore.sRunning)
+                    if(!SwmCore.sRunning)
                         return;
 
                     try {
-                        monitorHrv();
-
-                        getRriDistribution();
-
-                        getFrequencyData();
-
-                        Thread.sleep(1000);
+                        RtoRintervalData data = mRriDistributionServiceQueue.take();
+                        mRriDistributionService.onRtoRintervalDataAvailable(data);
                     } catch (InterruptedException e) {
-                        Log.d(LOG_TAG, e.getMessage(), e);
+                        break;
                     }
                 }
             }
         };
+        mRriDistributionServiceQueueWorker.start();
+    }
 
-        mHrvWorker.start();
-
-        mCallbackDataQueue = new LinkedBlockingQueue<>();
-
-        mCallbackWorker = new Thread(new Runnable() {
+    private void initRriFrequencyService() {
+        mRriFrequencyServiceQueue = new LinkedBlockingQueue<>();
+        mRriFrequencyService = new RriFrequencyService();
+        mRriFreqServiceQueueWorker = new Thread() {
             @Override
             public void run() {
-                for (;;) {
-                    if (!SwmCore.sRunning)
+                super.run();
+                for(;;) {
+                    if(!SwmCore.sRunning)
                         return;
 
                     try {
-                        HrvData hrvData = mCallbackDataQueue.take();
-                        if (mListeners != null) {
-                            for(HrvListener listener : mListeners) {
-                                listener.onHrvDataAvailable(hrvData);
-                            }
-                        }
+                        RtoRintervalData data = mRriFrequencyServiceQueue.take();
+                        mRriFrequencyService.onRtoRintervalDataAvailable(data);
                     } catch (InterruptedException e) {
-                        e.printStackTrace();
+                        break;
                     }
                 }
             }
-        });
-        mCallbackWorker.start();
-
+        };
+        mRriFreqServiceQueueWorker.start();
     }
 
-    private void getFrequencyData() {
-        if(mFrequencyListener == null)
-            return;
-
-        double[] frequencyData = new double[5];
-        SwmCore.GetFrequencyData(frequencyData);
-
-        if(mFrequencyListener == null)
-            return;
-
-        mFrequencyListener.onFrequencyDataAvailable(frequencyData);
-    }
-
-    private void getRriDistribution() {
-        if(mRriListener == null)
-            return;
-
-        int numOfBins = SwmCore.GetBinSize();
-        double[] rriCount = new double[numOfBins];
-        double[] rriTime = new double[numOfBins];
-        SwmCore.GetRriBins(rriCount, rriTime);
-
-        mRriListener.onRriBinsDataAvailable(rriCount, rriTime);
-
-    }
-
-    private void monitorHrv() {
-        if(mListeners == null)
-            return;
-
-        EcgMetaData ecgMetaData = SwmCore.getIns().getEcgMetaData();
-
-        if(ecgMetaData != null){
-            HrvData hrvData = new HrvData(ecgMetaData.sdnn, ecgMetaData.rmssd);
-            mCallbackDataQueue.offer(hrvData);
+    synchronized void setRriDistributionListener(RriDistributionListener listener) {
+        if(mRriDistributionServiceQueue == null) {
+            initRriDistributionService();
+            SwmCore.getIns().getHeartRateService().setRriDataListener(this);
         }
+        mRriDistributionService.setListener(listener);
     }
 
-    synchronized void addListener(HrvListener listener) throws Exception {
-        if (mListeners == null)
-            mListeners = new Vector<>();
-
-        if (mListeners.contains(listener))
-            throw new Exception("Listener is added already");
-        mListeners.add(listener);
+    synchronized void removeRriDistributionListener() {
+        SwmCore.getIns().getHeartRateService().removeRriDataListener();
+        mRriDistributionService.removeListener();
+        mRriDistributionServiceQueueWorker.interrupt();
+        mRriDistributionServiceQueue = null;
     }
 
-    synchronized void removeListener(HrvListener listener) {
-        if (mListeners != null)
-            mListeners.remove(listener);
+    synchronized void setRriFreqListener(RriFrequencyListener listener) {
+        if(mRriFrequencyServiceQueue == null) {
+            initRriFrequencyService();
+            SwmCore.getIns().getHeartRateService().setRriDataListener(this);
+        }
+        mRriFrequencyService.setListener(listener);
     }
 
-    void stop() {
-
-        mCallbackWorker.interrupt();
-        if(mHrvWorker != null)
-            mHrvWorker.interrupt();
+    synchronized void removeRriFreqListener() {
+        SwmCore.getIns().getHeartRateService().removeRriDataListener();
+        mRriFrequencyService.removeListener();
+        mRriFreqServiceQueueWorker.interrupt();
+        mRriFrequencyServiceQueue = null;
     }
 
-    void setRriListener(RriListener listener) {
-        mRriListener = listener;
-    }
+    @Override
+    public synchronized void onRtoRintervalDataAvailable(RtoRintervalData data) {
+        if(mRriDistributionServiceQueue != null)
+            mRriDistributionServiceQueue.offer(data);
 
-    void removeRriListener() {
-        mRriListener = null;
-    }
+        if (mRriFrequencyServiceQueue != null)
+            mRriFrequencyServiceQueue.offer(data);
 
-    void setFrequencyListener(FrequencyListener listener) {
-        mFrequencyListener = listener;
-    }
 
-    void removeFrequencyListener() {
-        mFrequencyListener = null;
     }
 }

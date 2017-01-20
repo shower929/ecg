@@ -17,7 +17,6 @@ import android.widget.RemoteViews;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.crash.FirebaseCrash;
-import com.google.firebase.database.Logger;
 import com.swm.app.superrun.SuperRunActivity;
 import com.swm.body.PersonalModule;
 import com.swm.heart.BuildConfig;
@@ -43,7 +42,6 @@ public class SwmService extends Service {
     public IBinder onBind(Intent intent) {
         if(!SwmCore.getIns().getSuperRunCloudService().isMonitoring())
             SwmCore.getIns().getSuperRunCloudService().startMonitor(FirebaseAuth.getInstance().getCurrentUser());
-        SwmCore.APPSEcgInitialForModeChange();
         return mSwmBinder;
     }
 
@@ -110,7 +108,7 @@ public class SwmService extends Service {
 
     private boolean isRecording() {
         return SwmCore.getIns().getEcgService().isRecording()
-                && SwmCore.getIns().getHeartBeatService().isRecording()
+                && SwmCore.getIns().getHeartRateService().isRecording()
                 && SwmCore.getIns().getMotionService().isRecording()
                 && MyLocationService.isRecording();
     }

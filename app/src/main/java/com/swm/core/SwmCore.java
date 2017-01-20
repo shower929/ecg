@@ -5,7 +5,6 @@ import android.os.Handler;
 import android.util.Log;
 
 import com.swm.heart.BuildConfig;
-import com.swm.hrv.HrvListener;
 
 import java.util.Arrays;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -26,7 +25,7 @@ public class SwmCore {
     private static Thread mMotionWorker;
 
     private EcgService mEcgService;
-    private LinkedBlockingDeque<SwmData> mEcgDataQueue;
+    private LinkedBlockingDeque<SwmData> mEcgServiceQueue;
     private Thread mEcgWorker;
 
     private static AcceleratorService mAcceleratorService;
@@ -38,7 +37,10 @@ public class SwmCore {
     private static Thread mBreathWorker;
 
     private static HeartRateService mHeartRateService;
-    private static LinkedBlockingQueue<SwmData> mHeartBeatServiceQueue;
+
+    private HrvService mHrvService;
+    private EcgProvider mEcgProvider;
+
     private static final long TIME_FRAME = 1000;
 
     static boolean sRunning = true;
@@ -74,19 +76,6 @@ public class SwmCore {
     private long mEcgLatency;
     private double mTotalPacketLoss;
 
-    private HrvService mHrvService;
-    private EcgMetaData mEcgMetaData;
-
-    static {
-        System.loadLibrary("swm_ecg_algo");
-    }
-
-    static native void APPSEcgInitialForModeChange();
-    static native int CalculateEcgMetaData(EcgMetaData ecgMetaData, int[] i32ECGRawBuffer);
-    static native int GetBinSize();
-    static native void GetRriBins(double[] rriCount, double[] rriTime);
-    static native void GetFrequencyData(double[] frequencyData);
-
     private SwmCore(Context context) {
         mContext = context;
         initMotionService();
@@ -102,10 +91,10 @@ public class SwmCore {
             @Override
             public void run() {
 
-                Log.v("Profiling", "ECG service queue: " + mEcgDataQueue.size());
+                Log.v("Profiling", "ECG service queue: " + mEcgServiceQueue.size());
                 Log.v("Profiling", "Accelerator service queue: " + mAccDataQueue.size());
                 Log.v("Profiling", "Breath service queue: " + mBreathDataQueue.size());
-                Log.v("Profiling", "Heart beat service queue: " + mHeartBeatServiceQueue.size());
+
                 if (mEcgService.mDump != null) {
                     Log.v("Profiling", "ECG dump queue: " + mEcgService.mDump.mBuffer.size());
                 }
@@ -239,9 +228,7 @@ public class SwmCore {
 
     private void onEcgBleDataAvailable(BleData bleData) {
         SwmData rawData = SwmData.ecgDataFrom(bleData);
-        mEcgDataQueue.offer(rawData);
-        SwmData ecgData = new SwmData(SwmData.ECG, Arrays.copyOfRange(bleData.rawData, 10, 20));
-        mHeartBeatServiceQueue.offer(ecgData);
+        mEcgServiceQueue.offer(rawData);
     }
 
     void onMotionBleDataAvailable(BleData bleData){
@@ -258,14 +245,14 @@ public class SwmCore {
 
     private void initEcgService() {
         mEcgService = new EcgService();
-        mEcgDataQueue = new LinkedBlockingDeque<SwmData>();
+        mEcgServiceQueue = new LinkedBlockingDeque<SwmData>();
         mEcgWorker = new Thread(new Runnable() {
             @Override
             public void run() {
                 for (;;) {
                     if (sRunning) {
                         try {
-                            SwmData swmData = mEcgDataQueue.take();
+                            SwmData swmData = mEcgServiceQueue.take();
                             mEcgService.onSwmDataAvailable(swmData);
                         } catch (InterruptedException e) {
                             Log.e(LOG_TAG, e.getMessage(), e);
@@ -280,24 +267,14 @@ public class SwmCore {
     private void initHeartBeatService() {
         if (mHeartRateService == null) {
             mHeartRateService = new HeartRateService();
-            mHeartBeatServiceQueue = new LinkedBlockingQueue<>();
-            Thread heartBeatQueueWorker = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    for(;;) {
-                        if (!sRunning)
-                            return;
-
-                        try {
-                            SwmData swmData = mHeartBeatServiceQueue.take();
-                            mHeartRateService.onSwmDataAvailable(swmData);
-                        } catch (InterruptedException e) {
-                            Log.e(LOG_TAG, e.getMessage(), e);
-                        }
-                    }
-                }
-            });
-            heartBeatQueueWorker.start();
+            EcgProvider.Builder builder = new EcgProvider.Builder();
+            mEcgProvider = builder.build();
+            try {
+                getEcgService().registerListener(mEcgProvider);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            mEcgProvider.addClient(mHeartRateService);
         }
     }
 
@@ -396,7 +373,7 @@ public class SwmCore {
         return mBreathService;
     }
 
-    HeartRateService getHeartBeatService() {
+    HeartRateService getHeartRateService() {
         return mHeartRateService;
     }
 
@@ -420,7 +397,7 @@ public class SwmCore {
     void stop() {
         sRunning = false;
         getEcgService().stop();
-        getHeartBeatService().stop();
+        getHeartRateService().stop();
         getMotionService().stop();
         getBreathService().stop();
     }
@@ -435,7 +412,7 @@ public class SwmCore {
 
         mDump.start();
         getEcgService().startRecord();
-        getHeartBeatService().startRecord();
+        getHeartRateService().startRecord();
         getMotionService().startRecord();
 
         if (mTimer == null)
@@ -469,7 +446,7 @@ public class SwmCore {
         mHandler.removeCallbacks(mTimer);
         mElapse = 0;
         getEcgService().stopRecord();
-        getHeartBeatService().stopRecord();
+        getHeartRateService().stopRecord();
         getMotionService().stopRecord();
         mDump.stop();
     }
@@ -506,23 +483,4 @@ public class SwmCore {
         mHrvService = new HrvService();
     }
 
-    void setHrvListener(HrvListener listener) {
-        try {
-            getHrvService().addListener(listener);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    void removeHrvListener(HrvListener listener) {
-        getHrvService().removeListener(listener);
-    }
-
-    void setEcgMetaData(EcgMetaData ecgMetaData) {
-        mEcgMetaData = ecgMetaData;
-    }
-
-    EcgMetaData getEcgMetaData() {
-        return mEcgMetaData;
-    }
 }

@@ -12,7 +12,7 @@ class SWM_ECG_ALGO_HEADER {
     static final int OVER_FLOW_MAX = 30000;
     static final int OVER_FLOW_MIN = -30000;
     static final int SHORT_MAX = 32767;
-    static final short ECG_SAMPLE_RATE = 250;
+    static final int ECG_SAMPLE_RATE = 250;
     static final short ECG_SHIFT_SAMPLE = 250;
     static final short ECG_MEDIAN_POINT = 125;
     static final short ECG_MEAN_POINT = 6;//2015/05/17 modify
@@ -23,7 +23,7 @@ class SWM_ECG_ALGO_HEADER {
     static final short MAX_RRI_BUF = 20;
     static final short MAX_RRI_LIMITE = 340;                // {[(1000 msec X 60)/ MIN_HR(BPM)]/ 4 msec} + 5 BPM
     static final short MIN_RRI_LIMITE = 63;                // {[(1000 msec X 60)/ MAX_HR(BPM)]/ 4 msec} - 5 BPM
-    static final short CAL_TIME_BUF = 6;
+    static final int CAL_TIME_BUF = 6;
     static final short KEEP_TIME_BUF = 3;
     //public short MAX_QRS_PAIR_1SEC = 6;        //(MAX_HR_LIMITE * 250 / 15000)
     static final int LOCAL_MAX_POINTS_NUM = 200; //the possible QRS pairs is which the formula: { MAX_HR(BPM) X 250SPS x CAL_TIME_BUF / [(1000 X 60 / 4) X 2] X 2 } 5min

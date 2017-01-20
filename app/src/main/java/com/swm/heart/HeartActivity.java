@@ -13,16 +13,16 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
-import com.swm.core.HeartBeatData;
+import com.swm.core.HeartRateData;
 import com.swm.core.SwmBinder;
 import com.swm.core.SwmService;
-import com.swm.heartbeat.HeartBeatListener;
+import com.swm.heartbeat.HeartRateListener;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-public class HeartActivity extends AppCompatActivity implements HeartBeatListener {
+public class HeartActivity extends AppCompatActivity implements HeartRateListener {
     private SwmBinder mSwmBinder;
 
     private ServiceConnection mConnection = new ServiceConnection() {
@@ -208,11 +208,11 @@ public class HeartActivity extends AppCompatActivity implements HeartBeatListene
     }
 
     @Override
-    public void onHeartBeatDataAvailable(final HeartBeatData heartBeatData) {
+    public void onHeartRateDataAvailable(final HeartRateData heartRateData) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mHeartBeatView.setText(String.valueOf(heartBeatData.heartRate));
+                mHeartBeatView.setText(String.valueOf(heartRateData.heartRate));
             }
         });
     }

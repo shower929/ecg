@@ -12,21 +12,17 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.analytics.FirebaseAnalytics;
-import com.google.firebase.database.FirebaseDatabase;
 import com.swm.app.superrun.power.RunPowerMeterHandler;
 import com.swm.app.superrun.power.SwmMeter;
-import com.swm.core.HeartBeatData;
+import com.swm.core.HeartRateData;
 import com.swm.core.MyLocationService;
 import com.swm.core.SwmBinder;
 import com.swm.core.SwmService;
@@ -34,7 +30,7 @@ import com.swm.device.SwmDeviceListener;
 import com.swm.heart.R;
 import com.swm.heart.SwmBaseActivity;
 import com.swm.heartbeat.HeartBeatHandler;
-import com.swm.heartbeat.HeartBeatListener;
+import com.swm.heartbeat.HeartRateListener;
 import com.swm.report.Reporter;
 import com.swm.training.SwmBar;
 import com.swm.training.TrainingListener;
@@ -43,7 +39,7 @@ import com.swm.training.TrainingModel;
 import static com.swm.app.superrun.training.TrainingModelActivity.KEY_TRAINING_MODEL;
 
 public class TrainingActivity extends SwmBaseActivity implements MyLocationService.LocationListener
-                                                    , HeartBeatListener
+                                                    , HeartRateListener
                                                     , SwmDeviceListener
                                                     , View.OnClickListener
                                                     , TrainingListener{
@@ -282,12 +278,12 @@ public class TrainingActivity extends SwmBaseActivity implements MyLocationServi
     }
 
     @Override
-    public void onHeartBeatDataAvailable(final HeartBeatData heartBeatData) {
+    public void onHeartRateDataAvailable(final HeartRateData heartRateData) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mMeterHandler.setHeartRate(heartBeatData.heartRate);
-                mHeartBeatHandler.onHeartBeat(heartBeatData.heartRate);
+                mMeterHandler.setHeartRate(heartRateData.heartRate);
+                mHeartBeatHandler.onHeartBeat(heartRateData.heartRate);
             }
         });
     }

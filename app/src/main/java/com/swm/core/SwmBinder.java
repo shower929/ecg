@@ -3,15 +3,14 @@ package com.swm.core;
 import android.location.Location;
 import android.os.Binder;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.swm.accelerator.AcceleratorListener;
 import com.swm.breath.BreathListener;
 import com.swm.device.SwmDeviceListener;
-import com.swm.emergency.UserQueryCallback;
-import com.swm.heartbeat.HeartBeatListener;
-import com.swm.hrv.FrequencyListener;
-import com.swm.hrv.HrvListener;
-import com.swm.hrv.RriListener;
+import com.swm.heartbeat.HeartRateListener;
+import com.swm.hrv.RmssdListener;
+import com.swm.hrv.RriFrequencyListener;
+import com.swm.hrv.RriDistributionListener;
+import com.swm.hrv.SdnnListener;
 import com.swm.motion.MotionListener;
 import com.swm.training.TrainingListener;
 
@@ -33,14 +32,13 @@ public class SwmBinder extends Binder {
         SwmCore.getIns().getMotionService().removeListener();
     }
 
-    void registerEcgListener(EcgListener listener) throws Exception {
+    void registerEcgRawDataListener(EcgRawDataListener listener) throws Exception {
         SwmCore.getIns().getEcgService().registerListener(listener);
     }
 
-    void removeEcgListener(EcgListener listener) {
+    void removeEcgRawDataListener(EcgRawDataListener listener) {
         SwmCore.getIns().getEcgService().removeListener(listener);
     }
-
     public void setAcceleratorListener(AcceleratorListener listener) {
         SwmCore.getIns().getAcceleratorService().setListener(listener);
     }
@@ -57,12 +55,12 @@ public class SwmBinder extends Binder {
         SwmCore.getIns().getBreathService().removeListener();
     }
 
-    public void registerHeartRateListener(HeartBeatListener listener) throws Exception{
-        SwmCore.getIns().getHeartBeatService().addListener(listener);
+    public void registerHeartRateListener(HeartRateListener listener) throws Exception{
+        SwmCore.getIns().getHeartRateService().addListener(listener);
     }
 
-    public void removeHeartRateListener(HeartBeatListener listener) {
-        SwmCore.getIns().getHeartBeatService().removeListener(listener);
+    public void removeHeartRateListener(HeartRateListener listener) {
+        SwmCore.getIns().getHeartRateService().removeListener(listener);
     }
 
     public void setDeviceListener(SwmDeviceListener listener) {
@@ -95,27 +93,43 @@ public class SwmBinder extends Binder {
         SwmCore.getIns().getSuperRunCloudService().logEvent(new UserEvent("stop_sport"));
     }
 
-    public void registerHrvListener(HrvListener listener) throws Exception {
-        SwmCore.getIns().getHrvService().addListener(listener);
+    public void startMonitorHrv() {
+        SwmCore.getIns().getHeartRateService().startMonitorHrv();
     }
 
-    public void removeHrvListener(HrvListener listener) {
-        SwmCore.getIns().removeHrvListener(listener);
+    public void stopMonitorHrv() {
+        SwmCore.getIns().getHeartRateService().stopMonitorHrv();
     }
 
-    public void setRriListener(RriListener listener) {
-        SwmCore.getIns().getHrvService().setRriListener(listener);
+    public void setRriDistributionListener(RriDistributionListener listener) {
+        SwmCore.getIns().getHrvService().setRriDistributionListener(listener);
     }
 
-    public void removeRriListener() {
-        SwmCore.getIns().getHrvService().removeRriListener();
+    public void removeRriDistributionListener() {
+        SwmCore.getIns().getHrvService().removeRriDistributionListener();
     }
 
-    public void setFrequencyListener(FrequencyListener listener) {
-        SwmCore.getIns().getHrvService().setFrequencyListener(listener);
+    public void setRriFreqListener(RriFrequencyListener listener) {
+        SwmCore.getIns().getHrvService().setRriFreqListener(listener);
     }
 
-    public void removeFrequencyListener() {
-        SwmCore.getIns().getHrvService().removeFrequencyListener();
+    public void removeRriFreqListener() {
+        SwmCore.getIns().getHrvService().removeRriFreqListener();
+    }
+
+    public void setSdnnListener(SdnnListener listener) {
+        SwmCore.getIns().getHeartRateService().setSdnnListener(listener);
+    }
+
+    public void removeSdnnListener() {
+        SwmCore.getIns().getHeartRateService().removeSdnnListener();
+    }
+
+    public void setRmssdListener(RmssdListener listener) {
+        SwmCore.getIns().getHeartRateService().setRmssdListener(listener);
+    }
+
+    public void removeRmssdListener() {
+        SwmCore.getIns().getHeartRateService().removeRmssdListener();
     }
 }

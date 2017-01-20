@@ -142,13 +142,13 @@
             android:screenOrientation="landscape"
             android:theme="@style/FullscreenTheme" />
         <activity
-            android:name="com.swm.core.RriActivity"
+            android:name="com.swm.core.RriDistributionActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize"
             android:exported="false"
             android:screenOrientation="landscape"
             android:theme="@style/FullscreenTheme" />
         <activity
-            android:name="com.swm.core.FrequencyActivity"
+            android:name="com.swm.core.RriFrequencyActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize"
             android:exported="false"
             android:screenOrientation="landscape"

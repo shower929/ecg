@@ -7,8 +7,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Logger;
-import com.swm.heart.BuildConfig;
-import com.swm.heartbeat.HeartBeatListener;
+import com.swm.heartbeat.HeartRateListener;
 import com.swm.motion.MotionListener;
 
 import java.util.concurrent.BlockingQueue;
@@ -17,7 +16,7 @@ import java.util.concurrent.BlockingQueue;
  * Created by yangzhenyu on 2016/10/29.
  */
 
-class SuperRunCloudService implements HeartBeatListener, EcgListener, MotionListener{
+class SuperRunCloudService implements HeartRateListener, EcgListener, MotionListener{
     private int mHeartRate;
     private DatabaseReference mHeartRateRef;
     private DatabaseReference mEcgRef;
@@ -34,15 +33,15 @@ class SuperRunCloudService implements HeartBeatListener, EcgListener, MotionList
     }
 
     @Override
-    public void onHeartBeatDataAvailable(HeartBeatData heartBeatData) {
+    public void onHeartRateDataAvailable(HeartRateData heartRateData) {
         synchronized (mHeartRateRef) {
-            if (mHeartRate == heartBeatData.heartRate)
+            if (mHeartRate == heartRateData.heartRate)
                 return;
 
-            mHeartRate = heartBeatData.heartRate;
+            mHeartRate = heartRateData.heartRate;
 
             String key = mHeartRateRef.push().getKey();
-            mHeartRateRef.child(key).child("heart_rate").setValue(heartBeatData.heartRate);
+            mHeartRateRef.child(key).child("heart_rate").setValue(heartRateData.heartRate);
             mHeartRateRef.child(key).child("timestamp").setValue(System.currentTimeMillis());
         }
     }
@@ -62,7 +61,7 @@ class SuperRunCloudService implements HeartBeatListener, EcgListener, MotionList
         mLocationRef = database.getReference("location").child(user.getUid());
 
         try {
-            SwmCore.getIns().getHeartBeatService().addListener(this);
+            SwmCore.getIns().getHeartRateService().addListener(this);
         } catch (Exception e) {
             e.printStackTrace();
         }

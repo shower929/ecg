@@ -15,21 +15,20 @@ import android.widget.TextView;
 import com.swm.breath.BreathListener;
 import com.swm.heart.R;
 import com.swm.heart.SwmBaseActivity;
-import com.swm.heartbeat.HeartBeatListener;
-import com.swm.heartbeat.HeartBeatSound;
-import com.swm.hrv.HrvListener;
+import com.swm.heartbeat.HeartRateListener;
+import com.swm.heartbeat.HeartRateSound;
 import com.swm.motion.MotionListener;
 
-public class CompositeActivity extends SwmBaseActivity implements EcgListener
+public class CompositeActivity extends SwmBaseActivity implements EcgProviderClient
         , BreathListener
-        , HeartBeatListener
+        , HeartRateListener
         , MotionListener
         , View.OnClickListener
         , MyLocationService.LocationListener
         , TimerListener
-        , ProfilingListener
-        , HrvListener{
+        , ProfilingListener {
     private static final String LOG_TAG = "ECG";
+    private static final double IIR_COEFF = 0.992;
     private SwmBinder mSwmBinder;
     private CompositeView mCompositeView;
 
@@ -52,15 +51,13 @@ public class CompositeActivity extends SwmBaseActivity implements EcgListener
     private TextView mElapseView;
     private TextView mPacketLossView;
     private TextView mThroughputView;
-    private TextView mByteErrorRateView;
-    private TextView mSdnnView;
-    private TextView mRmssdView;
 
-    private HeartBeatSound mHeartBeatSound;
+    private HeartRateSound mHeartBeatSound;
     private Button mRecordBtn;
     private MyLocationService mLocationService;
     private MenuController mMenuController;
     private View mMenu;
+    private EcgProvider mEcgProvider;
 
     private ServiceConnection mLocationConnection = new ServiceConnection() {
         @Override
@@ -82,15 +79,18 @@ public class CompositeActivity extends SwmBaseActivity implements EcgListener
         public void onServiceConnected(ComponentName name, IBinder service) {
             mSwmBinder = (SwmBinder) service;
             Log.i(LOG_TAG, "Connected to SWM service");
+            EcgProvider.Builder builder = new EcgProvider.Builder();
+            builder.addFilter(new IirFilter(IIR_COEFF));
+            mEcgProvider = builder.build();
+            mEcgProvider.addClient(CompositeActivity.this);
             try {
-                mSwmBinder.registerEcgListener(CompositeActivity.this);
+                mSwmBinder.registerEcgRawDataListener(mEcgProvider);
             } catch (Exception e) {
                 e.printStackTrace();
             }
             mSwmBinder.setBreathListener(CompositeActivity.this);
             try {
                 mSwmBinder.registerHeartRateListener(CompositeActivity.this);
-                mSwmBinder.registerHrvListener(CompositeActivity.this);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -136,10 +136,8 @@ public class CompositeActivity extends SwmBaseActivity implements EcgListener
         mElapseView = (TextView) findViewById(R.id.swm_record_elpase);
         mPacketLossView = (TextView) findViewById(R.id.swm_packetloss_view);
         mThroughputView = (TextView) findViewById(R.id.swm_throughput_view);
-        mByteErrorRateView = (TextView) findViewById(R.id.swm_byte_error_rate_view);
-        mSdnnView = (TextView) findViewById(R.id.swm_sdnn_value_view);
-        mRmssdView = (TextView) findViewById(R.id.swm_rmssd_value_view);
-        mHeartBeatSound = new HeartBeatSound(this);
+
+        mHeartBeatSound = new HeartRateSound(this);
         mRecordBtn = (Button) findViewById(R.id.swm_record);
         mRecordBtn.setOnClickListener(this);
         findViewById(R.id.swm_menu_icon).setOnClickListener(this);
@@ -172,9 +170,8 @@ public class CompositeActivity extends SwmBaseActivity implements EcgListener
         super.onResume();
         if (mSwmBinder != null) {
             try {
-                mSwmBinder.registerEcgListener(this);
+                mSwmBinder.registerEcgRawDataListener(mEcgProvider);
                 mSwmBinder.registerHeartRateListener(this);
-                mSwmBinder.registerHrvListener(this);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -199,10 +196,9 @@ public class CompositeActivity extends SwmBaseActivity implements EcgListener
     protected void onPause() {
         super.onPause();
         if(mSwmBinder != null) {
-            mSwmBinder.removeEcgListener(this);
+            mSwmBinder.removeEcgRawDataListener(mEcgProvider);
             mSwmBinder.removeBreathListener();
             mSwmBinder.removeHeartRateListener(this);
-            mSwmBinder.removeHrvListener(this);
             mSwmBinder.removeMotionListener();
         }
     }
@@ -238,26 +234,26 @@ public class CompositeActivity extends SwmBaseActivity implements EcgListener
     }
 
     @Override
-    public void onHeartBeatDataAvailable(final HeartBeatData heartBeatData) {
-        if(heartBeatData.heartRate == 0)
+    public void onHeartRateDataAvailable(final HeartRateData heartRateData) {
+        if(heartRateData.heartRate == 0)
             return;
 
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mHeartRateView.setText(String.valueOf(heartBeatData.heartRate));
-                if(heartBeatData.heartRate > mMaxHeartRate) {
-                    mMaxHeartRate = heartBeatData.heartRate;
+                mHeartRateView.setText(String.valueOf(heartRateData.heartRate));
+                if(heartRateData.heartRate > mMaxHeartRate) {
+                    mMaxHeartRate = heartRateData.heartRate;
                     mMaxHeartRateView.setText(String.valueOf(mMaxHeartRate));
                 }
-                if (heartBeatData.heartRate < mMinHeartRate) {
-                    mMinHeartRate = heartBeatData.heartRate;
+                if (heartRateData.heartRate < mMinHeartRate) {
+                    mMinHeartRate = heartRateData.heartRate;
                     mMinHeartRateView.setText(String.valueOf(mMinHeartRate));
                 }
             }
         });
 
-        mHeartBeatSound.onHeartBeatDataAvailable(heartBeatData);
+        mHeartBeatSound.onHeartRateDataAvailable(heartRateData);
     }
 
     @Override
@@ -368,14 +364,4 @@ public class CompositeActivity extends SwmBaseActivity implements EcgListener
 
     }
 
-    @Override
-    public void onHrvDataAvailable(final HrvData hrvData) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mSdnnView.setText(String.valueOf(hrvData.sdnn) + " ms");
-                mRmssdView.setText(String.valueOf(hrvData.rmssd) + " ms");
-            }
-        });
-    }
 }

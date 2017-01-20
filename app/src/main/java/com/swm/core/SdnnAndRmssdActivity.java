@@ -11,12 +11,14 @@ import com.swm.chart.RealtimeSingleLineChart;
 import com.swm.heart.R;
 import com.swm.heart.SwmBaseActivity;
 import com.swm.heartbeat.HeartBeatHandler;
-import com.swm.heartbeat.HeartBeatListener;
-import com.swm.heartbeat.HeartBeatSound;
-import com.swm.hrv.HrvListener;
+import com.swm.heartbeat.HeartRateListener;
+import com.swm.heartbeat.HeartRateSound;
+import com.swm.hrv.RmssdListener;
+import com.swm.hrv.SdnnListener;
 
-public class SdnnAndRmssdActivity extends SwmBaseActivity implements HrvListener
-                                                    , HeartBeatListener{
+public class SdnnAndRmssdActivity extends SwmBaseActivity implements SdnnListener
+                                                    , RmssdListener
+                                                    , HeartRateListener {
 
     RealtimeSingleLineChart mSdnnLineChart;
     TextView mSdnnValue;
@@ -26,20 +28,22 @@ public class SdnnAndRmssdActivity extends SwmBaseActivity implements HrvListener
 
     SwmBinder mSwmBinder;
     SwitchController mSwitchController;
-    private HeartBeatSound mHeartBeatSound;
+    private HeartRateSound mHeartBeatSound;
     private HeartBeatHandler mHeartBeatHandler;
 
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             mSwmBinder = (SwmBinder) service;
-
+            mSwmBinder.startMonitorHrv();
             try {
                 mSwmBinder.registerHeartRateListener(SdnnAndRmssdActivity.this);
-                mSwmBinder.registerHrvListener(SdnnAndRmssdActivity.this);
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
+            mSwmBinder.setSdnnListener(SdnnAndRmssdActivity.this);
+            mSwmBinder.setRmssdListener(SdnnAndRmssdActivity.this);
         }
 
         @Override
@@ -58,28 +62,38 @@ public class SdnnAndRmssdActivity extends SwmBaseActivity implements HrvListener
         mRmssdLineChart = (RealtimeSingleLineChart) findViewById(R.id.swm_rmssd);
         mRmssdValue = (TextView) findViewById(R.id.swm_rmssd_value);
         mSwitchController = new SwitchController(this, findViewById(R.id.swm_hrv_switch));
-        mHeartBeatSound = new HeartBeatSound(this);
+        mHeartBeatSound = new HeartRateSound(this);
         mHeartBeatHandler = new HeartBeatHandler(findViewById(R.id.swm_heart), (TextView) findViewById(R.id.swm_heart_rate));
     }
 
     @Override
-    public void onHrvDataAvailable(final HrvData hrvData) {
+    public void onSdnnAvailable(final Float sdnn) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mSdnnLineChart.offerData(hrvData.sdnn);
-                mSdnnValue.setText(String.valueOf(hrvData.sdnn) + " ms");
-
-                mRmssdLineChart.offerData(hrvData.rmssd);
-                mRmssdValue.setText(String.valueOf(hrvData.rmssd) + " ms");
+                mSdnnLineChart.offerData(sdnn);
+                mSdnnValue.setText(String.valueOf(sdnn) + " ms");
             }
         });
 
     }
 
     @Override
+    public void onRmssdAvailable(final Float rmssd) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mRmssdLineChart.offerData(rmssd);
+                mRmssdValue.setText(String.valueOf(rmssd) + " ms");
+            }
+        });
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
+        if(mSwmBinder != null)
+            mSwmBinder.stopMonitorHrv();
         unbindService(mConnection);
     }
 
@@ -88,30 +102,33 @@ public class SdnnAndRmssdActivity extends SwmBaseActivity implements HrvListener
         super.onPause();
         if(mSwmBinder != null) {
             mSwmBinder.removeHeartRateListener(this);
-            mSwmBinder.removeHrvListener(this);
         }
+        mSwmBinder.removeSdnnListener();
+        mSwmBinder.removeRmssdListener();
         mHeartBeatSound.release();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if(mSwmBinder != null)
+        if (mSwmBinder != null){
             try {
                 mSwmBinder.registerHeartRateListener(this);
-                mSwmBinder.registerHrvListener(this);
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            mSwmBinder.setSdnnListener(this);
+            mSwmBinder.setRmssdListener(this);
+        }
     }
 
     @Override
-    public void onHeartBeatDataAvailable(final HeartBeatData heartBeatData) {
+    public void onHeartRateDataAvailable(final HeartRateData heartRateData) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mHeartBeatSound.onHeartBeatDataAvailable(heartBeatData);
-                mHeartBeatHandler.onHeartBeat(heartBeatData.heartRate);
+                mHeartBeatSound.onHeartRateDataAvailable(heartRateData);
+                mHeartBeatHandler.onHeartBeat(heartRateData.heartRate);
 
             }
         });

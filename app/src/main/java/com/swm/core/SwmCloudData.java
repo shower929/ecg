@@ -1,7 +1,5 @@
 package com.swm.core;
 
-import java.util.List;
-
 /**
  * Created by yangzhenyu on 2016/10/30.
  */

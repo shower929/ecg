@@ -1,7 +1,7 @@
 package com.swm.core;
 
 import com.swm.body.PersonalModule;
-import com.swm.heartbeat.HeartBeatListener;
+import com.swm.heartbeat.HeartRateListener;
 import com.swm.training.TrainingListener;
 
 import static com.swm.training.TrainingListener.DANGER;
@@ -16,7 +16,7 @@ import static com.swm.training.TrainingListener.INTENSITY_T;
  * Created by yangzhenyu on 2016/11/11.
  */
 
-class SportService implements HeartBeatListener{
+class SportService implements HeartRateListener {
     private TrainingListener mListener;
     private int mMaxHeartRate;
     private int mCurrentIntensity;
@@ -28,7 +28,7 @@ class SportService implements HeartBeatListener{
     void setTrainingListener(TrainingListener listener) {
         mListener = listener;
         try {
-            SwmCore.getIns().getHeartBeatService().addListener(this);
+            SwmCore.getIns().getHeartRateService().addListener(this);
         } catch (Exception exception) {
 
         }
@@ -37,7 +37,7 @@ class SportService implements HeartBeatListener{
 
     void removeTrainingListener() {
         mListener = null;
-        SwmCore.getIns().getHeartBeatService().removeListener(this);
+        SwmCore.getIns().getHeartRateService().removeListener(this);
     }
 
     private int calculateIntensity(float maxHeartRate) {
@@ -67,8 +67,8 @@ class SportService implements HeartBeatListener{
     }
 
     @Override
-    public void onHeartBeatDataAvailable(HeartBeatData heartBeatData) {
-        float maxHeartRate = (float) heartBeatData.heartRate / mMaxHeartRate;
+    public void onHeartRateDataAvailable(HeartRateData heartRateData) {
+        float maxHeartRate = (float) heartRateData.heartRate / mMaxHeartRate;
         int intensity = calculateIntensity(maxHeartRate);
 
         if (intensity == mCurrentIntensity || intensity == -1)

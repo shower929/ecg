@@ -8,10 +8,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.swm.emergency.UserQueryCallback;
-import com.swm.heartbeat.HeartBeatListener;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by yangzhenyu on 2016/11/1.
@@ -36,7 +32,7 @@ class EmergencyCloudService {
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Integer heartRate = ((Long)dataSnapshot.child("heart_rate").getValue()).intValue();
                 if (mClientHeartRateListener != null) {
-                    mClientHeartRateListener.onDataAvailable(new HeartBeatData(heartRate));
+                    mClientHeartRateListener.onDataAvailable(new HeartRateData(heartRate));
                 }
             }
 

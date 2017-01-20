@@ -5,5 +5,5 @@ package com.swm.core;
  */
 
 public interface SwmCloudHeartRateListener {
-    void onDataAvailable(HeartBeatData heartBeatData);
+    void onDataAvailable(HeartRateData heartRateData);
 }
