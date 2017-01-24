@@ -11,6 +11,7 @@ class SwmData extends DumpData{
     public static final int ECG = 2;
     public static final int ACC = 3;
     public static final int BREATH = 4;
+    static final int INFORMATION = 6;
 
     public final int dataType;
     public final byte[] value;
@@ -36,6 +37,9 @@ class SwmData extends DumpData{
         return new SwmData(SwmData.BREATH, Arrays.copyOfRange(bleData.rawData, 8, 10));
     }
 
+    static SwmData informationDataFrom(BleData bleData) {
+        return new SwmData(SwmData.INFORMATION, bleData.rawData);
+    }
     @Override
     byte[] dump() {
         return value;

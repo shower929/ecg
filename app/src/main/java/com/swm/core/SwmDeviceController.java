@@ -68,6 +68,10 @@ import java.util.concurrent.LinkedBlockingQueue;
     private boolean mAutoRescan = false;
     private BluetoothLeScanner mScanner;
 
+    private BatteryBleProfile mBatteryBleProfile;
+
+    private InformationBleProfile mInformationBleProfile;
+
     private class BleReqWorker extends Thread {
         private static final int IDLE = 0;
         private static final int DESCRIPTOR_WRITING = 1;
@@ -167,7 +171,7 @@ import java.util.concurrent.LinkedBlockingQueue;
             List<BluetoothGattService> services = gatt.getServices();
             for(BluetoothGattService service : services) {
                 Log.d(LOG_TAG, "Service: " + service.getUuid().toString());
-                if(service.getUuid().equals(EcgBleProfile.SERVICE)) {
+                if(service.getUuid().toString().equalsIgnoreCase(EcgBleProfile.SERVICE)) {
                     mEcgBleProfile = new EcgBleProfile(service);
                     try {
                         mEcgBleProfile.enableNotification(gatt);
@@ -177,10 +181,7 @@ import java.util.concurrent.LinkedBlockingQueue;
                     }
                 }
 
-                if(!BuildConfig.ENGINEERING)
-                    return;
-
-                if(service.getUuid().equals(MotionBleProfile.SERVICE)) {
+                if(service.getUuid().toString().equalsIgnoreCase(MotionBleProfile.SERVICE)) {
                     mMotionBleProfile = new MotionBleProfile(service);
                     try {
                         mMotionBleProfile.enableNotification(gatt);
@@ -190,12 +191,20 @@ import java.util.concurrent.LinkedBlockingQueue;
                    }
                 }
 
+                if (service.getUuid().toString().toUpperCase().startsWith(InformationBleProfile.SERVICE)) {
+                    mInformationBleProfile = new InformationBleProfile(service);
+                    mInformationBleProfile.readCharacteristic(gatt);
+                }
             }
         }
 
         @Override
         public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             super.onCharacteristicRead(gatt, characteristic, status);
+            if(status != BluetoothGatt.GATT_SUCCESS)
+                return;
+
+            saveDeviceData(characteristic);
         }
 
         @Override
@@ -260,6 +269,16 @@ import java.util.concurrent.LinkedBlockingQueue;
 
     static synchronized SwmDeviceController getIns() {
         return mSwmDeviceController;
+    }
+
+    private void saveDeviceData(BluetoothGattCharacteristic characteristic) {
+        SharedPreferences pref = mContext.getSharedPreferences(SwmPref.PREF_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        if (characteristic.getUuid().toString().toUpperCase().startsWith(InformationBleProfile.FIRMWARE_REVISION)) {
+            String firmware = new String(characteristic.getValue());
+            editor.putString(SwmPref.SWM_FIRMWARE, firmware);
+        }
+        editor.apply();
     }
 
     void connectDevice(BluetoothDevice device) {

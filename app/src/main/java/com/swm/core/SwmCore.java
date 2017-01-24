@@ -38,6 +38,9 @@ public class SwmCore {
 
     private static HeartRateService mHeartRateService;
 
+    private InformationService mInformationService;
+    private BlockingQueue<SwmData> mInformationQueue;
+    private Thread mInformationWorker;
     private HrvService mHrvService;
     private EcgProvider mEcgProvider;
 
@@ -84,6 +87,7 @@ public class SwmCore {
         initAcceleratorService();
         initBreathService();
         initHrvService();
+        initInformationService();
         SwmDeviceController.init(context);
         initEmergencyCloudService();
 
@@ -164,7 +168,7 @@ public class SwmCore {
 
     void onBleDataAvailable(BleData data) {
 
-        if (data.uuid.equals(MotionBleProfile.DATA)) {
+        if (data.uuid.toString().equalsIgnoreCase(MotionBleProfile.DATA)) {
 
             onMotionBleDataAvailable(data);
 
@@ -190,7 +194,7 @@ public class SwmCore {
 
         }
 
-        if (data.uuid.equals(EcgBleProfile.DATA)) {
+        if (data.uuid.toString().equalsIgnoreCase(EcgBleProfile.DATA)) {
 
             onEcgBleDataAvailable(data);
             onAccDataAvailable(data);
@@ -224,22 +228,28 @@ public class SwmCore {
                     mPreEcgIndex = data.rawData[6];
                 }
         }
+        if (data.uuid.toString().equalsIgnoreCase(InformationBleProfile.FIRMWARE_REVISION)) {
+            onInformationBleDataAvailable(data);
+        }
     }
 
+    private void onInformationBleDataAvailable(BleData bleData) {
+        mInformationQueue.offer(SwmData.informationDataFrom(bleData));
+    }
     private void onEcgBleDataAvailable(BleData bleData) {
         SwmData rawData = SwmData.ecgDataFrom(bleData);
         mEcgServiceQueue.offer(rawData);
     }
 
-    void onMotionBleDataAvailable(BleData bleData){
+    private void onMotionBleDataAvailable(BleData bleData){
         mMotionDataQueue.offer(SwmData.motionDataFrom(bleData));
     }
 
-    void onAccDataAvailable(BleData bleData) {
+    private void onAccDataAvailable(BleData bleData) {
         mAccDataQueue.offer(SwmData.accDataFrom(bleData));
     }
 
-    void onBreathDataAvailable(BleData bleData) {
+    private void onBreathDataAvailable(BleData bleData) {
         mBreathDataQueue.offer(SwmData.breathDataFrom(bleData));
     }
 
@@ -332,6 +342,33 @@ public class SwmCore {
             });
             mBreathWorker.start();
         }
+    }
+
+    private void initInformationService() {
+        if (mInformationService == null) {
+            mInformationService = new InformationService();
+            mInformationQueue = new LinkedBlockingQueue<>();
+            mInformationWorker = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    for (;;) {
+                        if (sRunning) {
+                            try {
+                                SwmData swmData = mInformationQueue.take();
+                                mInformationService.onSwmDataAvailable(swmData);
+                            } catch (InterruptedException e) {
+                                Log.e(LOG_TAG, e.getMessage(), e);
+                            }
+                        }
+                    }
+                }
+            });
+            mInformationWorker.start();
+        }
+    }
+
+    synchronized InformationService getInformationService() {
+        return mInformationService;
     }
 
     private void initMotionService() {

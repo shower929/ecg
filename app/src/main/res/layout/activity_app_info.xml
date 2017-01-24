@@ -26,4 +26,23 @@
         android:layout_below="@id/swm_app_version_label"
         android:layout_marginTop="8dp"
         />
+    <TextView
+        android:id="@+id/swm_fw_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/swm_fw_label"
+        android:textSize="20dp"
+        android:textColor="@color/swm_title"
+        android:layout_below="@id/swm_app_version"
+        android:layout_marginTop="10dp"
+        />
+    <TextView
+        android:id="@+id/swm_fw_version"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="T??"
+        android:textSize="15dp"
+        android:layout_below="@id/swm_fw_label"
+        android:layout_marginTop="8dp"
+        />
 </RelativeLayout>
