@@ -4,21 +4,7 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
-    <LinearLayout
-        android:id="@+id/swm_heart_layout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:gravity="center"
-        android:layout_alignParentLeft="true">
-        <ImageView
-            android:id="@+id/swm_heart"
-            android:layout_width="42dp"
-            android:layout_height="42dp"
-            android:src="@drawable/swm_heart"
-            android:layout_centerHorizontal="true"
-            android:scaleType="center"/>
-    </LinearLayout>
+
     <FrameLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

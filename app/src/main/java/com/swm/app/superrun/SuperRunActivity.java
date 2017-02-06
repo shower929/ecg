@@ -29,6 +29,8 @@ import com.swm.app.superrun.marathon.MarathonActivity;
 import com.swm.app.superrun.training.TrainingModelActivity;
 import com.swm.app.superrun.power.RunPowerMeterHandler;
 import com.swm.app.superrun.power.SwmMeter;
+import com.swm.battery.BatteryListener;
+import com.swm.core.BatteryData;
 import com.swm.core.CompositeActivity;
 import com.swm.core.HeartRateData;
 import com.swm.core.SwmBinder;
@@ -42,7 +44,11 @@ import com.swm.heartbeat.HeartRateListener;
 import com.swm.heartbeat.HeartRateSound;
 
 public class SuperRunActivity extends SwmBaseActivity
-        implements NavigationView.OnNavigationItemSelectedListener, HeartRateListener, SwmDeviceListener, View.OnClickListener {
+        implements NavigationView.OnNavigationItemSelectedListener
+        , HeartRateListener
+        , SwmDeviceListener
+        , View.OnClickListener
+        , BatteryListener{
 
     private static final String LOG_TAG = "SuperRun";
 
@@ -56,6 +62,7 @@ public class SuperRunActivity extends SwmBaseActivity
     private RunPowerMeterHandler mMeterHandler;
     private AnimatorSet mBtnBeatingAnim;
     private Runnable mBtnAnimRunnable;
+    private TextView mBatteryPercent;
 
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
@@ -68,6 +75,7 @@ public class SuperRunActivity extends SwmBaseActivity
                 e.printStackTrace();
             }
             mSwmBinder.setDeviceListener(SuperRunActivity.this);
+            mSwmBinder.setBatteryListener(SuperRunActivity.this);
         }
 
         @Override
@@ -118,16 +126,7 @@ public class SuperRunActivity extends SwmBaseActivity
         mHeartBeatSound = new HeartRateSound(this);
         mHeartBeatHandler = new HeartBeatHandler(heart);
 
-        //try {
-            //PowerModule.getIns().queryPower(new PowerQueryCallback() {
-                //@Override
-                //public void onQueryDone(PowerModel model) {
-                    //mMeterHandler.setMainValue(model.power);
-                //}
-            //});
-        //} catch (Exception e) {
-            //e.printStackTrace();
-        //}
+        mBatteryPercent = (TextView) findViewById(R.id.swm_battery_percent);
 
         initBtnAnim(mTrainingBtn, mRipple);
     }
@@ -193,13 +192,15 @@ public class SuperRunActivity extends SwmBaseActivity
     @Override
     protected void onResume() {
         super.onResume();
-        if (mSwmBinder != null)
+        if (mSwmBinder != null) {
             try {
                 mSwmBinder.registerHeartRateListener(this);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
+            mSwmBinder.setDeviceListener(this);
+            mSwmBinder.setBatteryListener(this);
+        }
     }
 
     @Override
@@ -208,6 +209,7 @@ public class SuperRunActivity extends SwmBaseActivity
         if (mSwmBinder != null) {
             mSwmBinder.removeHeartRateListener(this);
             mSwmBinder.removeDeviceListener();
+            mSwmBinder.removeBatteryListener();
         }
     }
 
@@ -316,5 +318,16 @@ public class SuperRunActivity extends SwmBaseActivity
     protected void onStop() {
         super.onStop();
         mHeartBeatSound.release();
+    }
+
+    @Override
+    public void onBatteryDataAvailable(final BatteryData batteryData) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mBatteryPercent.setText(String.valueOf(batteryData.percent) + "%");
+            }
+        });
+
     }
 }

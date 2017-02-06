@@ -14,6 +14,25 @@
     tools:showIn="@layout/app_bar_super_run"
     android:background="@drawable/swm_main">
     <include layout="@layout/swm_info"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+        <ImageView
+            android:id="@+id/swm_heart"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:src="@drawable/swm_heart"
+            android:scaleType="center"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"/>
+        <include layout="@layout/swm_battery"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"/>
+    </RelativeLayout>
+
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="180dp"

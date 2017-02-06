@@ -136,4 +136,5 @@
     <string name="swm_total_power">TP</string>
     <string name="swm_lf_hf_ratio">L/H</string>
     <string name="swm_fw_label">Firmware version</string>
+    <string name="swm_manufacture_label">Manufacture</string>
 </resources>

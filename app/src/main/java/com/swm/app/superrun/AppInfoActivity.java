@@ -12,6 +12,7 @@ import com.swm.heart.pref.SwmPref;
 
 public class AppInfoActivity extends SwmBaseActivity {
     TextView mFirmware;
+    TextView mManufactureName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,5 +24,9 @@ public class AppInfoActivity extends SwmBaseActivity {
         String firmware = preferences.getString(SwmPref.SWM_FIRMWARE, null);
         if(firmware != null)
             mFirmware.setText(firmware);
+
+        mManufactureName = (TextView)findViewById(R.id.swm_manufacture_name);
+        mManufactureName.setText(preferences.getString(SwmPref.SWM_MANUFACTURE_NAME, null));
+
     }
 }

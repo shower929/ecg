@@ -136,7 +136,11 @@
         <activity android:name="com.swm.app.superrun.GenderAndAgeActivity" />
         <activity android:name="com.swm.app.superrun.BodyInfoActivity" />
         <activity android:name="com.swm.app.superrun.AppInfoActivity" />
-        <activity android:name="com.swm.core.HrvActivity"></activity>
+        <activity android:name="com.swm.core.HrvActivity"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize"
+            android:exported="false"
+            android:screenOrientation="landscape"
+            android:theme="@style/FullscreenTheme"/>
     </application>
 
 </manifest>

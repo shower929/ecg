@@ -4,6 +4,7 @@ import android.location.Location;
 import android.os.Binder;
 
 import com.swm.accelerator.AcceleratorListener;
+import com.swm.battery.BatteryListener;
 import com.swm.breath.BreathListener;
 import com.swm.device.SwmDeviceListener;
 import com.swm.heartbeat.HeartRateListener;
@@ -131,5 +132,13 @@ public class SwmBinder extends Binder {
 
     public void removeRmssdListener() {
         SwmCore.getIns().getHeartRateService().removeRmssdListener();
+    }
+
+    public void setBatteryListener(BatteryListener listener) {
+        SwmCore.getIns().getBatteryService().setListener(listener);
+    }
+
+    public void removeBatteryListener() {
+        SwmCore.getIns().getBatteryService().removeListener();
     }
 }

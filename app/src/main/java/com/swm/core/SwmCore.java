@@ -7,6 +7,8 @@ import android.util.Log;
 import com.swm.heart.BuildConfig;
 
 import java.util.Arrays;
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -38,9 +40,14 @@ public class SwmCore {
 
     private static HeartRateService mHeartRateService;
 
+    private BatteryService mBatteryService;
+    private BlockingQueue<SwmData> mBatteryServiceQueue;
+    private Thread mBatteryWorker;
+
     private InformationService mInformationService;
     private BlockingQueue<SwmData> mInformationQueue;
     private Thread mInformationWorker;
+
     private HrvService mHrvService;
     private EcgProvider mEcgProvider;
 
@@ -87,7 +94,9 @@ public class SwmCore {
         initAcceleratorService();
         initBreathService();
         initHrvService();
+        initBatteryService();
         initInformationService();
+
         SwmDeviceController.init(context);
         initEmergencyCloudService();
 
@@ -168,7 +177,7 @@ public class SwmCore {
 
     void onBleDataAvailable(BleData data) {
 
-        if (data.uuid.toString().equalsIgnoreCase(MotionBleProfile.DATA)) {
+        if (data.uuid.equals(MotionBleProfile.DATA)) {
 
             onMotionBleDataAvailable(data);
 
@@ -194,7 +203,7 @@ public class SwmCore {
 
         }
 
-        if (data.uuid.toString().equalsIgnoreCase(EcgBleProfile.DATA)) {
+        if (data.uuid.equals(EcgBleProfile.DATA)) {
 
             onEcgBleDataAvailable(data);
             onAccDataAvailable(data);
@@ -228,7 +237,12 @@ public class SwmCore {
                     mPreEcgIndex = data.rawData[6];
                 }
         }
-        if (data.uuid.toString().equalsIgnoreCase(InformationBleProfile.FIRMWARE_REVISION)) {
+
+        if (data.uuid.equals(BatteryBleProfile.BATTERY_PERCENT)) {
+            onBatteryBleDataAvailable(data);
+        }
+
+        if (data.uuid.equals(InformationBleProfile.FIRMWARE_REVISION)) {
             onInformationBleDataAvailable(data);
         }
     }
@@ -236,6 +250,11 @@ public class SwmCore {
     private void onInformationBleDataAvailable(BleData bleData) {
         mInformationQueue.offer(SwmData.informationDataFrom(bleData));
     }
+
+    private void onBatteryBleDataAvailable(BleData bleData) {
+        mBatteryServiceQueue.offer(SwmData.batteryDataFrom(bleData));
+    }
+
     private void onEcgBleDataAvailable(BleData bleData) {
         SwmData rawData = SwmData.ecgDataFrom(bleData);
         mEcgServiceQueue.offer(rawData);
@@ -342,6 +361,33 @@ public class SwmCore {
             });
             mBreathWorker.start();
         }
+    }
+
+    private void initBatteryService() {
+        if (mBatteryService == null) {
+            mBatteryService = new BatteryService();
+            mBatteryServiceQueue = new LinkedBlockingQueue<>();
+            mBatteryWorker = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    for (;;) {
+                        if (sRunning) {
+                            try {
+                                SwmData swmData = mBatteryServiceQueue.take();
+                                mBatteryService.onSwmDataAvailable(swmData);
+                            } catch (InterruptedException e) {
+                                Log.e(LOG_TAG, e.getMessage(), e);
+                            }
+                        }
+                    }
+                }
+            });
+            mBatteryWorker.start();
+        }
+    }
+
+    synchronized BatteryService getBatteryService() {
+        return mBatteryService;
     }
 
     private void initInformationService() {

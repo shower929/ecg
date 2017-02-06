@@ -45,4 +45,23 @@
         android:layout_below="@id/swm_fw_label"
         android:layout_marginTop="8dp"
         />
+    <TextView
+        android:id="@+id/swm_manufacture_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/swm_manufacture_label"
+        android:textSize="20dp"
+        android:textColor="@color/swm_title"
+        android:layout_below="@id/swm_fw_version"
+        android:layout_marginTop="10dp"
+        />
+    <TextView
+        android:id="@+id/swm_manufacture_name"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text=""
+        android:textSize="15dp"
+        android:layout_below="@id/swm_manufacture_label"
+        android:layout_marginTop="8dp"
+        />
 </RelativeLayout>

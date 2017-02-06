@@ -11,7 +11,9 @@ class BleRequest {
     static final int WRITE_DESCRIPTOR = 1;
     static final int WRITE_CHARACTERISTIC = 2;
     static final int DESCRIPTOR_WRITE_DONE = 3;
-    static final int CHARACTERISTIC_WRITE_DONE = 4;
+    static final int WRITE_CHARACTERISTIC_DONE = 4;
+    static final int READ_CHARACTERISTIC = 5;
+    static final int READ_CHARACTERISTIC_DONE = 6;
 
     final int request;
     final BluetoothGattDescriptor descriptor;

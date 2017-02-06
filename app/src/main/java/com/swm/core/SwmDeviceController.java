@@ -15,7 +15,6 @@ import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
@@ -26,7 +25,6 @@ import android.util.Log;
 import android.view.View;
 
 import com.swm.device.SwmDeviceListener;
-import com.swm.heart.BuildConfig;
 import com.swm.heart.pref.SwmPref;
 
 import java.util.ArrayList;
@@ -76,6 +74,7 @@ import java.util.concurrent.LinkedBlockingQueue;
         private static final int IDLE = 0;
         private static final int DESCRIPTOR_WRITING = 1;
         private static final int CHARACTERISTIC_WRITING = 2;
+        private static final int CHARACTERISTIC_READING = 3;
 
         private int mState;
         private List<BleRequest> mPendingReqs;
@@ -90,9 +89,11 @@ import java.util.concurrent.LinkedBlockingQueue;
             for(;;) {
                 if(mRunning) {
                     try {
+                        Log.d(LOG_TAG, "Bluetooth state: " + mState);
                         BleRequest bleRequest = mBleReqQueue.take();
                         if (bleRequest.request == BleRequest.WRITE_DESCRIPTOR
-                                || bleRequest.request == BleRequest.WRITE_CHARACTERISTIC){
+                                || bleRequest.request == BleRequest.WRITE_CHARACTERISTIC
+                                || bleRequest.request == BleRequest.READ_CHARACTERISTIC){
                             if (mState != IDLE) {
                                 mPendingReqs.add(bleRequest);
                                 continue;
@@ -107,6 +108,10 @@ import java.util.concurrent.LinkedBlockingQueue;
                                     if(mBluetoothGatt.writeCharacteristic(bleRequest.characteristic))
                                         mState = CHARACTERISTIC_WRITING;
                                     break;
+                                case BleRequest.READ_CHARACTERISTIC:
+                                    if(mBluetoothGatt.readCharacteristic(bleRequest.characteristic))
+                                        mState = CHARACTERISTIC_READING;
+                                    break;
                             }
                         }
 
@@ -116,10 +121,14 @@ import java.util.concurrent.LinkedBlockingQueue;
                         }
 
 
-                        if (bleRequest.request == BleRequest.CHARACTERISTIC_WRITE_DONE
+                        if (bleRequest.request == BleRequest.WRITE_CHARACTERISTIC_DONE
                                 && mState == CHARACTERISTIC_WRITING) {
                             mState = IDLE;
                         }
+
+                        if (bleRequest.request == BleRequest.READ_CHARACTERISTIC_DONE
+                                && mState == CHARACTERISTIC_READING)
+                            mState = IDLE;
 
                         if(mState == IDLE) {
                             for(BleRequest pendingReq : mPendingReqs) {
@@ -133,10 +142,6 @@ import java.util.concurrent.LinkedBlockingQueue;
                     }
                 }
             }
-        }
-
-        synchronized int getWorkingState() {
-            return mState;
         }
     }
 
@@ -171,29 +176,40 @@ import java.util.concurrent.LinkedBlockingQueue;
             List<BluetoothGattService> services = gatt.getServices();
             for(BluetoothGattService service : services) {
                 Log.d(LOG_TAG, "Service: " + service.getUuid().toString());
-                if(service.getUuid().toString().equalsIgnoreCase(EcgBleProfile.SERVICE)) {
+                if(service.getUuid().equals(EcgBleProfile.SERVICE)) {
                     mEcgBleProfile = new EcgBleProfile(service);
                     try {
-                        mEcgBleProfile.enableNotification(gatt);
-                        mEcgBleProfile.enableService();
+                        mEcgBleProfile.enableEcgService();
+                        mEcgBleProfile.enableEcgNotification(gatt);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
 
-                if(service.getUuid().toString().equalsIgnoreCase(MotionBleProfile.SERVICE)) {
+                if(service.getUuid().equals(MotionBleProfile.SERVICE)) {
                     mMotionBleProfile = new MotionBleProfile(service);
                     try {
-                        mMotionBleProfile.enableNotification(gatt);
-                        mMotionBleProfile.enableService();
+                        mMotionBleProfile.enableMotionService();
+                        mMotionBleProfile.enableMotionNotification(gatt);
                     } catch (Exception e) {
                         e.printStackTrace();
                    }
                 }
 
-                if (service.getUuid().toString().toUpperCase().startsWith(InformationBleProfile.SERVICE)) {
+                if(service.getUuid().equals(BatteryBleProfile.SERVICE)) {
+                    mBatteryBleProfile = new BatteryBleProfile(service);
+                    try {
+                        mBatteryBleProfile.enableBatteryPercentNoti(gatt);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                }
+
+                if (service.getUuid().equals(InformationBleProfile.SERVICE)) {
                     mInformationBleProfile = new InformationBleProfile(service);
-                    mInformationBleProfile.readCharacteristic(gatt);
+                    mInformationBleProfile.readFirmwareRevision(gatt);
+                    mInformationBleProfile.readManufactureName(gatt);
                 }
             }
         }
@@ -203,7 +219,9 @@ import java.util.concurrent.LinkedBlockingQueue;
             super.onCharacteristicRead(gatt, characteristic, status);
             if(status != BluetoothGatt.GATT_SUCCESS)
                 return;
-
+            BleRequest.Builder builder = new BleRequest.Builder();
+            builder.setRequest(BleRequest.READ_CHARACTERISTIC_DONE);
+            mBleReqQueue.offer(builder.build());
             saveDeviceData(characteristic);
         }
 
@@ -211,7 +229,7 @@ import java.util.concurrent.LinkedBlockingQueue;
         public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             super.onCharacteristicWrite(gatt, characteristic, status);
             BleRequest.Builder builder = new BleRequest.Builder();
-            builder.setRequest(BleRequest.CHARACTERISTIC_WRITE_DONE);
+            builder.setRequest(BleRequest.WRITE_CHARACTERISTIC_DONE);
             mBleReqQueue.offer(builder.build());
         }
 
@@ -274,9 +292,41 @@ import java.util.concurrent.LinkedBlockingQueue;
     private void saveDeviceData(BluetoothGattCharacteristic characteristic) {
         SharedPreferences pref = mContext.getSharedPreferences(SwmPref.PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
-        if (characteristic.getUuid().toString().toUpperCase().startsWith(InformationBleProfile.FIRMWARE_REVISION)) {
+        if (characteristic.getUuid().equals(InformationBleProfile.SYSTEM_ID)) {
+            String systemId = new String(characteristic.getValue());
+            editor.putString(SwmPref.SWM_SYSTEM_ID, systemId);
+        }
+        if (characteristic.getUuid().equals(InformationBleProfile.MODEL_NUMBER)) {
+            String modelNumber = new String(characteristic.getValue());
+            editor.putString(SwmPref.SWM_MODEL_NUMBER, modelNumber);
+        }
+        if (characteristic.getUuid().equals(InformationBleProfile.SERIAL_NUMBER)) {
+            String searialNumber = new String(characteristic.getValue());
+            editor.putString(SwmPref.SWM_SERIAL_NUMBER, searialNumber);
+        }
+        if (characteristic.getUuid().equals(InformationBleProfile.HARDWARE_REVISION)) {
+            String hardwareRevision = new String(characteristic.getValue());
+            editor.putString(SwmPref.SWM_HARDWARE_REVISION, hardwareRevision);
+        }
+        if (characteristic.getUuid().equals(InformationBleProfile.FIRMWARE_REVISION)) {
             String firmware = new String(characteristic.getValue());
             editor.putString(SwmPref.SWM_FIRMWARE, firmware);
+        }
+        if (characteristic.getUuid().equals(InformationBleProfile.SOFTWARE_REVISION)) {
+            String softwareRevision = new String(characteristic.getValue());
+            editor.putString(SwmPref.SWM_SOFTWARE_REVISION, softwareRevision);
+        }
+        if (characteristic.getUuid().equals(InformationBleProfile.MANUFACTURE_NAME)) {
+            String manufactureName = new String(characteristic.getValue());
+            editor.putString(SwmPref.SWM_MANUFACTURE_NAME, manufactureName);
+        }
+        if (characteristic.getUuid().equals(InformationBleProfile.BLE_11073_CERT_DATA)) {
+            String ble11073Cert = new String(characteristic.getValue());
+            editor.putString(SwmPref.SWM_BLE_11073_CERT, ble11073Cert);
+        }
+        if (characteristic.getUuid().equals(InformationBleProfile.PNP_ID)) {
+            String pnpId = new String(characteristic.getValue());
+            editor.putString(SwmPref.SWM_PNP_ID, pnpId);
         }
         editor.apply();
     }
