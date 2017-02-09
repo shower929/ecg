@@ -156,6 +156,8 @@ public class SplashActivity extends SwmBaseActivity implements View.OnClickListe
             }
         });
 
+        findViewById(R.id.swm_skip).setOnClickListener(this);
+
         SharedPreferences pref = getSharedPreferences(SwmPref.PREF_NAME, MODE_PRIVATE);
         String address = pref.getString(SwmPref.SWM_DEVICE_ADDRESS, "");
         if (TextUtils.isEmpty(address)) {
@@ -257,6 +259,13 @@ public class SplashActivity extends SwmBaseActivity implements View.OnClickListe
             startActivity(intent);
             finish();
         }
+
+        if(v.getId() == R.id.swm_skip){
+            Intent intent = new Intent(this, SuperRunActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
     }
 
     private void signIn() {

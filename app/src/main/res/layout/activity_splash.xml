@@ -52,6 +52,19 @@
             android:layout_marginTop="150dp"
             android:visibility="invisible"
             />
+        <TextView
+            android:id="@+id/swm_skip"
+            android:layout_width="70dp"
+            android:layout_height="30dp"
+            android:text="@string/swm_skip"
+            android:textColor="@color/swm_white"
+            android:textSize="16dp"
+            android:layout_below="@id/swm_cta"
+            android:gravity="center"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="150dp"
+            android:visibility="visible"
+            />
     </RelativeLayout>
 
     <!-- This FrameLayout insets its children based on system windows using
