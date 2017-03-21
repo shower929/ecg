@@ -16,6 +16,5 @@ public class BleApplication extends Application implements SwmClient {
     public void onCreate() {
         super.onCreate();
         SwmDeviceModule.init(this);
-
     }
 }

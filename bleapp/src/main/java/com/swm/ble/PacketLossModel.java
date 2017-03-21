@@ -9,6 +9,7 @@ public abstract class PacketLossModel {
     private int preIndex;
     private int packetLoss;
     private volatile boolean init;
+    private int packetCount;
 
     void setListener(PacketLossModelListener listener) {
         this.listener = listener;
@@ -19,7 +20,7 @@ public abstract class PacketLossModel {
         int index = data[col];
 
         if (listener != null)
-            listener.onArrival(index);
+            listener.onArrival(packetCount++);
 
         if (!init) {
             init = true;
@@ -41,6 +42,7 @@ public abstract class PacketLossModel {
         init = false;
         preIndex = 0;
         packetLoss = 0;
+        packetCount = 0;
     }
 
     abstract int indexColumn();

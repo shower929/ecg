@@ -8,7 +8,7 @@ public class EcgPacketLossModel extends PacketLossModel {
 
     @Override
     int indexColumn() {
-        return 13;
+        return 6;
     }
 
 
