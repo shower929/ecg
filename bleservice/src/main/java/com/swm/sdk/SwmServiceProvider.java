@@ -6,7 +6,7 @@ package com.swm.sdk;
 
 public class SwmServiceProvider extends ServiceProvider{
     private static SwmServiceProvider provider;
-    private SwmService bleService;
+    private SwmEngine bleService;
 
     private SwmServiceProvider() {
 
@@ -20,14 +20,14 @@ public class SwmServiceProvider extends ServiceProvider{
     }
 
     @Override
-    public synchronized SwmService getService(SwmClient client)  {
+    public synchronized SwmEngine getService(SwmClient client)  {
         if(bleService == null)
-            bleService = new BleService(client);
+            bleService = new BleEngine(client);
 
         return bleService;
     }
 
-    public BleService internal() {
-        return (BleService) bleService;
+    public BleEngine internal() {
+        return (BleEngine) bleService;
     }
 }

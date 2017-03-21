@@ -8,7 +8,7 @@ import android.bluetooth.BluetoothGattDescriptor;
  */
 
 class BleCommand {
-    static final int ENABLE_NOTI = 1;
+    static final int NOTIFICATION = 1;
     static final int WRITE = 2;
     static final int ENABLE_NOTI_DONE = 3;
     static final int WRITE_DONE = 4;

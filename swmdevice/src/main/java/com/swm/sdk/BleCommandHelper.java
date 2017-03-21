@@ -1,6 +1,5 @@
 package com.swm.sdk;
 
-import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 
@@ -10,22 +9,29 @@ import android.bluetooth.BluetoothGattDescriptor;
 
 class BleCommandHelper {
 
-    static BleCommand getEnableCommand(BluetoothGattCharacteristic characteristic) {
+    static BleCommand getWriteCommand(BluetoothGattCharacteristic characteristic) {
         BleCommand.Builder builder = new BleCommand.Builder();
         builder.setCommand(BleCommand.WRITE)
                 .setCharacteristic(characteristic);
         return builder.build();
     }
 
-    static BleCommand getNotificationCommand(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) throws Exception{
-        if(!gatt.setCharacteristicNotification(characteristic, true))
-            throw new Exception("Set bluetooth notification fail");
-
+    static BleCommand getEnableNotificationCommand(BluetoothGattCharacteristic characteristic) throws Exception{
         BluetoothGattDescriptor descriptor = characteristic.getDescriptor(GattInfo.CLIENT_CHARACTERISTIC_CONFIG);
         descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
 
         BleCommand.Builder builder = new BleCommand.Builder();
-        builder.setCommand(BleCommand.ENABLE_NOTI)
+        builder.setCommand(BleCommand.NOTIFICATION)
+                .setDescriptor(descriptor);
+        return builder.build();
+    }
+
+    static BleCommand getDisableNotificationCommand(BluetoothGattCharacteristic characteristic) throws Exception{
+        BluetoothGattDescriptor descriptor = characteristic.getDescriptor(GattInfo.CLIENT_CHARACTERISTIC_CONFIG);
+        descriptor.setValue(BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE);
+
+        BleCommand.Builder builder = new BleCommand.Builder();
+        builder.setCommand(BleCommand.NOTIFICATION)
                 .setDescriptor(descriptor);
         return builder.build();
     }

@@ -1,7 +1,5 @@
 package com.swm.sdk;
 
-import android.bluetooth.BluetoothGattCharacteristic;
-
 /**
  * Created by yangzhenyu on 2017/3/9.
  */
@@ -12,8 +10,11 @@ public interface SwmDevice {
     void setListener(SwmListener listener);
     void removeListener();
     boolean isConnected();
-    void enableEcg(boolean enable);
-    void enableMotion(boolean enable);
-    boolean isEcgEnable();
-    boolean isMotionEnable();
+    void enableEcgService(boolean enable) throws Exception;
+    void enableMotionService(boolean enable) throws Exception;
+    void enablePressureService(boolean enable) throws Exception;
+    boolean isEcgServiceEnable();
+    boolean isMotionServiceEnable();
+    boolean isPressureServiceEnable();
+    void registerEngine(SwmEngine swmEngine);
 }

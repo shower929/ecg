@@ -3,6 +3,8 @@ package com.swm.sdk;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 
+import com.swm.device.BuildConfig;
+
 /**
  * Created by yangzhenyu on 2017/3/9.
  */
@@ -12,7 +14,7 @@ public class SwmDeviceModule {
     private static SwmDeviceModule SWM_DEVICE_MODULE;
 
     private SwmDevice mSwmDevice;
-    private SwmService service;
+    private SwmEngine service;
 
     private SwmDeviceModule(SwmClient client){
         service = SwmServiceProvider.getIns().getService(client);
@@ -51,5 +53,9 @@ public class SwmDeviceModule {
 
     public SwmDevice getDevice() {
         return mSwmDevice;
+    }
+
+    public String version() {
+        return BuildConfig.VERSION_NAME;
     }
 }

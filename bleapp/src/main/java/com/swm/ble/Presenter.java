@@ -2,7 +2,6 @@ package com.swm.ble;
 
 import android.view.View;
 import android.widget.TextView;
-import android.widget.ToggleButton;
 
 import com.swm.sdk.SwmData;
 import com.swm.sdk.SwmListener;
@@ -12,22 +11,22 @@ import com.swm.sdk.SwmListener;
  */
 
 public class Presenter implements PacketLossModelListener, View.OnClickListener, SwmListener{
-    private final TextView indexView;
+    private final TextView packetCount;
     private final TextView packetLossView;
     private final SwmToggle toggle;
 
-    public Presenter(TextView indexView, TextView packetLossView, SwmToggle toggle) {
-        this.indexView = indexView;
+    public Presenter(TextView packetCount, TextView packetLossView, SwmToggle toggle) {
+        this.packetCount = packetCount;
         this.packetLossView = packetLossView;
         this.toggle = toggle;
     }
 
     @Override
-    public void onArrival(final int index) {
-        indexView.post(new Runnable() {
+    public void onArrival(final int count) {
+        packetCount.post(new Runnable() {
             @Override
             public void run() {
-                indexView.setText(String.valueOf(index));
+                packetCount.setText(String.valueOf(count));
             }
         });
     }
@@ -63,18 +62,6 @@ public class Presenter implements PacketLossModelListener, View.OnClickListener,
             toggle.on();
         else {
             toggle.off();
-            indexView.post(new Runnable() {
-                @Override
-                public void run() {
-                    indexView.setText(String.valueOf(0));
-                }
-            });
-            packetLossView.post(new Runnable() {
-                @Override
-                public void run() {
-                    packetLossView.setText(String.valueOf(0));
-                }
-            });
         }
     }
 }

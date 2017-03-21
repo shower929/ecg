@@ -30,16 +30,18 @@ class OneFiveZeroOne implements SwmDevice, BleDevice {
     private Context mContext;
     private boolean sConnected = false;
     private SwmListener mListener;
-    private EcgBleProfile mEcgBleProfile;
-    private MotionBleProfile mMotionBleProfile;
-    private BatteryBleProfile mBatteryBleProfile;
-    private InformationBleProfile mInformationBleProfile;
+    private EcgBleProfile ecgBleProfile;
+    private MotionBleProfile motionBleProfile;
+    private BatteryBleProfile batteryBleProfile;
+    private InformationBleProfile informationBleProfile;
+    private PressureBleProfile pressureBleProfile;
 
     private DeviceCallback callback;
-    private SwmService mSwmService;
+    private SwmEngine mSwmEngine;
 
     private volatile boolean ecgEnable;
     private volatile boolean motionEnable;
+    private volatile boolean pressureEnable;
 
     private BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
         @Override
@@ -74,39 +76,50 @@ class OneFiveZeroOne implements SwmDevice, BleDevice {
             for(BluetoothGattService service : services) {
                 Log.d(LOG_TAG, "Service: " + service.getUuid().toString());
                 if(service.getUuid().equals(EcgBleProfile.SERVICE)) {
-                    mEcgBleProfile = new EcgBleProfile(service, OneFiveZeroOne.this);
+                    ecgBleProfile = new EcgBleProfile(OneFiveZeroOne.this, service, gatt);
                     try {
-                        enableEcg(true);
-                        mEcgBleProfile.enableEcgNotification(gatt, OneFiveZeroOne.this);
+                        enableEcgService(true);
+                        ecgBleProfile.enableNotification();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
 
                 if(service.getUuid().equals(MotionBleProfile.SERVICE)) {
-                    mMotionBleProfile = new MotionBleProfile(service, OneFiveZeroOne.this);
+                    motionBleProfile = new MotionBleProfile(OneFiveZeroOne.this, service, gatt);
+
                     try {
-                        enableMotion(true);
-                        mMotionBleProfile.enableMotionNotification(gatt, OneFiveZeroOne.this);
+                        enableMotionService(true);
+                        motionBleProfile.enableNotification();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
 
                 if(service.getUuid().equals(BatteryBleProfile.SERVICE)) {
-                    mBatteryBleProfile = new BatteryBleProfile(service, OneFiveZeroOne.this);
+                    batteryBleProfile = new BatteryBleProfile(OneFiveZeroOne.this, service, gatt);
                     try {
-                        mBatteryBleProfile.enableBatteryPercentNoti(gatt, OneFiveZeroOne.this);
+                        batteryBleProfile.enableNotification();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-
                 }
 
                 if (service.getUuid().equals(InformationBleProfile.SERVICE)) {
-                    mInformationBleProfile = new InformationBleProfile(service, OneFiveZeroOne.this);
-                    mInformationBleProfile.readFirmwareRevision(gatt);
-                    mInformationBleProfile.readManufactureName(gatt);
+                    informationBleProfile = new InformationBleProfile(service, OneFiveZeroOne.this);
+                    informationBleProfile.readFirmwareRevision(gatt);
+                    informationBleProfile.readManufactureName(gatt);
+                }
+
+                if(service.getUuid().equals(PressureBleProfile.SERVICE)) {
+                    pressureBleProfile = new PressureBleProfile(OneFiveZeroOne.this, service, gatt);
+
+                    try {
+                        enablePressureService(true);
+                        pressureBleProfile.enableNotification();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
@@ -136,7 +149,7 @@ class OneFiveZeroOne implements SwmDevice, BleDevice {
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
             super.onCharacteristicChanged(gatt, characteristic);
-            mSwmService.process(BleData.from(characteristic));
+            mSwmEngine.process(BleData.from(characteristic));
         }
 
         @Override
@@ -190,7 +203,7 @@ class OneFiveZeroOne implements SwmDevice, BleDevice {
                         BleCommand command = queue.take();
 
                         switch(command.command) {
-                            case BleCommand.ENABLE_NOTI:
+                            case BleCommand.NOTIFICATION:
                                 if(processing != null)
                                     pending.add(command);
                                 else
@@ -213,15 +226,21 @@ class OneFiveZeroOne implements SwmDevice, BleDevice {
                                 break;
                             case BleCommand.WRITE_DONE:
                                 if(command.characteristic.getUuid().equals(EcgBleProfile.CONF)) {
-                                    if(mEcgBleProfile.enable(command.characteristic.getValue()))
+                                    if(ecgBleProfile.isEnableValue(command.characteristic.getValue()))
                                         ecgEnable = true;
                                     else
                                         ecgEnable = false;
-                                } else if(command.characteristic.getUuid().equals(MotionBleProfile.CONF))
-                                    if(mMotionBleProfile.enable(command.characteristic.getValue()))
+                                } else if(command.characteristic.getUuid().equals(MotionBleProfile.CONF)) {
+                                    if (motionBleProfile.isEnableValue(command.characteristic.getValue()))
                                         motionEnable = true;
                                     else
                                         motionEnable = false;
+                                } else if(command.characteristic.getUuid().equals(PressureBleProfile.CONF)) {
+                                    if(pressureBleProfile.isEnableValue(command.characteristic.getValue()))
+                                        pressureEnable = true;
+                                    else
+                                        pressureEnable = false;
+                                }
                                 notifyUpdate();
                             case BleCommand.READ_DONE:
                             case BleCommand.ENABLE_NOTI_DONE:
@@ -243,10 +262,10 @@ class OneFiveZeroOne implements SwmDevice, BleDevice {
         }
     }
 
-    OneFiveZeroOne(Context context, BluetoothDevice device, SwmService service) {
+    OneFiveZeroOne(Context context, BluetoothDevice device, SwmEngine service) {
         mContext = context;
         mDevice = device;
-        mSwmService = service;
+        mSwmEngine = service;
         queue = new LinkedBlockingQueue<>();
         mBleReqWorker = new BleReqWorker();
         mBleReqWorker.start();
@@ -283,6 +302,7 @@ class OneFiveZeroOne implements SwmDevice, BleDevice {
         mListener.onConnectStateChanged(sConnected ? SwmListener.CONNECTED : SwmListener.DISCONNECTED);
         mListener.onServiceStateChange(SwmListener.Service.ECG, ecgEnable);
         mListener.onServiceStateChange(SwmListener.Service.MOTION, motionEnable);
+        mListener.onServiceStateChange(SwmListener.Service.PRESSURE, pressureEnable);
     }
 
     @Override
@@ -296,28 +316,56 @@ class OneFiveZeroOne implements SwmDevice, BleDevice {
     }
 
     @Override
-    public void enableEcg(boolean enable) {
-        if(enable)
-            mEcgBleProfile.enableService();
-        else
-            mEcgBleProfile.disableService();
+    public void enableEcgService(boolean enable) throws Exception {
+        if(enable) {
+            ecgBleProfile.enableNotification();
+            ecgBleProfile.enableService();
+        } else {
+            ecgBleProfile.disableNotification();
+            ecgBleProfile.disableService();
+        }
     }
 
     @Override
-    public void enableMotion(boolean enable) {
-        if(enable)
-            mMotionBleProfile.enableService();
-        else
-            mMotionBleProfile.disableService();
+    public void enableMotionService(boolean enable) throws Exception {
+        if(enable) {
+            motionBleProfile.enableNotification();
+            motionBleProfile.enableService();
+        } else {
+            motionBleProfile.disableNotification();
+            motionBleProfile.disableService();
+        }
     }
 
     @Override
-    public boolean isEcgEnable() {
+    public void enablePressureService(boolean enable) throws Exception {
+        if(enable) {
+            pressureBleProfile.enableNotification();
+            pressureBleProfile.enableService();
+        } else {
+            pressureBleProfile.disableNotification();
+            pressureBleProfile.disableService();
+        }
+    }
+
+    @Override
+    public boolean isEcgServiceEnable() {
         return ecgEnable;
     }
 
     @Override
-    public boolean isMotionEnable() {
+    public boolean isMotionServiceEnable() {
         return motionEnable;
     }
+
+    @Override
+    public boolean isPressureServiceEnable() {
+        return pressureEnable;
+    }
+
+    @Override
+    public void registerEngine(SwmEngine swmEngine) {
+
+    }
+
 }

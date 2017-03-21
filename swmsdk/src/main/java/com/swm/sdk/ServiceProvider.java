@@ -32,6 +32,6 @@ abstract class ServiceProvider {
         }
     }
 
-    abstract SwmService getService(SwmClient callback) throws Exception;
+    abstract SwmEngine getService(SwmClient callback) throws Exception;
 
 }

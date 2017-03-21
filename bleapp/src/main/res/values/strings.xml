@@ -13,5 +13,7 @@
     <string name="ble_engineer">SWM Engineer</string>
     <string name="swm_super_run_sub">Run, Health, Fast, Power</string>
     <string name="swm_cta_go">GO</string>
-    <string name="ble_index">Index</string>
+    <string name="ble_count">Count</string>
+    <string name="ble_pressure">Pressure</string>
+    <string name="ble_swm_service">Swm service</string>
 </resources>
