@@ -1,4 +1,4 @@
-package com.swm.core;
+package com.swm.sdk;
 
 import android.os.Environment;
 
@@ -17,13 +17,13 @@ import java.util.concurrent.LinkedBlockingQueue;
  * Created by yangzhenyu on 2016/10/25.
  */
 
-class Dump<T extends DumpData> {
+public class Dump<T extends DumpData> {
     private File mFile;
     private FileOutputStream mFileOutput;
     private String mFileName;
     private ByteBuffer mWriteBuffer;
     private FileChannel mFileChannel;
-    BlockingQueue<T> mBuffer;
+    public BlockingQueue<T> mBuffer;
     private boolean mRecording = false;
     private DumpWorker mDumpWorker;
     private boolean mWithoutComma = false;
@@ -50,6 +50,7 @@ class Dump<T extends DumpData> {
                 mFile.setReadable(true, false);
                 mFileOutput = new FileOutputStream(mFile);
                 mFileChannel = mFileOutput.getChannel();
+
                 mWriteBuffer = ByteBuffer.allocate(128);
 
             } catch (FileNotFoundException e) {
@@ -64,8 +65,6 @@ class Dump<T extends DumpData> {
         public void run() {
             super.run();
             for (;;) {
-                if (!SwmCore.sRunning)
-                    break;
 
                 if (!mRecording)
                     break;
@@ -123,7 +122,7 @@ class Dump<T extends DumpData> {
         mBuffer = null;
     }
 
-    void putData(T data) {
+    public void putData(T data) {
         mBuffer.offer(data);
     }
 }

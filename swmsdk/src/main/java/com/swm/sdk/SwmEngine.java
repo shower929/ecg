@@ -1,12 +1,9 @@
 package com.swm.sdk;
 
 /**
- * Created by yangzhenyu on 2017/3/10.
+ * Created by yangzhenyu on 2017/3/29.
  */
-interface SwmEngine {
-    enum ServiceType {ECG, MOTION, RUNNING, BLE};
 
-    void setListener(SwmListener listener);
-    void process(BleData data);
-    ServiceType getServiceType();
+interface SwmEngine extends GenericEngine {
+    void onFuel(BleData data);
 }

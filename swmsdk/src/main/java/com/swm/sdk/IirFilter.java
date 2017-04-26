@@ -1,16 +1,18 @@
-package com.swm.core;
+package com.swm.sdk;
+
+import com.swm.sdk.Filter;
 
 /**
  * Created by yangzhenyu on 2017/1/19.
  */
 
-class IirFilter extends Filter {
+public class IirFilter extends Filter {
     private int i32PrevSample = 0;
     private int i32PrevDCSample = 0;
     private int gi16_FirstECGIIRFlag = 1;
     private final double fIIRFilterCoeff;
 
-    IirFilter(double fIIRFilterCoeff) {
+    public IirFilter(double fIIRFilterCoeff) {
         this.fIIRFilterCoeff = fIIRFilterCoeff;
     }
 

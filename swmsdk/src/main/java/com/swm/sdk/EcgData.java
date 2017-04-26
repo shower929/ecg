@@ -1,4 +1,4 @@
-package com.swm.core;
+package com.swm.sdk;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +8,7 @@ import java.util.List;
  */
 
 public class EcgData {
-    final Integer[] values;
+    public final Integer[] values;
 
     EcgData(Integer[] values){
         this.values = values;

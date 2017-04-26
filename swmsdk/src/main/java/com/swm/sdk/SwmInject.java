@@ -1,14 +1,19 @@
 package com.swm.sdk;
 
+import android.support.annotation.Nullable;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * Created by yangzhenyu on 2017/3/10.
+ * Created by yangzhenyu on 2017/3/9.
  */
 
-abstract class ServiceProvider {
-    Object getObject(String dependency, Object... args) throws Exception{
+class SwmInject {
+    @Nullable
+    static Object getObject(String dependency, Object...args) throws Exception{
+        Object object = null;
+
         try {
             Class<?> clazz = Class.forName(dependency);
             Class<?>[] argClass = new Class<?>[args.length];
@@ -17,10 +22,9 @@ abstract class ServiceProvider {
             }
             Constructor<?> c = clazz.getDeclaredConstructor(argClass);
             c.setAccessible(true);
-            Object object = c.newInstance(args);
-            return object;
+            object = c.newInstance(args);
         } catch (ClassNotFoundException e) {
-            throw e;
+            e.printStackTrace();
         } catch (NoSuchMethodException e) {
             throw e;
         } catch (IllegalAccessException e) {
@@ -30,8 +34,7 @@ abstract class ServiceProvider {
         } catch (InvocationTargetException e) {
             throw e;
         }
+
+        return object;
     }
-
-    abstract SwmEngine getService(SwmClient callback) throws Exception;
-
 }

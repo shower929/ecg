@@ -1,4 +1,4 @@
-package com.swm.core;
+package com.swm.sdk;
 
 /**
  * Created by yangzhenyu on 2016/10/25.
