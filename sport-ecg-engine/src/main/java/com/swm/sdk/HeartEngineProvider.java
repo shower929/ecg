@@ -8,10 +8,10 @@ import android.content.Context;
 
 public class HeartEngineProvider extends GenericHeartEngineProvider {
 
-    public static synchronized void init(Context context) {
+    public static synchronized void init() {
 
         if(HEART_ENGINE == null)
-            HEART_ENGINE = new SportHeartEngine(context);
+            HEART_ENGINE = new SportHeartEngine();
 
     }
 }
