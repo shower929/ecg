@@ -5,5 +5,5 @@ package com.swm.sdk;
  */
 
 public interface HeartEngineOutput {
-    void onHeartRateAvailable(int heartRate);
+    void onHeartDataAvailable(HeartData heartData);
 }
