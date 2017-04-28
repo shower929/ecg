@@ -1,4 +1,4 @@
-#include "stdafx.h"
+//#include <stdafx.h>
 #include "SWM_AccFunctionList.h"
 #include "SWM_MotionAlgoParameterSetting.h"
 #include "SWM_GTFilter.h"

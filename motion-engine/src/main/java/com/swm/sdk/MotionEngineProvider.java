@@ -7,8 +7,8 @@ import android.content.Context;
  */
 
 public class MotionEngineProvider extends GenericMotionEngineProvider{
-    public static synchronized void init(Context context) {
+    public static synchronized void init() {
         if(MOTION_ENGINE == null)
-            MOTION_ENGINE = new MotionEngineImpl(context);
+            MOTION_ENGINE = new MotionEngineImpl();
     }
 }

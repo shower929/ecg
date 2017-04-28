@@ -1,5 +1,5 @@
 // SWM_MotionAlgoParameterSetting.h
-#include "stdafx.h"
+//#include "stdafx.h"
 #include <stdio.h>
 #include <string.h>
 #include <math.h>

@@ -1,5 +1,5 @@
 // SWM_SpeedByDNN_FeatureFunction.h
-#include "stdafx.h"
+//#include "stdafx.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>

@@ -2,7 +2,9 @@ package com.swm.sdk;
 
 import android.content.Context;
 
+import java.util.ArrayList;
 import java.util.Deque;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -16,11 +18,17 @@ class MotionEngineImpl implements MotionEngine {
     private MotionEngineOutput output;
     private Worker worker;
     private BlockingQueue<MotionData> queue;
-    private Deque<Double> accX;
-    private Deque<Double> accY;
-    private Deque<Double> accZ;
+    private List<Double> accX;
+    private List<Double> accY;
+    private List<Double> accZ;
 
     private volatile boolean running = false;
+
+    static {
+        System.loadLibrary("swm_motion_algo");
+    }
+
+    static native int GetStep(double[] accX, double[] accY, double[] accZ);
 
     private class Worker extends Thread {
         @Override
@@ -31,25 +39,53 @@ class MotionEngineImpl implements MotionEngine {
                     return;
 
                 try {
+                    // Blocking while data available
                     MotionData data = queue.take();
-                    accX.add(Double.data.accelerator.x);
-                    accY.add(data.accelerator.y);
-                    accZ.add(data.accelerator.z);
-                    if(accX.size() >= WINDOW && accY.size() >= WINDOW && accZ.size() >= WINDOW)
-                    int step = GetStep(accX, accY, accZ);
+
+                    if(accX == null)
+                        accX = new ArrayList<>();
+                    if (accY == null)
+                        accY = new ArrayList<>();
+                    if(accZ == null)
+                        accZ = new ArrayList<>();
+
+                    accX.add((double) data.accelerator.x);
+                    accY.add((double) data.accelerator.y);
+                    accZ.add((double) data.accelerator.z);
+
+                    if(accX.size() >= WINDOW && accY.size() >= WINDOW && accZ.size() >= WINDOW) {
+
+                        double[] dataX = cut(accX);
+                        double[] dataY = cut(accY);
+                        double[] dataZ = cut(accZ);
+
+                        int step = GetStep(dataX, dataY, dataZ);
+                        output.onStepDataAvailable(step);
+
+                        accX.remove(0);
+                        accY.remove(0);
+                        accZ.remove(0);
+
+                    }
 
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
         }
-    }
 
-    static {
-        System.loadLibrary("swm_motion_algo");
-    }
+        private double[] cut(List<Double> original) {
+            List<Double> sample = original.subList(0, WINDOW);
 
-    static native int GetStep(double[] accX, double[] accY, double[] accZ);
+            double[] data = new double[sample.size()];
+
+            int i = 0;
+            for (Double value: sample)
+                data[i++] = value.doubleValue();
+
+            return data;
+        }
+    }
 
     MotionEngineImpl () {
         queue = new LinkedBlockingQueue<>();
@@ -71,16 +107,22 @@ class MotionEngineImpl implements MotionEngine {
 
     @Override
     public void onFuel(BleData data) {
+        if(!running)
+            return;
+
+        if (output == null)
+            return;
+
         MotionData motionData = new MotionData(
-                data.rawData[1] & 0xFF << 8 | data.rawData[0] & 0xFF
-                , data.rawData[3] & 0xFF << 8 | data.rawData[2] & 0xFF
-                , data.rawData[5] & 0xFF << 8 | data.rawData[4] & 0xFF
-                , data.rawData[7] & 0xFF << 8 | data.rawData[6] & 0xFF
-                , data.rawData[9] & 0xFF << 8 | data.rawData[8] & 0xFF
-                , data.rawData[11] & 0xFF << 8 | data.rawData[10] & 0xFF
-                , data.rawData[13] & 0xFF << 8 | data.rawData[12] & 0xFF
-                , data.rawData[15] & 0xFF << 8 | data.rawData[14] & 0xFF
-                , data.rawData[17] & 0xFF << 8 | data.rawData[16] & 0xFF
+                ((data.rawData[1] << 8) & 0xFF00) | (data.rawData[0] & 0xFF)
+                , ((data.rawData[3] << 8) & 0xFF00) | (data.rawData[2] & 0xFF)
+                , ((data.rawData[5] << 8) & 0xFF00) | (data.rawData[4] & 0xFF)
+                , ((data.rawData[7] << 8) & 0xFF00) | (data.rawData[6] & 0xFF)
+                , ((data.rawData[9] << 8) & 0xFF00) | (data.rawData[8] & 0xFF)
+                , ((data.rawData[11] << 8 )& 0xFF00) | (data.rawData[10] & 0xFF)
+                , ((data.rawData[13] << 8) & 0xFF00) | (data.rawData[12] & 0xFF)
+                , ((data.rawData[15] << 8) & 0xFF00) | (data.rawData[14] & 0xFF)
+                , ((data.rawData[17] << 8) & 0xFF00) | (data.rawData[16] & 0xFF)
                 , data.rawData[18]
         );
         queue.add(motionData);

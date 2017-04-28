@@ -1,5 +1,5 @@
 //#include "SWM_GTFilter.h"
-#include "stdafx.h"
+//#include "stdafx.h"
 #include <stdio.h>
 
 // Mean compute at local
