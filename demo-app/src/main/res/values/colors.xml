@@ -3,4 +3,17 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="swm_white">#FFFFFFFF</color>
+    <color name="swm_title">#ff000000</color>
+    <color name="swm_word">#ff888888</color>
+    <color name="swm_text">#ff000000</color>
+    <color name="swm_cta">#ff04df9d</color>
+    <color name="swm_main">#FF007183</color>
+    <color name="swm_cta_dark">#ff00bd8c</color>
+    <color name="black_overlay">#66000000</color>
+    <color name="swm_cta_pressed">#ff21ffb1</color>
+    <color name="swm_weak_cta">#33000000</color>
+    <color name="swm_grey">#FFDDDDDD</color>
+    <color name="ble_active">#ff04df9d</color>
+    <color name="ble_inactive">#ff888888</color>
 </resources>

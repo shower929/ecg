@@ -1,0 +1,30 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fullscreen_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/swm_main"
+    tools:context="com.swm.demo.DeviceDiscoverAndConnActivity">
+
+    <LinearLayout
+        android:id="@+id/swm_ble_devices_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+        <include layout="@layout/swm_ble_head"
+            android:layout_height="0dp"
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            />
+        <ListView
+            android:id="@+id/swm_ble_devices_list_view"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:background="@color/swm_grey"
+            android:visibility="gone"
+            >
+        </ListView>
+    </LinearLayout>
+
+</FrameLayout>

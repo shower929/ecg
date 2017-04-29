@@ -1,3 +1,22 @@
 <resources>
     <string name="app_name">Demo app</string>
+    <string name="swm_service">Demo service</string>
+    <string name="swm_status_connected">Connected</string>
+    <string name="swm_ble_do_connect">Connect</string>
+    <string name="swm_logo">SINGULAR WINGS</string>
+    <string name="ble_engineer">SWM Engineer</string>
+    <string name="swm_cta_go">GO</string>
+    <string name="swm_cta_ok">OK</string>
+    <string name="swm_ble_turn_on_device">Turn on SWM device</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="swm_ble_choose_your_device">Choose your device</string>
+    <string name="swm_ble_scan">Scanning SWM devices ...</string>
+    <string name="swm_heart_rate">Heart rate</string>
+    <string name="swm_calorie">Calorie</string>
+    <string name="swm_stress_bad">I am not in good mood</string>
+    <string name="swm_stress_normal">Not bad</string>
+    <string name="swm_stress_good">I feel good</string>
+    <string name="swm_stress_happy">I am happy</string>
+    <string name="swm_phy_age">Your physical age is %1$d</string>
+    <string name="swm_step">Today\'s step %1$d</string>
 </resources>
