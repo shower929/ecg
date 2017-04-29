@@ -1,10 +1,10 @@
 package com.swm.sdk;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Handler;
 import android.util.Log;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.BlockingQueue;
@@ -48,6 +48,8 @@ class SportHeartEngine extends HeartEngine {
     private Handler mProfillingHandler;
     private Thread mCallbackWorker;
 
+    private Context context;
+
     private class HeartRateWorker extends Thread{
 
         @Override
@@ -85,6 +87,7 @@ class SportHeartEngine extends HeartEngine {
                     float rmssd = GetRmssd();
 
                     HeartData heartData = new HeartData(heartRate, sdnn, rmssd);
+                    sendHeartRateBroadcast(heartRate);
 
                     if(outputs != null)
                         mCallbackDataQueue.offer(heartData);
@@ -106,7 +109,8 @@ class SportHeartEngine extends HeartEngine {
         }
     }
 
-    SportHeartEngine() {
+    SportHeartEngine(Context context) {
+        super(context);
 
         mSecondLevelBuffer = new Vector<>();
 
@@ -180,11 +184,11 @@ class SportHeartEngine extends HeartEngine {
     }
 
     @Override
-    public void onFuel(BleData data) {
+    synchronized void onFuel(BleData data) {
         int len = data.rawData.length;
 
         for(int i = 10; i < len - 1; i = i + 2) {
-            Integer value = (data.rawData[i+1] & 0xFF) << 8 | (data.rawData[i] & 0xFF);
+            Integer value = ((data.rawData[i+1] << 8) & 0xFF00) | (data.rawData[i] & 0xFF);
             mSecondLevelBuffer.add(value);
         }
 
@@ -193,7 +197,15 @@ class SportHeartEngine extends HeartEngine {
             mProfillingHandler.postDelayed(mCheckQueueSize, 1000);
         }
 
+        if (rawOutput != null) {
+            for(int i = 10; i < len - 1; i = i + 2) {
+                Integer value = ((data.rawData[i + 1] << 8) & 0xFF00) | (data.rawData[i] & 0xFF);
+                rawOutput.onRawDataAvailable(value);
+            }
+        }
+
         if (rawDump != null)
             rawDump.putData(new RawEcg(data.rawData));
+
     }
 }

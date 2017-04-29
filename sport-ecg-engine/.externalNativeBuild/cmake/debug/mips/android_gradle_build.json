@@ -1,0 +1,53 @@
+
+{
+	"buildFiles" : 
+	[
+		"/Users/yangzhenyu/Desktop/ecg_src/ecg/sport-ecg-engine/CMakeLists.txt"
+	],
+	"cleanCommands" : 
+	[
+		"/Users/yangzhenyu/Library/Android/sdk/cmake/3.6.3155560/bin/cmake --build /Users/yangzhenyu/Desktop/ecg_src/ecg/sport-ecg-engine/.externalNativeBuild/cmake/debug/mips --target clean"
+	],
+	"cppFileExtensions" : [ "cpp" ],
+	"libraries" : 
+	{
+		"swm_ecg_algo-Debug-mips" : 
+		{
+			"abi" : "mips",
+			"artifactName" : "swm_ecg_algo",
+			"buildCommand" : "/Users/yangzhenyu/Library/Android/sdk/cmake/3.6.3155560/bin/cmake --build /Users/yangzhenyu/Desktop/ecg_src/ecg/sport-ecg-engine/.externalNativeBuild/cmake/debug/mips --target swm_ecg_algo",
+			"buildType" : "debug",
+			"files" : 
+			[
+				
+				{
+					"flags" : "  --target=mipsel-none-linux-android --gcc-toolchain=/Users/yangzhenyu/Library/Android/sdk/ndk-bundle/toolchains/mips64el-linux-android-4.9/prebuilt/darwin-x86_64 --sysroot=/Users/yangzhenyu/Library/Android/sdk/ndk-bundle/platforms/android-21/arch-mips  -Dswm_ecg_algo_EXPORTS -isystem /Users/yangzhenyu/Library/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.9/include -isystem /Users/yangzhenyu/Library/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.9/libs/mips/include -isystem /Users/yangzhenyu/Library/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.9/include/backward  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security   -O0 -fno-limit-debug-info -O0 -fno-limit-debug-info  -fPIC    -c ",
+					"src" : "/Users/yangzhenyu/Desktop/ecg_src/ecg/sport-ecg-engine/src/main/cpp/ecg/swm_ecg_algo_jni.cpp",
+					"workingDirectory" : "/Users/yangzhenyu/Desktop/ecg_src/ecg/sport-ecg-engine/.externalNativeBuild/cmake/debug/mips"
+				},
+				
+				{
+					"flags" : "  --target=mipsel-none-linux-android --gcc-toolchain=/Users/yangzhenyu/Library/Android/sdk/ndk-bundle/toolchains/mips64el-linux-android-4.9/prebuilt/darwin-x86_64 --sysroot=/Users/yangzhenyu/Library/Android/sdk/ndk-bundle/platforms/android-21/arch-mips  -Dswm_ecg_algo_EXPORTS -isystem /Users/yangzhenyu/Library/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.9/include -isystem /Users/yangzhenyu/Library/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.9/libs/mips/include -isystem /Users/yangzhenyu/Library/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.9/include/backward  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security   -O0 -fno-limit-debug-info -O0 -fno-limit-debug-info  -fPIC    -c ",
+					"src" : "/Users/yangzhenyu/Desktop/ecg_src/ecg/sport-ecg-engine/src/main/cpp/ecg/SWM_ECG_ALGO.cpp",
+					"workingDirectory" : "/Users/yangzhenyu/Desktop/ecg_src/ecg/sport-ecg-engine/.externalNativeBuild/cmake/debug/mips"
+				},
+				
+				{
+					"flags" : "  --target=mipsel-none-linux-android --gcc-toolchain=/Users/yangzhenyu/Library/Android/sdk/ndk-bundle/toolchains/mips64el-linux-android-4.9/prebuilt/darwin-x86_64 --sysroot=/Users/yangzhenyu/Library/Android/sdk/ndk-bundle/platforms/android-21/arch-mips  -Dswm_ecg_algo_EXPORTS -isystem /Users/yangzhenyu/Library/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.9/include -isystem /Users/yangzhenyu/Library/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.9/libs/mips/include -isystem /Users/yangzhenyu/Library/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.9/include/backward  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security   -O0 -fno-limit-debug-info -O0 -fno-limit-debug-info  -fPIC    -c ",
+					"src" : "/Users/yangzhenyu/Desktop/ecg_src/ecg/sport-ecg-engine/src/main/cpp/ecg/SWM_Filter.cpp",
+					"workingDirectory" : "/Users/yangzhenyu/Desktop/ecg_src/ecg/sport-ecg-engine/.externalNativeBuild/cmake/debug/mips"
+				}
+			],
+			"output" : "/Users/yangzhenyu/Desktop/ecg_src/ecg/sport-ecg-engine/build/intermediates/cmake/debug/obj/mips/libswm_ecg_algo.so",
+			"toolchain" : "14669284408707750773"
+		}
+	},
+	"toolchains" : 
+	{
+		"14669284408707750773" : 
+		{
+			"cCompilerExecutable" : "/Users/yangzhenyu/Library/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang",
+			"cppCompilerExecutable" : "/Users/yangzhenyu/Library/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang++"
+		}
+	}
+}

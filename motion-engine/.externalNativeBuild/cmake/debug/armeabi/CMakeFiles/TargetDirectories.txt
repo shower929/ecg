@@ -1,0 +1,3 @@
+/Users/yangzhenyu/Desktop/ecg_src/ecg/motion-engine/.externalNativeBuild/cmake/debug/armeabi/CMakeFiles/edit_cache.dir
+/Users/yangzhenyu/Desktop/ecg_src/ecg/motion-engine/.externalNativeBuild/cmake/debug/armeabi/CMakeFiles/rebuild_cache.dir
+/Users/yangzhenyu/Desktop/ecg_src/ecg/motion-engine/.externalNativeBuild/cmake/debug/armeabi/CMakeFiles/swm_motion_algo.dir

@@ -1,0 +1,23 @@
+# ninja log v5
+0	146	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/ecg/swm_ecg_algo_jni.cpp.o	a1e070c74cce9155
+1	484	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/ecg/SWM_Filter.cpp.o	aa40662326fc2bab
+0	648	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/ecg/SWM_ECG_ALGO.cpp.o	1232e272e129a71b
+648	818	0	../../../../build/intermediates/cmake/release/obj/arm64-v8a/libswm_ecg_algo.so	e7c55894a48082ae
+1	135	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/ecg/swm_ecg_algo_jni.cpp.o	a1e070c74cce9155
+4	522	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/ecg/SWM_Filter.cpp.o	aa40662326fc2bab
+3	730	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/ecg/SWM_ECG_ALGO.cpp.o	1232e272e129a71b
+730	856	0	../../../../build/intermediates/cmake/release/obj/arm64-v8a/libswm_ecg_algo.so	e7c55894a48082ae
+0	190	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/ecg/swm_ecg_algo_jni.cpp.o	a1e070c74cce9155
+190	364	0	../../../../build/intermediates/cmake/release/obj/arm64-v8a/libswm_ecg_algo.so	e7c55894a48082ae
+1	155	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/ecg/swm_ecg_algo_jni.cpp.o	a1e070c74cce9155
+3	403	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/ecg/SWM_Filter.cpp.o	aa40662326fc2bab
+2	553	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/ecg/SWM_ECG_ALGO.cpp.o	1232e272e129a71b
+553	708	0	../../../../build/intermediates/cmake/release/obj/arm64-v8a/libswm_ecg_algo.so	e7c55894a48082ae
+0	153	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/ecg/swm_ecg_algo_jni.cpp.o	a1e070c74cce9155
+5	393	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/ecg/SWM_Filter.cpp.o	aa40662326fc2bab
+2	581	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/ecg/SWM_ECG_ALGO.cpp.o	1232e272e129a71b
+581	701	0	../../../../build/intermediates/cmake/release/obj/arm64-v8a/libswm_ecg_algo.so	e7c55894a48082ae
+1	233	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/ecg/swm_ecg_algo_jni.cpp.o	a1e070c74cce9155
+4	1213	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/ecg/SWM_Filter.cpp.o	aa40662326fc2bab
+2	1748	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/ecg/SWM_ECG_ALGO.cpp.o	1232e272e129a71b
+1748	1930	0	../../../../build/intermediates/cmake/release/obj/arm64-v8a/libswm_ecg_algo.so	e7c55894a48082ae

@@ -1,0 +1,23 @@
+# ninja log v5
+0	180	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/ecg/swm_ecg_algo_jni.cpp.o	a3abb55a7ec84546
+3	289	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/ecg/SWM_Filter.cpp.o	6384e340bcb81296
+2	538	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/ecg/SWM_ECG_ALGO.cpp.o	3953459e05210cf8
+538	703	0	../../../../build/intermediates/cmake/release/obj/mips/libswm_ecg_algo.so	3e5b66d2c3d1461
+1	142	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/ecg/swm_ecg_algo_jni.cpp.o	a3abb55a7ec84546
+4	236	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/ecg/SWM_Filter.cpp.o	6384e340bcb81296
+3	446	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/ecg/SWM_ECG_ALGO.cpp.o	3953459e05210cf8
+446	611	0	../../../../build/intermediates/cmake/release/obj/mips/libswm_ecg_algo.so	3e5b66d2c3d1461
+0	141	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/ecg/swm_ecg_algo_jni.cpp.o	a3abb55a7ec84546
+141	293	0	../../../../build/intermediates/cmake/release/obj/mips/libswm_ecg_algo.so	3e5b66d2c3d1461
+1	133	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/ecg/swm_ecg_algo_jni.cpp.o	a3abb55a7ec84546
+1	254	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/ecg/SWM_Filter.cpp.o	6384e340bcb81296
+1	590	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/ecg/SWM_ECG_ALGO.cpp.o	3953459e05210cf8
+591	761	0	../../../../build/intermediates/cmake/release/obj/mips/libswm_ecg_algo.so	3e5b66d2c3d1461
+1	234	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/ecg/swm_ecg_algo_jni.cpp.o	a3abb55a7ec84546
+5	280	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/ecg/SWM_Filter.cpp.o	6384e340bcb81296
+3	694	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/ecg/SWM_ECG_ALGO.cpp.o	3953459e05210cf8
+694	791	0	../../../../build/intermediates/cmake/release/obj/mips/libswm_ecg_algo.so	3e5b66d2c3d1461
+0	139	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/ecg/swm_ecg_algo_jni.cpp.o	a3abb55a7ec84546
+2	279	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/ecg/SWM_Filter.cpp.o	6384e340bcb81296
+1	627	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/ecg/SWM_ECG_ALGO.cpp.o	3953459e05210cf8
+627	837	0	../../../../build/intermediates/cmake/release/obj/mips/libswm_ecg_algo.so	3e5b66d2c3d1461

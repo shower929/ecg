@@ -1,0 +1,13 @@
+{
+  "client": {
+    "package_name": "com.swm.running"
+  },
+  "api_key": {
+    "current_key": "hash code of applicationId and engine"
+  },
+  "engine": {
+    "running_engine": {
+      "status": 1
+    }
+  }
+}

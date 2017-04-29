@@ -1,0 +1,23 @@
+# ninja log v5
+0	339	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/ecg/swm_ecg_algo_jni.cpp.o	99c7f0de0f1d4e50
+4	636	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/ecg/SWM_Filter.cpp.o	d710b70bd6115a82
+2	747	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/ecg/SWM_ECG_ALGO.cpp.o	8307b0cd6842c06f
+747	870	0	../../../../build/intermediates/cmake/release/obj/x86/libswm_ecg_algo.so	4e24eff863650c01
+1	103	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/ecg/swm_ecg_algo_jni.cpp.o	99c7f0de0f1d4e50
+1	379	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/ecg/SWM_Filter.cpp.o	d710b70bd6115a82
+1	524	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/ecg/SWM_ECG_ALGO.cpp.o	8307b0cd6842c06f
+524	652	0	../../../../build/intermediates/cmake/release/obj/x86/libswm_ecg_algo.so	4e24eff863650c01
+1	156	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/ecg/swm_ecg_algo_jni.cpp.o	99c7f0de0f1d4e50
+157	292	0	../../../../build/intermediates/cmake/release/obj/x86/libswm_ecg_algo.so	4e24eff863650c01
+1	187	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/ecg/swm_ecg_algo_jni.cpp.o	99c7f0de0f1d4e50
+2	459	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/ecg/SWM_Filter.cpp.o	d710b70bd6115a82
+2	606	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/ecg/SWM_ECG_ALGO.cpp.o	8307b0cd6842c06f
+606	707	0	../../../../build/intermediates/cmake/release/obj/x86/libswm_ecg_algo.so	4e24eff863650c01
+0	137	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/ecg/swm_ecg_algo_jni.cpp.o	99c7f0de0f1d4e50
+2	591	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/ecg/SWM_Filter.cpp.o	d710b70bd6115a82
+1	756	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/ecg/SWM_ECG_ALGO.cpp.o	8307b0cd6842c06f
+757	895	0	../../../../build/intermediates/cmake/release/obj/x86/libswm_ecg_algo.so	4e24eff863650c01
+0	226	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/ecg/swm_ecg_algo_jni.cpp.o	99c7f0de0f1d4e50
+2	514	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/ecg/SWM_Filter.cpp.o	d710b70bd6115a82
+2	649	0	CMakeFiles/swm_ecg_algo.dir/src/main/cpp/ecg/SWM_ECG_ALGO.cpp.o	8307b0cd6842c06f
+649	745	0	../../../../build/intermediates/cmake/release/obj/x86/libswm_ecg_algo.so	4e24eff863650c01

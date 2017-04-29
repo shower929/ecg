@@ -1,0 +1,50 @@
+
+{
+	"buildFiles" : [ "/Users/yangzhenyu/Desktop/ecg_src/ecg/motion-engine/CMakeLists.txt" ],
+	"cleanCommands" : 
+	[
+		"/Users/yangzhenyu/Library/Android/sdk/cmake/3.6.3155560/bin/cmake --build /Users/yangzhenyu/Desktop/ecg_src/ecg/motion-engine/.externalNativeBuild/cmake/debug/mips64 --target clean"
+	],
+	"cppFileExtensions" : [ "cpp" ],
+	"libraries" : 
+	{
+		"swm_motion_algo-Debug-mips64" : 
+		{
+			"abi" : "mips64",
+			"artifactName" : "swm_motion_algo",
+			"buildCommand" : "/Users/yangzhenyu/Library/Android/sdk/cmake/3.6.3155560/bin/cmake --build /Users/yangzhenyu/Desktop/ecg_src/ecg/motion-engine/.externalNativeBuild/cmake/debug/mips64 --target swm_motion_algo",
+			"buildType" : "debug",
+			"files" : 
+			[
+				
+				{
+					"flags" : "  --target=mips64el-none-linux-android --gcc-toolchain=/Users/yangzhenyu/Library/Android/sdk/ndk-bundle/toolchains/mips64el-linux-android-4.9/prebuilt/darwin-x86_64 --sysroot=/Users/yangzhenyu/Library/Android/sdk/ndk-bundle/platforms/android-21/arch-mips64  -Dswm_motion_algo_EXPORTS -isystem /Users/yangzhenyu/Library/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.9/include -isystem /Users/yangzhenyu/Library/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.9/libs/mips64/include -isystem /Users/yangzhenyu/Library/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.9/include/backward  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -Wa,--noexecstack -Wformat -Werror=format-security  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -Wa,--noexecstack -Wformat -Werror=format-security   -O0 -fno-limit-debug-info -O0 -fno-limit-debug-info  -fPIC    -c ",
+					"src" : "/Users/yangzhenyu/Desktop/ecg_src/ecg/motion-engine/src/main/cpp/swm_motion_algo_jni.cpp",
+					"workingDirectory" : "/Users/yangzhenyu/Desktop/ecg_src/ecg/motion-engine/.externalNativeBuild/cmake/debug/mips64"
+				},
+				
+				{
+					"flags" : "  --target=mips64el-none-linux-android --gcc-toolchain=/Users/yangzhenyu/Library/Android/sdk/ndk-bundle/toolchains/mips64el-linux-android-4.9/prebuilt/darwin-x86_64 --sysroot=/Users/yangzhenyu/Library/Android/sdk/ndk-bundle/platforms/android-21/arch-mips64  -Dswm_motion_algo_EXPORTS -isystem /Users/yangzhenyu/Library/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.9/include -isystem /Users/yangzhenyu/Library/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.9/libs/mips64/include -isystem /Users/yangzhenyu/Library/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.9/include/backward  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -Wa,--noexecstack -Wformat -Werror=format-security  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -Wa,--noexecstack -Wformat -Werror=format-security   -O0 -fno-limit-debug-info -O0 -fno-limit-debug-info  -fPIC    -c ",
+					"src" : "/Users/yangzhenyu/Desktop/ecg_src/ecg/motion-engine/src/main/cpp/SWM_AccFunctionList.cpp",
+					"workingDirectory" : "/Users/yangzhenyu/Desktop/ecg_src/ecg/motion-engine/.externalNativeBuild/cmake/debug/mips64"
+				},
+				
+				{
+					"flags" : "  --target=mips64el-none-linux-android --gcc-toolchain=/Users/yangzhenyu/Library/Android/sdk/ndk-bundle/toolchains/mips64el-linux-android-4.9/prebuilt/darwin-x86_64 --sysroot=/Users/yangzhenyu/Library/Android/sdk/ndk-bundle/platforms/android-21/arch-mips64  -Dswm_motion_algo_EXPORTS -isystem /Users/yangzhenyu/Library/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.9/include -isystem /Users/yangzhenyu/Library/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.9/libs/mips64/include -isystem /Users/yangzhenyu/Library/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.9/include/backward  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -Wa,--noexecstack -Wformat -Werror=format-security  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -Wa,--noexecstack -Wformat -Werror=format-security   -O0 -fno-limit-debug-info -O0 -fno-limit-debug-info  -fPIC    -c ",
+					"src" : "/Users/yangzhenyu/Desktop/ecg_src/ecg/motion-engine/src/main/cpp/SWM_GTFilter.cpp",
+					"workingDirectory" : "/Users/yangzhenyu/Desktop/ecg_src/ecg/motion-engine/.externalNativeBuild/cmake/debug/mips64"
+				}
+			],
+			"output" : "/Users/yangzhenyu/Desktop/ecg_src/ecg/motion-engine/build/intermediates/cmake/debug/obj/mips64/libswm_motion_algo.so",
+			"toolchain" : "14669284408707750773"
+		}
+	},
+	"toolchains" : 
+	{
+		"14669284408707750773" : 
+		{
+			"cCompilerExecutable" : "/Users/yangzhenyu/Library/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang",
+			"cppCompilerExecutable" : "/Users/yangzhenyu/Library/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang++"
+		}
+	}
+}
