@@ -1,57 +1,107 @@
 package com.swm.sdk;
 
+import android.content.Context;
+import android.content.Intent;
+
 import com.swm.running.RunningPluginListener;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Created by yangzhenyu on 2017/3/28.
  */
 
-public class RunningPlugin implements HeartEngineOutput, MotionEngineOutput {
-    private RunningPluginListener listener;
-    private volatile int heartRate;
-    private volatile double speed;
-    private double vdot;
+public class RunningPlugin extends SwmPlugin implements HeartEngineOutput, MotionEngineOutput {
+    public static final String ACTION_STEP = "action_step";
+    public static final String EXTRA_STEP = "extra_step";
+
+    private static final int WINDOW = 6 * 50; // 300 samples
+
+    private List<Double> accX;
+    private List<Double> accY;
+    private List<Double> accZ;
+
+    private volatile boolean on = false;
 
     static {
         System.loadLibrary("swm_running_algo");
     }
 
-    private static native double calculateVdot(int heartRate, double speed);
-    private static native double calculateTrainScore(int heartRate);
+    static native int GetStep(double[] accX, double[] accY, double[] accZ);
 
-    private class Worker extends Thread {
-        @Override
-        public void run() {
-            super.run();
-            for (;;) {
+    public RunningPlugin(Context context) {
+        super(context);
+    }
 
-                double newVdot = calculateVdot(heartRate, speed);
-                double score = calculateTrainScore(heartRate);
+    public void on() {
+        on = true;
+    }
 
-                if(vdot != newVdot && listener != null) {
-                    listener.onVdotChanged(newVdot);
-                    vdot = newVdot;
-                }
+    public void off() {
+        on = false;
+        accX.clear();
+        accY.clear();
+        accZ.clear();
+    }
 
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
+    @Override
+    public void onHeartDataAvailable(HeartData heartData) {
+
+    }
+
+    @Override
+    public void onAcceleratorDataAvailale(MotionData.Accelerator accelerator) {
+
+
+        if(accX == null)
+            accX = new ArrayList<>();
+        if (accY == null)
+            accY = new ArrayList<>();
+        if(accZ == null)
+            accZ = new ArrayList<>();
+
+        accX.add((double) accelerator.x);
+        accY.add((double) accelerator.y);
+        accZ.add((double) accelerator.z);
+
+        if(accX.size() >= WINDOW && accY.size() >= WINDOW && accZ.size() >= WINDOW) {
+
+            double[] dataX = cut(accX);
+            double[] dataY = cut(accY);
+            double[] dataZ = cut(accZ);
+
+            int step = GetStep(dataX, dataY, dataZ);
+            broadcast(ACTION_STEP, EXTRA_STEP, step);
+
+            accX.remove(0);
+            accY.remove(0);
+            accZ.remove(0);
+
         }
     }
-    @Override
-    public void onHeartRateAvailable(int heartRate) {
-        this.heartRate = heartRate;
-    }
 
-    public void setListener(RunningPluginListener listener) {
-        this.listener = listener;
+    @Override
+    public void onGyroDataAvailable(MotionData.Gyro gyro) {
+
     }
 
     @Override
-    public void onSpeed(double speed) {
-        this.speed = speed;
+    public void onMagneticDataAvailable(MotionData.Magnetic magnetic) {
+
+    }
+
+    private double[] cut(List<Double> original) {
+        List<Double> sample = original.subList(0, WINDOW);
+
+        double[] data = new double[sample.size()];
+
+        int i = 0;
+        for (Double value: sample)
+            data[i++] = value.doubleValue();
+
+        return data;
     }
 }

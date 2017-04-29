@@ -15,7 +15,7 @@
 
 extern "C" {
     JNIEXPORT int JNICALL
-    Java_com_swm_sdk_MotionEngineImpl_GetStep(JNIEnv *env, jobject thiz, jdoubleArray accX, jdoubleArray accY, jdoubleArray accZ) {
+    Java_com_swm_sdk_RunningPlugin_GetStep(JNIEnv *env, jobject thiz, jdoubleArray accX, jdoubleArray accY, jdoubleArray accZ) {
         jdouble *dataX = env->GetDoubleArrayElements(accX, 0);
         jdouble *dataY = env->GetDoubleArrayElements(accY, 0);
         jdouble *dataZ = env->GetDoubleArrayElements(accZ, 0);

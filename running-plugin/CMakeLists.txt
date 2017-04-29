@@ -11,13 +11,13 @@ cmake_minimum_required(VERSION 3.4.1)
 # automatically packages shared libraries with your APK.
 
 add_library( # Specifies the name of the library.
-             swm_motion_algo
+             swm_running_algo
 
              # Sets the library as a shared library.
              SHARED
 
              # Provides a relative path to your source file(s).
-             src/main/cpp/swm_motion_algo_jni.cpp
+             src/main/cpp/swm_running_algo_jni.cpp
              src/main/cpp/SWM_AccFunctionList.cpp
              src/main/cpp/SWM_GTFilter.cpp
             )
@@ -30,4 +30,4 @@ find_library( # Defines the name of the path variable that stores the
               # CMake needs to locate.
               log )
 
-target_link_libraries(swm_motion_algo ${log-lib})
+target_link_libraries(swm_running_algo ${log-lib})
