@@ -5,4 +5,5 @@ package com.swm.sdk;
  */
 
 interface MotionEngineRawOutput {
+    void onMotionDataAvailable(MotionData motionData);
 }

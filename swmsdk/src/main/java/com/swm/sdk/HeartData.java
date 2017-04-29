@@ -15,6 +15,10 @@ public class HeartData extends DumpData {
         this.rmssd = rmssd;
     }
 
+    public boolean hasHeartRate() {
+        return heartRate != 0;
+    }
+
     @Override
     byte[] dump() {
         String dump = "{\"HeartData\":{\"HeartRate\":" + heartRate

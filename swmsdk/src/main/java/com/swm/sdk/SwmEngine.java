@@ -4,6 +4,6 @@ package com.swm.sdk;
  * Created by yangzhenyu on 2017/3/29.
  */
 
-interface SwmEngine extends GenericEngine {
-    void onFuel(BleData data);
+abstract class SwmEngine implements GenericEngine {
+    abstract void onFuel(BleData data);
 }

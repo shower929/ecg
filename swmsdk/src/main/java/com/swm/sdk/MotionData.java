@@ -1,11 +1,11 @@
-package com.swm.core;
+package com.swm.sdk;
 
 /**
  * Created by yangzhenyu on 2016/9/27.
  */
 
-public class MotionData {
-    public class Gyro{
+class MotionData {
+     class Gyro{
         public final int x;
         public final int y;
         public final int z;
@@ -17,7 +17,7 @@ public class MotionData {
         }
     }
 
-    public class Accelerator {
+     class Accelerator {
         public final int x;
         public final int y;
         public final int z;
@@ -29,7 +29,7 @@ public class MotionData {
         }
     }
 
-    public class Magnetic {
+     class Magnetic {
         public final int x;
         public final int y;
         public final int z;
@@ -41,14 +41,31 @@ public class MotionData {
         }
     }
 
-    public final Gyro gyro;
-    public final Accelerator accelerator;
-    public final Magnetic magnetic;
+    final Gyro gyro;
+    final Accelerator accelerator;
+    final Magnetic magnetic;
 
     MotionData(int gx, int gy, int gz, int ax, int ay, int az, int mx, int my, int mz, int idx) {
+        gx = twosComplement(gx);
+        gy = twosComplement(gy);
+        gz = twosComplement(gz);
+        ax = twosComplement(ax);
+        ay = twosComplement(ay);
+        az = twosComplement(az);
+        mx = twosComplement(mx);
+        my = twosComplement(my);
+        mz = twosComplement(mz);
+
         gyro = new Gyro(gx, gy, gz);
         accelerator = new Accelerator(ax, ay, az);
         magnetic = new Magnetic(mx, my, mz);
+    }
+
+    private int twosComplement(int in) {
+        if ((in & 0x8000) == 0x8000)
+            return -1 * ((in ^ 0xFFFF) + 0x0001);
+        else
+            return in;
     }
 
     @Override

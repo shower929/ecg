@@ -5,6 +5,11 @@ package com.swm.sdk;
  */
 
 public interface SwmDevice {
+    public static final String ACTION_DEVICE_EVENT = "action_connection_event";
+    public static final String EXTRA_CONNECTION_STATUS = "extra_connection_status";
+    public static final int CONNECTED = 1;
+    public static final int DISCONNECTED = 2;
+
     void connect(DeviceCallback callback);
     void disconnect();
     void setListener(DeviceListener listener);
