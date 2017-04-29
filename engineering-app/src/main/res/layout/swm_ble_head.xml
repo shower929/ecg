@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/swm_main">
+    <ImageView
+        android:id="@+id/swm_device_icon"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:src="@drawable/swm_logo"
+        android:layout_centerInParent="true"
+        />
+    <TextView
+        android:id="@+id/swm_ble_action_text_view"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="@string/swm_ble_choose_your_device"
+        android:textColor="@color/swm_white"
+        android:layout_marginTop="10dp"
+        android:layout_below="@id/swm_device_icon"
+        android:layout_centerHorizontal="true"/>
+    <include layout="@layout/swm_ble_icon_large"
+        android:id="@+id/swm_ble_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_below="@id/swm_ble_action_text_view"
+        android:layout_marginTop="10dp"
+        />
+</RelativeLayout>

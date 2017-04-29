@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Engineering app</string>
+    <string name="swm_ble_choose_your_device">Choose your device</string>
+    <string name="swm_ble_scan">Scanning SWM devices ...</string>
+    <string name="swm_my_heart_rate">Heart rate:%1$d.  Max: %2$d.  Min: %3$d.</string>
+    <string name="swm_my_hrv">SDNN: %1$d.  RMSSD: %2$d</string>
+    <string name="swm_engineering">Engineering</string>
+    <string name="swm_cta_go">GO</string>
+    <string name="swm_record">RECORD</string>
+    <string name="swm_stop">STOP</string>
 </resources>

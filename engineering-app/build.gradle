@@ -30,4 +30,9 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha8'
     testCompile 'junit:junit:4.12'
+    compile project(path: ':swmsdk')
+    compile project(path: ':1501-device')
+    compile project(path: ':sport-ecg-engine')
+    compile project(path: ':swm-stuff')
+    compile project(path: ':realtime-chart')
 }
