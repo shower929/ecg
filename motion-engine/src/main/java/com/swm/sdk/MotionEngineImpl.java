@@ -12,23 +12,11 @@ import java.util.concurrent.LinkedBlockingQueue;
  * Created by yangzhenyu on 2017/4/26.
  */
 
-class MotionEngineImpl implements MotionEngine {
-    private static final int CLOCK = 50;    //Hz
-    private static final int WINDOW = 6 * 50; // 300 samples
-    private MotionEngineOutput output;
+class MotionEngineImpl extends MotionEngine {
     private Worker worker;
     private BlockingQueue<MotionData> queue;
-    private List<Double> accX;
-    private List<Double> accY;
-    private List<Double> accZ;
-
+    private MotionEngineOutput output;
     private volatile boolean running = false;
-
-    static {
-        System.loadLibrary("swm_motion_algo");
-    }
-
-    static native int GetStep(double[] accX, double[] accY, double[] accZ);
 
     private class Worker extends Thread {
         @Override
@@ -38,52 +26,19 @@ class MotionEngineImpl implements MotionEngine {
                 if(!running)
                     return;
 
+                if (output == null)
+                    return;
+
                 try {
                     // Blocking while data available
                     MotionData data = queue.take();
-
-                    if(accX == null)
-                        accX = new ArrayList<>();
-                    if (accY == null)
-                        accY = new ArrayList<>();
-                    if(accZ == null)
-                        accZ = new ArrayList<>();
-
-                    accX.add((double) data.accelerator.x);
-                    accY.add((double) data.accelerator.y);
-                    accZ.add((double) data.accelerator.z);
-
-                    if(accX.size() >= WINDOW && accY.size() >= WINDOW && accZ.size() >= WINDOW) {
-
-                        double[] dataX = cut(accX);
-                        double[] dataY = cut(accY);
-                        double[] dataZ = cut(accZ);
-
-                        int step = GetStep(dataX, dataY, dataZ);
-                        output.onStepDataAvailable(step);
-
-                        accX.remove(0);
-                        accY.remove(0);
-                        accZ.remove(0);
-
-                    }
-
+                    output.onAcceleratorDataAvailale(data.accelerator);
+                    output.onGyroDataAvailable(data.gyro);
+                    output.onMagneticDataAvailable(data.magnetic);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
-        }
-
-        private double[] cut(List<Double> original) {
-            List<Double> sample = original.subList(0, WINDOW);
-
-            double[] data = new double[sample.size()];
-
-            int i = 0;
-            for (Double value: sample)
-                data[i++] = value.doubleValue();
-
-            return data;
         }
     }
 
