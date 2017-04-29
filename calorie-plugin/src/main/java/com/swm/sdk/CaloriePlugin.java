@@ -1,17 +1,22 @@
 package com.swm.sdk;
 
+import android.content.Context;
 import android.os.Handler;
 
 /**
  * Created by yangzhenyu on 2017/4/20.
  */
 
-public class CaloriePlugin implements HeartEngineOutput {
-    public enum Gender{MALE, FEMALE};
-    private final Gender gender;
+public class CaloriePlugin extends SwmPlugin implements HeartEngineOutput {
+    public static final String ACTION_CALORIE_AVAILABLE = "action_calorie_available";
+    public static final String EXTRA_CALORIE = "extra_calorie";
+
+    public static final int MALE = 1;
+    public static final int FEMALE = 2;
+    private final int gender;
     private final int age;
     private final int weight;
-    private CaloriePluginListener listener;
+
     private Handler handler;
     private volatile int heartRate;
 
@@ -20,37 +25,34 @@ public class CaloriePlugin implements HeartEngineOutput {
 
         @Override
         public void run() {
-            if (listener == null)
-                return;
-
             float calorie = APPS_RUNNING_GetCalorie(gender, age, heartRate, weight, ++duration, 0);
-            listener.onCalorieAvailable(calorie);
+            broadcast(ACTION_CALORIE_AVAILABLE, EXTRA_CALORIE, calorie);
             handler.postDelayed(this, 1000);
         }
     };
 
-    public CaloriePlugin(Gender gender, int age, int weight) {
+    public CaloriePlugin(Context context, int gender, int age, int weight) {
+        super(context);
         this.gender = gender;
         this.age = age;
         this.weight = weight;
     }
 
     @Override
-    public void onHeartRateAvailable(int heartRate) {
-        if(gender == null || age == 0 || weight == 0)
+    public void onHeartDataAvailable(HeartData heartData) {
+        if(gender == 0 || age == 0 || weight == 0)
             throw new RuntimeException("Need input gender, height and weight");
-        
-        this.heartRate = heartRate;
 
+        this.heartRate = heartData.heartRate;
     }
 
-    private float APPS_RUNNING_GetCalorie(Gender enSex, int i16Age, int i16HR, float fWeight, float fSecondTime, float fVO2Max)
+    private float APPS_RUNNING_GetCalorie(int enSex, int i16Age, int i16HR, float fWeight, float fSecondTime, float fVO2Max)
     {
         float fCalorie = 0;
 
         if (fVO2Max <= 0)
         {
-            if (enSex == Gender.FEMALE)
+            if (enSex == FEMALE)
             {
                 fCalorie = (float)(fSecondTime * ((-20.4022 +
                         (0.4472 * i16HR) +
@@ -67,7 +69,7 @@ public class CaloriePlugin implements HeartEngineOutput {
         }
         else
         {
-            if (enSex == Gender.FEMALE)
+            if (enSex == FEMALE)
             {
                 fCalorie = (float)(fSecondTime * ((-59.3954 +
                         (0.45 * i16HR) +
@@ -91,14 +93,11 @@ public class CaloriePlugin implements HeartEngineOutput {
         return fCalorie;
     }
 
-    public void setListener(CaloriePluginListener listener) {
-        this.listener = listener;
-    }
-
     public synchronized void on() {
         if (handler == null)
             handler = new Handler();
         handler.post(timer);
+
     }
 
     public synchronized void off() {
