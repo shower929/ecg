@@ -57,13 +57,13 @@ class OneFiveZeroOne extends HeartMotionDevice{
                     mBluetoothGatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH);
 
                 if(mListener != null) {
-                    mListener.onConnectionStateChanged(DeviceListener.CONNECTED);
+                    mListener.onConnectionStateChanged(CONNECTED);
                 }
             }
             if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 sConnected = false;
                 if (mListener != null) {
-                    mListener.onConnectionStateChanged(DeviceListener.DISCONNECTED);
+                    mListener.onConnectionStateChanged(DISCONNECTED);
                 }
             }
         }
@@ -152,6 +152,7 @@ class OneFiveZeroOne extends HeartMotionDevice{
                 heartEngine.onFuel(BleData.from(characteristic));
             else if (characteristic.getUuid().equals(MotionBleProfile.DATA))
                 motionEngine.onFuel(BleData.from(characteristic));
+
         }
 
         @Override
@@ -303,7 +304,7 @@ class OneFiveZeroOne extends HeartMotionDevice{
         if(mListener == null)
             return;
 
-        mListener.onConnectionStateChanged(sConnected ? DeviceListener.CONNECTED : DeviceListener.DISCONNECTED);
+        mListener.onConnectionStateChanged(sConnected ? CONNECTED : DISCONNECTED);
         mListener.onServiceStateChange(DeviceListener.Service.ECG, ecgEnable);
         mListener.onServiceStateChange(DeviceListener.Service.MOTION, motionEnable);
         mListener.onServiceStateChange(DeviceListener.Service.PRESSURE, pressureEnable);
