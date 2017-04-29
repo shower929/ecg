@@ -75,5 +75,10 @@ dependencies {
     compile 'com.android.support:design:25.3.1'
     testCompile 'junit:junit:4.12'
     compile project(':realtime-chart')
+    compile project(path: ':swmsdk')
+    compile project(path: ':1501-device')
+    compile project(path: ':sport-ecg-engine')
+    compile project(path: ':calorie-plugin')
 }
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.swm.app'
