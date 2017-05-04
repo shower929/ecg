@@ -20,26 +20,32 @@ public class RunPowerMeterHandler extends Handler implements MeterListener {
     private SwmMeter mMeter;
     private TextView mMeterValue;
     public static final int MSG_TURNON = 1;
-    public static final int MSG_SET_MAIN_VALUE = 2;
+    public static final int MSG_DRAW_METER = 2;
     public static final int MSG_TURNOFF = 3;
     public static final int MSG_SET_MAX_HEART_RATE = 4;
 
     private static final String KEY_POWER = "key_power";
     private static final String KEY_MAX_HEART_RATE = "key_max_heart_rate";
+    private static final String KEY_VALUE = "key_value";
+
     private static final int FPS = 60;
     private Animator mMeterValueColorAnim;
-    private int mMainValue;
+    private int currentValue;
     private int mMeterValueColor;
     private int MAX_HEART_RATE = 220 - 50;
     private int STABLE_HEART_RATE = 72;
     private int mCurrentHeartRate;
     private int mCurrentMaxHeartRate;
-    private int mStep;
+    private int max;
+    private float excellentLevel;
+    private float goodLevel;
+    private float poorLevel;
+
+    private static final float CLOCK = Math.round((float)1000 / FPS);
 
     public RunPowerMeterHandler(SwmMeter meter, TextView meterValue) {
         mMeter = meter;
         mMeterValue = meterValue;
-        mMeter.setCallback(this);
     }
 
     @Override
@@ -50,14 +56,21 @@ public class RunPowerMeterHandler extends Handler implements MeterListener {
                 mMeter.turnon();
 
                 break;
-            case MSG_SET_MAIN_VALUE:
-                Bundle powerData = msg.getData();
-                int power = powerData.getInt(KEY_POWER);
-
+            case MSG_DRAW_METER:
+                Bundle data = msg.getData();
+                int power = data.getInt(KEY_POWER);
+                int value = data.getInt(KEY_VALUE);
                 mMeter.setRunPower(power);
                 mMeter.invalidate();
-
+                mMeterValue.setText(String.valueOf(value));
+                if (value >= excellentLevel)
+                    setMeterValueColor(mMeterValue.getResources().getColor(R.color.swm_run_power_excellent));
+                else if (value < excellentLevel && value >= goodLevel)
+                    setMeterValueColor(mMeterValue.getResources().getColor(R.color.swm_run_power_good));
+                else
+                    setMeterValueColor(mMeterValue.getResources().getColor(R.color.swm_run_power_poor));
                 break;
+
             case MSG_TURNOFF:
                 mMeter.turnoff();
                 break;
@@ -65,34 +78,61 @@ public class RunPowerMeterHandler extends Handler implements MeterListener {
         }
     }
 
-    public void setStep(int step) {
-        mStep = step;
+    public void setMax(int max) {
+        this.max = max;
     }
 
-    public void setMainValue(int mainValue) {
-        if(mMainValue == mainValue)
-            return;
-        float fraction = (float)mainValue / mStep * SwmMeter.MAX_DEGREE;
-        fraction = fraction > SwmMeter.MAX_DEGREE ? SwmMeter.MAX_DEGREE : fraction;
+    private void drawMeter(int newValue) {
 
-        float currentFraction = (float)mMainValue / mStep * SwmMeter.MAX_DEGREE;
+        float currentFraction = (float) currentValue / max * SwmMeter.MAX_DEGREE;
         currentFraction = currentFraction > SwmMeter.MAX_DEGREE ? SwmMeter.MAX_DEGREE : currentFraction;
 
-        float frame = Math.round((float)300 / FPS);
-        int len = (int) Math.abs(currentFraction - fraction);
-        final int step = (fraction - currentFraction) > 0 ? 1 : -1;
+        float newFraction = (float) newValue / max * SwmMeter.MAX_DEGREE;
 
-        mMainValue = mainValue;
+        int len = Math.abs(currentValue - newValue);
+        float fractionStep = newFraction / len;
+
+        final int sign = (newValue - currentValue) > 0 ? 1 : -1;
+        int newStep = currentValue;
 
         for (int i = 0; i < len; i++) {
-            currentFraction = currentFraction + step;
+            currentFraction = currentFraction + fractionStep * sign;
+            newStep = newStep + sign;
             Bundle data = new Bundle();
             data.putInt(KEY_POWER, (int) currentFraction);
-            Message msg = obtainMessage(MSG_SET_MAIN_VALUE);
+            data.putInt(KEY_VALUE, newStep);
+            Message msg = obtainMessage(MSG_DRAW_METER);
             msg.setData(data);
-            sendMessageDelayed(msg, i * Math.round(frame));
+            sendMessageDelayed(msg, i * Math.round(CLOCK));
         }
+        currentValue = newValue;
+    }
 
+
+    public void setMainValue(int newValue) {
+
+        if(currentValue == newValue)
+            return;
+
+        drawMeter(newValue);
+
+        currentValue = newValue;
+
+    }
+
+    public void setExcellentLevel(int level) {
+        excellentLevel = level;
+        mMeter.setExcellentLevel((int)excellentLevel);
+    }
+
+    public void setGoodLevel(int level) {
+        goodLevel = level;
+        mMeter.setGoodLevel((int)goodLevel);
+    }
+
+    public void setPoorLevel(int level) {
+        poorLevel = level;
+        mMeter.setPoorLevel((int)poorLevel);
     }
 
     @Override
@@ -100,10 +140,6 @@ public class RunPowerMeterHandler extends Handler implements MeterListener {
         if (mMeterValue == null)
             return;
 
-        if (value < 40)
-            setMeterValueColor(mMeterValue.getResources().getColor(R.color.swm_run_power_poor));
-        else
-            setMeterValueColor(mMeterValue.getResources().getColor(R.color.swm_run_power_good));
 
         mMeterValue.setText(String.valueOf(value));
     }
