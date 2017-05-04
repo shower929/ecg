@@ -8,11 +8,9 @@ import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.SweepGradient;
-import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -75,6 +73,10 @@ public class SwmMeter extends View {
     private int mType;
     private float mPointerLeft;
     private float mPointerTop;
+
+    private int excellentLevel;
+    private int goodLevel;
+    private int poorLevel;
 
     public SwmMeter(Context context) {
         this(context, null);
@@ -178,7 +180,6 @@ public class SwmMeter extends View {
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
 
-
         mInnerCircleX = (right - left) / 2;
         mInnerCircleY = top + mOuterRadius + mOuterWidth;
         mInnerBase = new RectF();
@@ -246,13 +247,14 @@ public class SwmMeter extends View {
             canvas.drawBitmap(mPointer, mPointerLeft, mPointerTop, null);
             canvas.restore();
         } else {
-            if (power > 120)
-                setRunPowerColor(getResources().getColor(R.color.swm_intensity_strong));
+            if(power >= excellentLevel)
+                setRunPowerColor(getResources().getColor(R.color.swm_run_power_excellent));
+            else if (power >= goodLevel && power < excellentLevel)
+                setRunPowerColor(getResources().getColor(R.color.swm_run_power_good));
+            else if (power < goodLevel)
+                setRunPowerColor(getResources().getColor(R.color.swm_run_power_poor));
 
-            if (power <= 60)
-                setRunPowerColor(getResources().getColor(R.color.swm_intensity_easy));
-
-            canvas.drawArc(mOuterBase, power, mCurrentPower, false, mOuterPaint);
+            canvas.drawArc(mOuterBase, 91, power, false, mOuterPaint);
         }
     }
 
@@ -275,9 +277,6 @@ public class SwmMeter extends View {
 
                     drawMeter(canvas, power);
                     mCurrentPower = power;
-                    if(mMeterListener != null) {
-                        mMeterListener.onChange(mCurrentPower*100/360);
-                    }
 
                 }
                 mBuffer.clear();
@@ -345,5 +344,17 @@ public class SwmMeter extends View {
     public void setSecondCircleColor(int color) {
         mSecondCirclePaint.setColor(color);
         invalidate();
+    }
+
+    public void setExcellentLevel(int level) {
+        excellentLevel = level;
+    }
+
+    public void setGoodLevel(int level) {
+        goodLevel = level;
+    }
+
+    public void setPoorLevel(int level) {
+        poorLevel = level;
     }
 }
