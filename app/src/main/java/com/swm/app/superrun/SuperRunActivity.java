@@ -116,7 +116,10 @@ public class SuperRunActivity extends SwmBaseActivity
         SwmMeter powerMeter = (SwmMeter) findViewById(R.id.swm_run_power_meter);
         TextView meterValue = (TextView) findViewById(R.id.swm_run_power);
         mMeterHandler = new RunPowerMeterHandler(powerMeter, meterValue);
-
+        mMeterHandler.setMax(100);
+        mMeterHandler.setExcellentLevel(90);
+        mMeterHandler.setGoodLevel(60);
+        mMeterHandler.setPoorLevel(40);
         TextView runPowerValue = (TextView) findViewById(R.id.swm_run_power);
         mTrainingBtn = (Button) findViewById(R.id.swm_cta_training_btn);
         mTrainingBtn.setOnClickListener(this);
@@ -201,6 +204,7 @@ public class SuperRunActivity extends SwmBaseActivity
             mSwmBinder.setDeviceListener(this);
             mSwmBinder.setBatteryListener(this);
         }
+        mMeterHandler.setMainValue(60);
     }
 
     @Override
