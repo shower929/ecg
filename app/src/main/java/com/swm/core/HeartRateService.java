@@ -209,6 +209,7 @@ class HeartRateService implements EcgProviderClient{
             mDump.stop();
         mCallbackWorker.interrupt();
         mHeartRateWorker.interrupt();
+        mSecondLevelBuffer.clear();
     }
 
     private synchronized void initRriCalculationService() {
