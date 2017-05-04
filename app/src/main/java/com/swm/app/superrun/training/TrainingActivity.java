@@ -164,7 +164,7 @@ public class TrainingActivity extends SwmBaseActivity implements MyLocationServi
         mStepBar = (SwmBar) findViewById(R.id.swm_step_bar);
         SwmMeter meter = (SwmMeter) findViewById(R.id.swm_run_power_meter);
         mMeterHandler = new RunPowerMeterHandler(meter, null);
-        mMeterHandler.setStep(8);
+        mMeterHandler.setMax(8);
         View heart = findViewById(R.id.swm_heart);
         mHeartBeatHandler = new HeartBeatHandler(heart);
         if (model.distance > 0) {
