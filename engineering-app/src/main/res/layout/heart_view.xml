@@ -80,5 +80,80 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.782"
         app:layout_constraintHorizontal_bias="0.127" />
-
+    <RadioGroup
+        android:id="@+id/swm_x_scale"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginRight="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="8dp"
+        app:layout_constraintLeft_toRightOf="@+id/swm_ecg_breath_view"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintHorizontal_bias="0.187">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/swm_x_scale"/>
+        <com.swm.stuff.view.RadioButton
+            android:id="@+id/swm_x_smaller"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/swm_x_smaller"
+            android:textColor="@color/swm_main" />
+        <com.swm.stuff.view.RadioButton
+            android:id="@+id/swm_x_the_same"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/swm_x_the_same"
+            android:textColor="@color/swm_main"
+            />
+        <com.swm.stuff.view.RadioButton
+            android:id="@+id/swm_x_bigger"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/swm_x_bigger"
+            android:textColor="@color/swm_main" />
+    </RadioGroup>
+    <RadioGroup
+        android:id="@+id/swm_y_scale"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginRight="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="8dp"
+        app:layout_constraintLeft_toRightOf="@+id/swm_x_scale"
+        android:layout_marginLeft="8dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/swm_y_scale"/>
+        <com.swm.stuff.view.RadioButton
+            android:id="@+id/swm_y_smaller"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/swm_y_smaller"
+            android:textColor="@color/swm_main" />
+        <com.swm.stuff.view.RadioButton
+            android:id="@+id/swm_y_the_same"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/swm_y_the_same"
+            android:textColor="@color/swm_main" />
+        <com.swm.stuff.view.RadioButton
+            android:id="@+id/swm_y_bigger"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/swm_y_bigger"
+            android:textColor="@color/swm_main" />
+    </RadioGroup>
 </android.support.constraint.ConstraintLayout>
