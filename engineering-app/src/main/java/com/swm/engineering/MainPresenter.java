@@ -47,8 +47,10 @@ public class MainPresenter implements RadioGroup.OnCheckedChangeListener
 
     @Override
     public void onActivityStarted(Activity activity) {
-        if(activity == myActivity)
-            currentPresenter.onStart();
+        if(activity != myActivity)
+            return;
+
+        currentPresenter.onStart();
     }
 
     @Override
@@ -63,8 +65,10 @@ public class MainPresenter implements RadioGroup.OnCheckedChangeListener
 
     @Override
     public void onActivityStopped(Activity activity) {
-        if(activity == myActivity)
-            currentPresenter.onStop();
+        if(activity != myActivity)
+            return;
+
+        currentPresenter.onStop();
     }
 
     @Override
