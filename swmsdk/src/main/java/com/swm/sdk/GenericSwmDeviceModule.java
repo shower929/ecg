@@ -1,10 +1,13 @@
 package com.swm.sdk;
 
+import android.bluetooth.BluetoothDevice;
+import android.content.Context;
+
 /**
  * Created by yangzhenyu on 2017/3/29.
  */
 
-abstract class GenericSwmDeviceModule extends SwmModule{
+public abstract class GenericSwmDeviceModule extends SwmModule{
     static SwmDevice DEVICE;
 
     public synchronized static SwmDevice getDevice() {
@@ -30,5 +33,4 @@ abstract class GenericSwmDeviceModule extends SwmModule{
     public void disconnect() {
         DEVICE.disconnect();
     }
-
 }
