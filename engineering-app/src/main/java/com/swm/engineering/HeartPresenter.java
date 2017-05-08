@@ -5,9 +5,14 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.support.annotation.IdRes;
 import android.view.View;
+import android.widget.RadioGroup;
 
 import com.swm.chart.Oscilloscope;
+import com.swm.filter.FirFilter;
+import com.swm.filter.NotchFilter;
+import com.swm.filter.RemoveBaselineWander;
 import com.swm.sdk.EcgDataSource;
 import com.swm.sdk.HeartEngine;
 import com.swm.sdk.HrvPlugin;
@@ -23,7 +28,7 @@ import com.swm.engineering.app.R;
  * Created by yangzhenyu on 2017/4/28.
  */
 
-public class HeartPresenter extends Presenter{
+public class HeartPresenter extends Presenter implements RadioGroup.OnCheckedChangeListener{
     private Activity myActivity;
     private final View parent;
     private final Oscilloscope oscilloscope;
@@ -31,6 +36,8 @@ public class HeartPresenter extends Presenter{
     private final HrvView hrvView;
     private final StressView stressView;
     private final PhyAgeView phyAgeView;
+    private final RadioGroup xScaleView;
+    private final RadioGroup yScaleView;
 
     private final HeartBeatSound heartBeatSound;
 
@@ -45,6 +52,12 @@ public class HeartPresenter extends Presenter{
     private int payload = 5;
     private int SAMPLE_RATE = 250;
     private int lineBuffer = period * averageSample * payload * Double.SIZE / Byte.SIZE;
+    private float xScale = 1.1f;
+    private float yScale = 1.0f;
+
+    private FirFilter firFilter;
+    private NotchFilter notchFilter;
+    private RemoveBaselineWander removeBaselineWander;
 
     HeartPresenter(Activity activity, View view) {
         this.myActivity = activity;
@@ -52,9 +65,19 @@ public class HeartPresenter extends Presenter{
         this.oscilloscope = (Oscilloscope) parent.findViewById(R.id.swm_ecg_breath_view);
         oscilloscope.setBufferSize(lineBuffer);
         oscilloscope.setClock(Math.round(1f/ SAMPLE_RATE * 1000));
-        oscilloscope.setPeriod(4);
-        oscilloscope.setSampleRate(SAMPLE_RATE);
-        oscilloscope.setAverageSample(averageSample);
+        oscilloscope.setXScale(xScale);
+        oscilloscope.setYScale(yScale);
+        oscilloscope.setFrequency(1000.0 / SAMPLE_RATE);
+
+        notchFilter = new NotchFilter(SAMPLE_RATE);
+        oscilloscope.addFilter(notchFilter);
+
+        removeBaselineWander = new RemoveBaselineWander(SAMPLE_RATE);
+        oscilloscope.addFilter(removeBaselineWander);
+
+        //firFilter = new FirFilter(SAMPLE_RATE);
+        //oscilloscope.addFilter(firFilter);
+
         this.heartRateView = (HeartRateView) parent.findViewById(R.id.swm_heart_rate_view);
         this.heartRateView.setHeartRate(0);
         this.hrvView = (HrvView) parent.findViewById(R.id.swm_hrv_view);
@@ -65,6 +88,12 @@ public class HeartPresenter extends Presenter{
         this.phyAgeView = (PhyAgeView) parent.findViewById(R.id.swm_phy_age_view);
         this.phyAgeView.setPhyAge(0);
         this.heartBeatSound = new HeartBeatSound(myActivity);
+
+        xScaleView = (RadioGroup) view.findViewById(R.id.swm_x_scale);
+        xScaleView.setOnCheckedChangeListener(this);
+
+        yScaleView = (RadioGroup) view.findViewById(R.id.swm_y_scale);
+        yScaleView.setOnCheckedChangeListener(this);
     }
 
     private void initDataSource() {
@@ -141,5 +170,30 @@ public class HeartPresenter extends Presenter{
     @Override
     void hide() {
         onStop();
+    }
+
+
+    @Override
+    public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
+        switch(checkedId) {
+            case R.id.swm_x_smaller:
+                oscilloscope.setXScale(0.75f);
+                break;
+            case R.id.swm_x_the_same:
+                oscilloscope.setXScale(1.0f);
+                break;
+            case R.id.swm_x_bigger:
+                oscilloscope.setXScale(1.25f);
+                break;
+            case R.id.swm_y_smaller:
+                oscilloscope.setYScale(0.75f);
+                break;
+            case R.id.swm_y_the_same:
+                oscilloscope.setYScale(1.0f);
+                break;
+            case R.id.swm_y_bigger:
+                oscilloscope.setYScale(1.25f);
+                break;
+        }
     }
 }
