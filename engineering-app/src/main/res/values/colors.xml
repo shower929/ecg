@@ -4,10 +4,20 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="swm_main">#FF007183</color>
+    <color name="black_overlay">#66000000</color>
+    <color name="swm_text">#ff000000</color>
     <color name="swm_white">#FFFFFFFF</color>
     <color name="swm_grey">#FFDDDDDD</color>
-    <color name="ble_active">#ff04df9d</color>
-    <color name="ble_inactive">#ff888888</color>
     <color name="swm_cta">#ff04df9d</color>
     <color name="swm_cta_dark">#ff00bd8c</color>
+    <color name="swm_title">#ff000000</color>
+    <color name="swm_word">#ff888888</color>
+    <color name="swm_cta_pressed">#ff21ffb1</color>
+    <color name="swm_weak_cta">#33000000</color>
+    <color name="swm_red_btn_pressed">#ffff9c9c</color>
+    <color name="swm_red">#ffff7575</color>
+    <color name="swm_ecg">#ff00ff00</color>
+    <color name="swm_motion_x">#ffff0000</color>
+    <color name="swm_motion_y">#ffffff00</color>
+    <color name="swm_motion_z">#ff0000ff</color>
 </resources>
