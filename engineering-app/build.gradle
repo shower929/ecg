@@ -7,7 +7,7 @@ android {
     defaultConfig {
         applicationId "com.swm.engineering.app"
         minSdkVersion 21
-        targetSdkVersion 25
+        targetSdkVersion 21
         versionCode 1
         versionName "1.0"
 
@@ -27,12 +27,18 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:25.3.1'
-    compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha8'
-    testCompile 'junit:junit:4.12'
     compile project(path: ':swmsdk')
-    compile project(path: ':1501-device')
     compile project(path: ':sport-ecg-engine')
     compile project(path: ':swm-stuff')
     compile project(path: ':realtime-chart')
+    compile project(path: ':calorie-plugin')
+    compile project(path: ':hrv-plugin')
+    compile project(path: ':running-plugin')
+    compile project(path: ':1501-device')
+    compile project(path: ':motion-engine')
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.google.android.gms:play-services-location:10.0.1'
+    compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha8'
+    compile 'com.android.support:support-v4:25.3.1'
+    testCompile 'junit:junit:4.12'
 }
