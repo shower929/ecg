@@ -14,10 +14,17 @@ import java.util.List;
 
 public abstract class HeartEngine extends SwmEngine{
     public static final String ACTION_HEART_RATE = "action_heart_rate";
-    public static final String HEART_RATE = "heart_rate";
+    public static final String ACTION_HRV = "action_hrv";
+    public static final String EXTRA_HEART_RATE = "extra_heart_rate";
+    public static final String EXTRA_SDNN = "extra_sdnn";
+    public static final String EXTRA_RMSSD = "extra_rmssd";
 
-    List<HeartEngineOutput> outputs;
-    HeartEngineRawOutput rawOutput;
+    private Dump<HeartData> mDump;
+    private Dump<RawEcg> rawDump;
+
+    protected List<HeartEngineOutput> outputs;
+
+    private volatile boolean logging;
 
     @NonNull
     private final Context context;
@@ -26,8 +33,12 @@ public abstract class HeartEngine extends SwmEngine{
         this.context = context;
     }
 
-    synchronized void setRawOutput(HeartEngineRawOutput rawOutput) {
-        this.rawOutput = rawOutput;
+    public synchronized void log() {
+        logging = true;
+    }
+
+    public synchronized void nolog() {
+        logging = false;
     }
 
     public synchronized void addOutput(HeartEngineOutput output) {
@@ -47,10 +58,48 @@ public abstract class HeartEngine extends SwmEngine{
     protected void sendHeartRateBroadcast(int heartRate) {
         Intent intent = new Intent(ACTION_HEART_RATE);
         intent.setPackage(context.getPackageName());
-        intent.putExtra(HEART_RATE, heartRate);
-
+        intent.putExtra(EXTRA_HEART_RATE, heartRate);
         context.sendBroadcast(intent);
-
     }
 
+    protected void sendHrvBroadcast(float sdnn, float rmssd) {
+        Intent intent = new Intent(ACTION_HRV);
+        intent.setPackage(context.getPackageName());
+        intent.putExtra(EXTRA_SDNN, sdnn);
+        intent.putExtra(EXTRA_RMSSD, rmssd);
+        context.sendBroadcast(intent);
+    }
+
+    @Override
+    void onFuel(BleData data) {
+
+        if (logging)
+            rawDump.putData(new RawEcg(data.rawData));
+    }
+
+    @Override
+    public void start() {
+        mDump = new Dump<>("HeartData");
+        mDump.start();
+        rawDump = new Dump<>("RawEcg");
+        rawDump.setWithoutComma(true);
+        rawDump.start();
+    }
+
+    @Override
+    public void stop() {
+        if (mDump != null) {
+            mDump.stop();
+            mDump = null;
+        }
+
+        if (rawDump != null) {
+            rawDump.stop();
+            rawDump = null;
+        }
+    }
+
+    protected void logHeartData(HeartData heartData) {
+        mDump.putData(heartData);
+    }
 }
