@@ -75,8 +75,7 @@ public class MotionPresenter extends Presenter implements RadioGroup.OnCheckedCh
         locationView = (LocationView) view.findViewById(R.id.swm_location_view);
         calorieView = (CalorieView) view.findViewById(R.id.swm_calorie_view);
         stepView = (StepView) view.findViewById(R.id.swm_step_view);
-        Intent locationIntent = new Intent(myActivity, MyLocationService.class);
-        myActivity.bindService(locationIntent, mLocationConnection, BIND_AUTO_CREATE);
+
     }
 
     @Override
@@ -159,6 +158,8 @@ public class MotionPresenter extends Presenter implements RadioGroup.OnCheckedCh
 
     @Override
     void onStart() {
+        Intent locationIntent = new Intent(myActivity, MyLocationService.class);
+        myActivity.bindService(locationIntent, mLocationConnection, BIND_AUTO_CREATE);
         registerBroadcastReceiver();
         initDataSource();
     }
