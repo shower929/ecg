@@ -7,7 +7,6 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.swm.engineering.ServiceListener;
 
 /**
  * Created by yangzhenyu on 2016/9/26.
