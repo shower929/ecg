@@ -1,8 +1,6 @@
 package com.swm.demo;
 
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
@@ -10,11 +8,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.swm.demo.view.CalorieView;
-import com.swm.demo.view.HeartRateView;
-import com.swm.demo.view.PhyAgeView;
-import com.swm.demo.view.StepView;
-import com.swm.demo.view.StressView;
+import com.swm.stuff.view.CalorieView;
+import com.swm.stuff.view.HeartRateView;
+import com.swm.stuff.view.PhyAgeView;
+import com.swm.stuff.view.StepView;
+import com.swm.stuff.view.StressView;
 
 public class MainActivity extends AppCompatActivity {
     private static final String LOG_TAG = "Demo";

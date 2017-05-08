@@ -8,13 +8,12 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 
-import com.swm.demo.view.CalorieView;
-import com.swm.demo.view.HeartRateView;
-import com.swm.demo.view.PhyAgeView;
-import com.swm.demo.view.StepView;
-import com.swm.demo.view.StressView;
+import com.swm.stuff.view.CalorieView;
+import com.swm.stuff.view.HeartRateView;
+import com.swm.stuff.view.PhyAgeView;
+import com.swm.stuff.view.StepView;
+import com.swm.stuff.view.StressView;
 import com.swm.sdk.CaloriePlugin;
-import com.swm.sdk.DeviceListener;
 import com.swm.sdk.HeartEngine;
 import com.swm.sdk.HrvPlugin;
 import com.swm.sdk.RunningPlugin;
@@ -82,7 +81,14 @@ public class Presenter implements Application.ActivityLifecycleCallbacks{
 
     private void handleStressChange(Intent intent) {
         com.swm.sdk.HrvPlugin.Stress stress = (HrvPlugin.Stress) intent.getSerializableExtra(HrvPlugin.EXTRA_STRESS);
-        stressView.setStress(stress);
+        if (stress == HrvPlugin.Stress.BAD)
+            stressView.setStress((myActivity.getString(R.string.swm_stress_bad)));
+        else if (stress == HrvPlugin.Stress.GOOD)
+            stressView.setStress(myActivity.getString(R.string.swm_stress_good));
+        else if (stress == HrvPlugin.Stress.HAPPY)
+            stressView.setStress(myActivity.getString(R.string.swm_stress_happy));
+        else if (stress == HrvPlugin.Stress.NORMAL)
+            stressView.setStress(myActivity.getString(R.string.swm_stress_normal));
     }
 
     private void handlePhyAgeChange(Intent intent) {
@@ -109,7 +115,7 @@ public class Presenter implements Application.ActivityLifecycleCallbacks{
     }
 
     private void handleHeartRateBroadcast(Intent intent) {
-        heartRateView.setHeartRate(intent.getIntExtra(HeartEngine.HEART_RATE, 0));
+        heartRateView.setHeartRate(intent.getIntExtra(HeartEngine.EXTRA_HEART_RATE, 0));
     }
 
     @Override
