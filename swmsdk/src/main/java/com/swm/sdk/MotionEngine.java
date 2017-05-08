@@ -8,4 +8,12 @@ public abstract class MotionEngine extends SwmEngine {
     public void setOutput(MotionEngineOutput output) {
 
     }
+
+    public synchronized void log() {
+
+    }
+
+    public synchronized void nolog() {
+
+    }
 }
