@@ -1,11 +1,39 @@
 <resources>
     <string name="app_name">Engineering app</string>
+
+    <string name="swm_phy_age">Your physical age is %1$d</string>
+    <string name="swm_step">Today\'s step %1$d</string>
+    <string name="swm_ble_turn_on_device">Turn on SWM device</string>
+    <string name="swm_cta_ok">OK</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="swm_cta_go">GO</string>
+    <string name="swm_ble_do_connect">Connect</string>
+    <string name="swm_logo">SINGULAR WINGS</string>
     <string name="swm_ble_choose_your_device">Choose your device</string>
     <string name="swm_ble_scan">Scanning SWM devices ...</string>
-    <string name="swm_my_heart_rate">Heart rate:%1$d.  Max: %2$d.  Min: %3$d.</string>
-    <string name="swm_my_hrv">SDNN: %1$d.  RMSSD: %2$d</string>
+    <string name="swm_heart_rate">Heart rate</string>
+    <string name="swm_calorie">Calorie</string>
+    <string name="swm_stress_bad">I am not in good mood</string>
+    <string name="swm_stress_normal">Not bad</string>
+    <string name="swm_stress_good">I feel good</string>
+    <string name="swm_stress_happy">I am happy</string>
     <string name="swm_engineering">Engineering</string>
-    <string name="swm_cta_go">GO</string>
+    <string name="swm_my_calorie">Calorie %1$d</string>
+    <string name="swm_my_heart_rate">Heart rate:%1$d.  Max: %2$d.  Min: %3$d.</string>
+    <string name="swm_my_hrv">SDNN: %1$f.  RMSSD: %2$f</string>
+    <string name="swm_my_stress">My stress</string>
+    <string name="swm_my_phy_age">My physical age is: %1$d</string>
+    <string name="swm_record_timer">00:00:00</string>
     <string name="swm_record">RECORD</string>
     <string name="swm_stop">STOP</string>
+    <string name="swm_ecg_mode">ECG</string>
+    <string name="swm_motion_mode">MOTION</string>
+    <string name="swm_accelerator">Accelerator</string>
+    <string name="swm_gyro">Gyro</string>
+    <string name="swm_magnetic">Magnetic</string>
+    <string name="swm_packet">Packet loss %1$d.</string>
+    <string name="swm_my_step">Step %1$d</string>
+    <string name="swm_my_location">(%1$d,%2$d) accuracy: %3$d time: %4$d</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
