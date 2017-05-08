@@ -37,4 +37,5 @@ dependencies {
     compile project(path: ':hrv-plugin')
     compile project(path: ':motion-engine')
     compile project(path: ':running-plugin')
+    compile project(path: ':swm-stuff')
 }
