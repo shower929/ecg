@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/swm_main"
-    tools:context="com.swm.engineering.app.DeviceDiscoverAndConnActivity">
+    tools:context="com.swm.engineering.ble.DeviceDiscoverAndConnActivity">
 
     <LinearLayout
         android:id="@+id/swm_ble_devices_layout"
