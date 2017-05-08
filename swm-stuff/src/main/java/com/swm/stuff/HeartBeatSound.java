@@ -5,35 +5,32 @@ import android.media.AudioManager;
 import android.media.ToneGenerator;
 import android.os.Handler;
 import android.util.Log;
-import com.swm.sdk.HeartData;
-import com.swm.sdk.HeartEngineOutput;
 
 
 /**
  * Created by yangzhenyu on 2016/10/6.
  */
 
-public class HeartRateSound implements HeartEngineOutput {
+public class HeartBeatSound {
     private Long mLen = 1000L;
     private Handler mSoundHandler;
     private BeatSound mBeatSoundRunnable;
     private ToneGenerator mBeatSound;
-    private int mHeartBeatRate;
+    private int heartRate;
     private boolean mReleased = false;
     private int mCurrentVolume;
     private Context mContext;
 
-    @Override
-    public void onHeartDataAvailable(HeartData heartData) {
-        Log.d("Sound", "onHeartRateDataAvailable");
-        int heartBeatRate = heartData.heartRate;
-        if (heartBeatRate <= 0)
+    public void setHeartRate(int heartRate) {
+        Log.d("Sound", "Heart rate: " + heartRate);
+
+        if (heartRate <= 0)
             return;
 
-        if (mHeartBeatRate == heartBeatRate)
+        if (this.heartRate == heartRate)
             return;
 
-        mHeartBeatRate = heartBeatRate;
+        this.heartRate = heartRate;
 
         if (mBeatSoundRunnable == null) {
             mBeatSound = new ToneGenerator(AudioManager.STREAM_RING, mCurrentVolume);
@@ -57,7 +54,7 @@ public class HeartRateSound implements HeartEngineOutput {
         }
     }
 
-    public HeartRateSound(Context context) {
+    public HeartBeatSound(Context context) {
         mContext = context;
     }
 

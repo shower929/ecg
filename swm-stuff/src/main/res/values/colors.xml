@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="ble_active">#ff04df9d</color>
+    <color name="ble_inactive">#ff888888</color>
+</resources>
