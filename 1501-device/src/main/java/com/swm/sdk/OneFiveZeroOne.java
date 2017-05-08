@@ -152,7 +152,7 @@ class OneFiveZeroOne extends HeartMotionDevice{
                 heartEngine.onFuel(BleData.from(characteristic));
             else if (characteristic.getUuid().equals(MotionBleProfile.DATA))
                 motionEngine.onFuel(BleData.from(characteristic));
-
+            BleDataStore.getIns().putData(characteristic.getValue().length);
         }
 
         @Override
