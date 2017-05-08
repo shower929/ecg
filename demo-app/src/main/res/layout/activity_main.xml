@@ -36,7 +36,7 @@
         android:layout_marginBottom="8dp"
         app:layout_constraintHorizontal_bias="0.222"
         app:layout_constraintVertical_bias="0.179" />
-    <com.swm.demo.view.HeartRateView
+    <com.swm.stuff.view.HeartRateView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/swm_heart_rate"
@@ -68,7 +68,7 @@
         app:layout_constraintHorizontal_bias="0.209"
         app:layout_constraintVertical_bias="0.051" />
 
-    <com.swm.demo.view.CalorieView
+    <com.swm.stuff.view.CalorieView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/swm_calorie"
@@ -84,7 +84,7 @@
         android:layout_marginBottom="0dp"
         app:layout_constraintVertical_bias="1.0" />
 
-    <com.swm.demo.view.StressView
+    <com.swm.stuff.view.StressView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/swm_stress"
@@ -100,7 +100,7 @@
         android:layout_marginBottom="0dp"
         app:layout_constraintVertical_bias="0.409" />
 
-    <com.swm.demo.view.PhyAgeView
+    <com.swm.stuff.view.PhyAgeView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/swm_phy_age"
@@ -116,7 +116,7 @@
         app:layout_constraintVertical_bias="0.343"
         app:layout_constraintTop_toBottomOf="@+id/swm_stress" />
 
-    <com.swm.demo.view.StepView
+    <com.swm.stuff.view.StepView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/swm_step"
