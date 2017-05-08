@@ -7,18 +7,18 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.swm.engineering.app.ServiceListener;
+import com.swm.engineering.ServiceListener;
 
 /**
  * Created by yangzhenyu on 2016/9/26.
  */
 
-public class SwmService extends Service implements HeartEngineOutput {
+public class SwmService extends Service {
     private static final String LOG_TAG = "SwmService";
     private final IBinder mSwmBinder = new SwmBinder();
     private SwmDevice device;
     private HeartEngine heartEngine;
-    private ServiceListener mListener;
+    private MotionEngine motionEngine;
 
     @Nullable
     @Override
@@ -29,9 +29,8 @@ public class SwmService extends Service implements HeartEngineOutput {
         HeartEngineProvider.init(this);
         heartEngine = HeartEngineProvider.newEngine(device);
 
-        // Output heart rate to client
-        heartEngine.addOutput((HeartEngineOutput) mSwmBinder);
-
+        MotionEngineProvider.init();
+        motionEngine = MotionEngineProvider.newEngine(device);
         return mSwmBinder;
     }
 
@@ -40,12 +39,6 @@ public class SwmService extends Service implements HeartEngineOutput {
         super.onDestroy();
         heartEngine.stop();
         device.disconnect();
-    }
-
-    private boolean isRecording() {
-        return SwmCore.getIns().getHeartRateService().isRecording()
-                && SwmCore.getIns().getMotionService().isRecording()
-                && MyLocationService.isRecording();
     }
 
     @Override
@@ -58,18 +51,6 @@ public class SwmService extends Service implements HeartEngineOutput {
         super.onLowMemory();
     }
 
-    @Override
-    public void onHeartDataAvailable(HeartData heartData) {
-        if (mListener != null) {
-            if (heartData.hasHeartRate())
-                mListener.onHeartRateAvailable(heartData.heartRate);
-
-            // @TODO Wait breath rate algo
-            //if(heartData.hasBreathRate())
-                //mListener.onBreathRateAvailable(heartData.breathRate);
-        }
-    }
-
     /**
      * Created by yangzhenyu on 2016/9/27.
      */
@@ -79,12 +60,12 @@ public class SwmService extends Service implements HeartEngineOutput {
         SwmBinder() {
         }
 
-        public void setServiceListener(ServiceListener listener) {
-            mListener = listener;
+        public HeartEngine getHeartEngine() {
+            return heartEngine;
         }
 
-        HeartEngine getHeartEngine() {
-            return heartEngine;
+        public MotionEngine getMotionEngine() {
+            return motionEngine;
         }
 
     }
