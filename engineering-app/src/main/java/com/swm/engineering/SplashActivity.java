@@ -60,7 +60,7 @@ public class SplashActivity extends AppCompatActivity implements View.OnClickLis
     private final Runnable mShowPart2Runnable = new Runnable() {
         @Override
         public void run() {
-            // Delayed display of UI elements
+            // Delayed bufferDrawing of UI elements
             ActionBar actionBar = getSupportActionBar();
             if (actionBar != null) {
                 actionBar.show();
@@ -101,7 +101,7 @@ public class SplashActivity extends AppCompatActivity implements View.OnClickLis
         //mControlsView = findViewById(R.id.fullscreen_content_controls);
         mContentView = findViewById(R.id.fullscreen_content);
 
-        // Set up the user interaction to manually show or hide the system UI.
+        // Set up the user interaction to manually start or stop the system UI.
         mContentView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -116,7 +116,7 @@ public class SplashActivity extends AppCompatActivity implements View.OnClickLis
         cta.setVisibility(View.VISIBLE);
         cta.setOnClickListener(this);
 
-        // Upon interacting with UI controls, delay any scheduled hide()
+        // Upon interacting with UI controls, delay any scheduled stop()
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
         //findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
@@ -127,7 +127,7 @@ public class SplashActivity extends AppCompatActivity implements View.OnClickLis
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
 
-        // Trigger the initial hide() shortly after the activity has been
+        // Trigger the initial stop() shortly after the activity has been
         // created, to briefly hint to the user that UI controls
         // are available.
         delayedHide(100);
@@ -162,13 +162,13 @@ public class SplashActivity extends AppCompatActivity implements View.OnClickLis
                 | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
         mVisible = true;
 
-        // Schedule a runnable to display UI elements after a delay
+        // Schedule a runnable to bufferDrawing UI elements after a delay
         mHideHandler.removeCallbacks(mHidePart2Runnable);
         mHideHandler.postDelayed(mShowPart2Runnable, UI_ANIMATION_DELAY);
     }
 
     /**
-     * Schedules a call to hide() in [delay] milliseconds, canceling any
+     * Schedules a call to stop() in [delay] milliseconds, canceling any
      * previously scheduled calls.
      */
     private void delayedHide(int delayMillis) {

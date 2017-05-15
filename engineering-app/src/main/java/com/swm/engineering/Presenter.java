@@ -5,8 +5,8 @@ package com.swm.engineering;
  */
 
 public abstract class Presenter {
-    abstract void onStart();
-    abstract void onStop();
-    abstract void show();
-    abstract void hide();
+    public abstract void onStart();
+    public abstract void onStop();
+    public abstract void show();
+    public abstract void hide();
 }
