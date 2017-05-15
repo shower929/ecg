@@ -12,7 +12,12 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.RadioGroup;
 
+import com.swm.chart.Oscilloscope;
 import com.swm.engineering.app.R;
+import com.swm.filter.FirFilter;
+import com.swm.filter.IirFilter;
+import com.swm.filter.NotchFilter;
+import com.swm.filter.RemoveBaselineWander;
 import com.swm.sdk.SwmService;
 import com.swm.stuff.view.RecordButton;
 import com.swm.stuff.view.TimerView;
@@ -20,7 +25,14 @@ import com.swm.stuff.view.TimerView;
 public class MainActivity extends AppCompatActivity {
     private MainPresenter mainPresenter;
 
+    private static final int ECG_SAMPLE_RATE = 250;
     private View heartView;
+    private Oscilloscope ecg;
+    private OscilloscopeController oscilloscopeController;
+    private IirFilter iirFilter;
+    private FirFilter firFilter;
+    private NotchFilter notchFilter;
+    private RemoveBaselineWander removeBaselineWander;
     private HeartPresenter heartPresenter;
 
     private View motionView;
@@ -44,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
             Log.i("Main", "Connected to SWM service");
             mSwmBinder = (SwmService.SwmBinder) service;
             recordPresenter.setModel(mSwmBinder.getHeartEngine(), mSwmBinder.getMotionEngine());
+            mSwmBinder.getHeartEngine().setListener(oscilloscopeController);
         }
 
         @Override
@@ -63,7 +76,19 @@ public class MainActivity extends AppCompatActivity {
 
         // Heart UI
         heartView = findViewById(R.id.swm_heart_view);
-        heartPresenter = new HeartPresenter(this, heartView);
+        ecg = (Oscilloscope) findViewById(R.id.swm_ecg_breath_view);
+        oscilloscopeController = new OscilloscopeController(ecg);
+        //notchFilter = new NotchFilter(ECG_SAMPLE_RATE);
+        //oscilloscopeController.addFilter(notchFilter);
+        iirFilter = new IirFilter(0.992);
+        oscilloscopeController.addFilter(iirFilter);
+        //firFilter = new FirFilter(ECG_SAMPLE_RATE);
+        //oscilloscopeController.addFilter(firFilter);
+        //removeBaselineWander = new RemoveBaselineWander(ECG_SAMPLE_RATE);
+        //oscilloscopeController.addFilter(removeBaselineWander);
+
+        heartPresenter = new HeartPresenter(this, heartView, oscilloscopeController);
+
 
         // Motion UI
         motionView = findViewById(R.id.swm_motion_view);
@@ -94,5 +119,6 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         unbindService(mConnection);
         getApplication().unregisterActivityLifecycleCallbacks(recordPresenter);
+        getApplication().unregisterActivityLifecycleCallbacks(mainPresenter);
     }
 }
