@@ -5,15 +5,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.support.annotation.IdRes;
 import android.view.View;
-import android.widget.RadioGroup;
 
-import com.swm.chart.Oscilloscope;
-import com.swm.filter.FirFilter;
-import com.swm.filter.NotchFilter;
-import com.swm.filter.RemoveBaselineWander;
-import com.swm.sdk.EcgDataSource;
 import com.swm.sdk.HeartEngine;
 import com.swm.sdk.HrvPlugin;
 import com.swm.sdk.RunningPlugin;
@@ -28,83 +21,43 @@ import com.swm.engineering.app.R;
  * Created by yangzhenyu on 2017/4/28.
  */
 
-public class HeartPresenter extends Presenter implements RadioGroup.OnCheckedChangeListener{
+public class HeartPresenter extends Presenter {
     private Activity myActivity;
     private final View parent;
-    private final Oscilloscope oscilloscope;
+
+    private OscilloscopeController oscilloscopeController;
     private final HeartRateView heartRateView;
     private final HrvView hrvView;
     private final StressView stressView;
     private final PhyAgeView phyAgeView;
-    private final RadioGroup xScaleView;
-    private final RadioGroup yScaleView;
+
 
     private final HeartBeatSound heartBeatSound;
 
     private IntentFilter intentFilter;
     private BroadcastReceiver broadcastReceiver;
 
-    /**
-     * Double is 8 bytes.  Sample rate is 250 Hz.  Send 5 sample data every connection interval.
-     */
-    private int period = 4;
-    private int averageSample = 200;
-    private int payload = 5;
-    private int SAMPLE_RATE = 250;
-    private int lineBuffer = period * averageSample * payload * Double.SIZE / Byte.SIZE;
-    private float xScale = 1.1f;
-    private float yScale = 1.0f;
 
-    private FirFilter firFilter;
-    private NotchFilter notchFilter;
-    private RemoveBaselineWander removeBaselineWander;
-
-    HeartPresenter(Activity activity, View view) {
+    public HeartPresenter(Activity activity, View view, OscilloscopeController oscilloscopeController) {
         this.myActivity = activity;
         this.parent = view;
-        this.oscilloscope = (Oscilloscope) parent.findViewById(R.id.swm_ecg_breath_view);
-        oscilloscope.setBufferSize(lineBuffer);
-        oscilloscope.setClock(Math.round(1f/ SAMPLE_RATE * 1000));
-        oscilloscope.setXScale(xScale);
-        oscilloscope.setYScale(yScale);
-        oscilloscope.setFrequency(1000.0 / SAMPLE_RATE);
 
-        notchFilter = new NotchFilter(SAMPLE_RATE);
-        oscilloscope.addFilter(notchFilter);
+        this.oscilloscopeController = oscilloscopeController;
 
-        removeBaselineWander = new RemoveBaselineWander(SAMPLE_RATE);
-        oscilloscope.addFilter(removeBaselineWander);
+        heartRateView = (HeartRateView) parent.findViewById(R.id.swm_heart_rate_view);
 
-        //firFilter = new FirFilter(SAMPLE_RATE);
-        //oscilloscope.addFilter(firFilter);
+        hrvView = (HrvView) parent.findViewById(R.id.swm_hrv_view);
 
-        this.heartRateView = (HeartRateView) parent.findViewById(R.id.swm_heart_rate_view);
-        this.heartRateView.setHeartRate(0);
-        this.hrvView = (HrvView) parent.findViewById(R.id.swm_hrv_view);
-        hrvView.setSdnn(0);
-        hrvView.setRmssd(0);
-        this.stressView = (StressView) parent.findViewById(R.id.swm_stress_view);
-        this.stressView.setStress("");
-        this.phyAgeView = (PhyAgeView) parent.findViewById(R.id.swm_phy_age_view);
-        this.phyAgeView.setPhyAge(0);
+        stressView = (StressView) parent.findViewById(R.id.swm_stress_view);
+
+        phyAgeView = (PhyAgeView) parent.findViewById(R.id.swm_phy_age_view);
+
         this.heartBeatSound = new HeartBeatSound(myActivity);
-
-        xScaleView = (RadioGroup) view.findViewById(R.id.swm_x_scale);
-        xScaleView.setOnCheckedChangeListener(this);
-
-        yScaleView = (RadioGroup) view.findViewById(R.id.swm_y_scale);
-        yScaleView.setOnCheckedChangeListener(this);
-    }
-
-    private void initDataSource() {
-        oscilloscope.addDataSource(new EcgDataSource(), myActivity.getResources().getColor(R.color.swm_ecg));
-        // @TODO add breath line
-        //lineChart.addDataSource(new BreathDataSource(), myActivity.getResources().getColor(R.color.swm_breath));
     }
 
     private void registerBroadcastReceiver() {
         intentFilter = new IntentFilter(HeartEngine.ACTION_HEART_RATE);
-
+        intentFilter.addAction(HeartEngine.ACTION_HRV);
         intentFilter.addAction(HrvPlugin.ACTION_STRESS_CHANGED);
         intentFilter.addAction(HrvPlugin.ACTION_PHYSICAL_AGE_CHANGED);
         intentFilter.addAction(RunningPlugin.ACTION_STEP);
@@ -114,6 +67,8 @@ public class HeartPresenter extends Presenter implements RadioGroup.OnCheckedCha
             public void onReceive(Context context, Intent intent) {
                 if(intent.getAction().equals(HeartEngine.ACTION_HEART_RATE))
                     handleHeartRateBroadcast(intent);
+                else if (intent.getAction().equals(HeartEngine.ACTION_HRV))
+                    handleHrv(intent);
                 else if (intent.getAction().equals((HrvPlugin.ACTION_STRESS_CHANGED)))
                     handleStressChange(intent);
                 else if (intent.getAction().equals(HrvPlugin.ACTION_PHYSICAL_AGE_CHANGED))
@@ -124,15 +79,23 @@ public class HeartPresenter extends Presenter implements RadioGroup.OnCheckedCha
         myActivity.registerReceiver(broadcastReceiver, intentFilter);
     }
 
+    private void handleHrv(Intent intent) {
+        float sdnn = intent.getFloatExtra(HeartEngine.EXTRA_SDNN, 0);
+        float rmssd = intent.getFloatExtra(HeartEngine.EXTRA_RMSSD, 0);
+
+        hrvView.setSdnn(sdnn);
+        hrvView.setRmssd(rmssd);
+    }
+
     private void handleStressChange(Intent intent) {
-        com.swm.sdk.HrvPlugin.Stress stress = (HrvPlugin.Stress) intent.getSerializableExtra(HrvPlugin.EXTRA_STRESS);
-        if (stress == HrvPlugin.Stress.BAD)
+        int stress = intent.getIntExtra(HrvPlugin.EXTRA_STRESS, 0);
+        if (stress == HrvPlugin.STRESS_BAD)
             stressView.setStress((myActivity.getString(R.string.swm_stress_bad)));
-        else if (stress == HrvPlugin.Stress.GOOD)
+        else if (stress == HrvPlugin.STRESS_GOOD)
             stressView.setStress(myActivity.getString(R.string.swm_stress_good));
-        else if (stress == HrvPlugin.Stress.HAPPY)
+        else if (stress == HrvPlugin.STRESS_HAPPY)
             stressView.setStress(myActivity.getString(R.string.swm_stress_happy));
-        else if (stress == HrvPlugin.Stress.NORMAL)
+        else if (stress == HrvPlugin.STRESS_NORMAL)
             stressView.setStress(myActivity.getString(R.string.swm_stress_normal));
     }
 
@@ -152,48 +115,36 @@ public class HeartPresenter extends Presenter implements RadioGroup.OnCheckedCha
     }
 
     @Override
-    void onStart() {
+    public void onStart() {
+        parent.setVisibility(View.VISIBLE);
+        heartBeatSound.prepare();
         registerBroadcastReceiver();
-        initDataSource();
+        // @TODO add breath line
+        //lineChart.addDataSource(new BreathDataSource(), myActivity.getResources().getColor(R.color.swm_breath));
+        oscilloscopeController.start();
     }
 
     @Override
-    void onStop() {
+    public void onStop() {
+        oscilloscopeController.stop();
+
         unregisterroadcastReceiver();
+        parent.setVisibility(View.GONE);
+        heartBeatSound.release();
     }
 
     @Override
-    void show() {
+    public void show() {
         onStart();
     }
 
     @Override
-    void hide() {
+    public void hide() {
         onStop();
     }
 
-
-    @Override
-    public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
-        switch(checkedId) {
-            case R.id.swm_x_smaller:
-                oscilloscope.setXScale(0.75f);
-                break;
-            case R.id.swm_x_the_same:
-                oscilloscope.setXScale(1.0f);
-                break;
-            case R.id.swm_x_bigger:
-                oscilloscope.setXScale(1.25f);
-                break;
-            case R.id.swm_y_smaller:
-                oscilloscope.setYScale(0.75f);
-                break;
-            case R.id.swm_y_the_same:
-                oscilloscope.setYScale(1.0f);
-                break;
-            case R.id.swm_y_bigger:
-                oscilloscope.setYScale(1.25f);
-                break;
-        }
+    public OscilloscopeController getOscilloscopeController() {
+        return oscilloscopeController;
     }
+
 }
