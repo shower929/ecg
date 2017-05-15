@@ -76,10 +76,15 @@ public class OscilloscopeController implements Application.ActivityLifecycleCall
                 if(!running)
                     return;
 
-                Canvas canvas = surfaceHolder.lockCanvas();
-                oscilloscope.drawOnCanvas(canvas);
-                surfaceHolder.unlockCanvasAndPost(canvas);
 
+                Canvas canvas = surfaceHolder.lockCanvas();
+
+                if (canvas == null)
+                    return;
+
+                oscilloscope.drawOnCanvas(canvas);
+
+                surfaceHolder.unlockCanvasAndPost(canvas);
                 try {
                     Thread.sleep(1000 / framePerSecond);
                 } catch (InterruptedException e) {
@@ -181,6 +186,7 @@ public class OscilloscopeController implements Application.ActivityLifecycleCall
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         Log.e("Shower", "Surface destroyed");
+        surfaceHolder.lockCanvas();
         running = false;
         renderThread.interrupt();
         oscilloscope.clean();
