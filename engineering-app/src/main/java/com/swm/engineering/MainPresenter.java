@@ -29,11 +29,11 @@ public class MainPresenter implements RadioGroup.OnCheckedChangeListener
 
     @Override
     public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
-        if(checkedId == R.id.swm_heart_view) {
+        if(checkedId == R.id.swm_ecg_mode_button) {
             heartPresenter.show();
             motionPresenter.hide();
             currentPresenter = heartPresenter;
-        } else if (checkedId == R.id.swm_motion_view) {
+        } else if (checkedId == R.id.swm_motion_mode_button) {
             heartPresenter.hide();
             motionPresenter.show();
             currentPresenter = motionPresenter;
