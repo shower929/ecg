@@ -32,7 +32,7 @@
     <!-- Device view-->
     <include
         android:id="@+id/swm_device_view"
-        layout="@layout/motion_view"
+        layout="@layout/device_view"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -49,13 +49,11 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         app:layout_constraintRight_toRightOf="@+id/swm_motion_view"
-        app:layout_constraintHorizontal_bias="0.886"
-        app:layout_constraintBottom_toBottomOf="@+id/swm_motion_view"
-        android:layout_marginBottom="8dp"
+        app:layout_constraintHorizontal_bias="0.919"
+        android:layout_marginBottom="23dp"
         app:layout_constraintLeft_toLeftOf="@+id/swm_motion_view"
-        android:layout_marginTop="8dp"
-        app:layout_constraintVertical_bias="0.428"
-        app:layout_constraintTop_toBottomOf="@+id/swm_record_button" />
+        app:layout_constraintBottom_toTopOf="@+id/swm_record_button"
+        android:textColor="@color/swm_white"/>
 
     <com.swm.stuff.view.RecordButton
         android:id="@+id/swm_record_button"
@@ -69,11 +67,11 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintHorizontal_bias="0.905"
+        app:layout_constraintHorizontal_bias="0.946"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="@+id/swm_motion_view"
         android:layout_marginTop="8dp"
-        app:layout_constraintVertical_bias="0.832" />
+        app:layout_constraintVertical_bias="0.955" />
 
     <RadioGroup
         android:id="@+id/swm_switch_engine"
@@ -84,11 +82,11 @@
         android:layout_marginRight="8dp"
         android:layout_marginTop="8dp"
         app:layout_constraintBottom_toTopOf="@+id/swm_record_button"
-        app:layout_constraintHorizontal_bias="0.9"
+        app:layout_constraintHorizontal_bias="0.955"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.047">
+        app:layout_constraintVertical_bias="0.088">
 
         <com.swm.stuff.view.RadioButton
             android:id="@+id/swm_ecg_mode_button"
@@ -96,13 +94,14 @@
             android:layout_height="wrap_content"
             android:checked="true"
             android:text="@string/swm_ecg_mode"
-            android:textColor="@color/swm_main" />
+            android:textColor="@color/swm_white"
+            />
 
         <com.swm.stuff.view.RadioButton
             android:id="@+id/swm_motion_mode_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/swm_motion_mode"
-            android:textColor="@color/swm_main" />
+            android:textColor="@color/swm_white" />
     </RadioGroup>
 </android.support.constraint.ConstraintLayout>

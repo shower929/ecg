@@ -18,6 +18,6 @@
     <color name="swm_red">#ffff7575</color>
     <color name="swm_ecg">#ff00ff00</color>
     <color name="swm_motion_x">#ffff0000</color>
-    <color name="swm_motion_y">#ffffff00</color>
+    <color name="swm_motion_y">#ff00ff00</color>
     <color name="swm_motion_z">#ff0000ff</color>
 </resources>

@@ -18,10 +18,10 @@
     <string name="swm_stress_good">I feel good</string>
     <string name="swm_stress_happy">I am happy</string>
     <string name="swm_engineering">Engineering</string>
-    <string name="swm_my_calorie">Calorie %1$d</string>
+    <string name="swm_my_calorie">Calorie %1$f</string>
     <string name="swm_my_heart_rate">Heart rate:%1$d.  Max: %2$d.  Min: %3$d.</string>
     <string name="swm_my_hrv">SDNN: %1$f.  RMSSD: %2$f</string>
-    <string name="swm_my_stress">My stress</string>
+    <string name="swm_my_stress">Stress: %1$s</string>
     <string name="swm_my_phy_age">My physical age is: %1$d</string>
     <string name="swm_record_timer">00:00:00</string>
     <string name="swm_record">RECORD</string>
@@ -33,15 +33,16 @@
     <string name="swm_magnetic">Magnetic</string>
     <string name="swm_packet">Packet loss %1$d.</string>
     <string name="swm_my_step">Step %1$d</string>
-    <string name="swm_my_location">(%1$d,%2$d) accuracy: %3$d time: %4$d</string>
+    <string name="swm_my_location">(%1$f,%2$f) accuracy: %3$f time: %4$d</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="swm_x_smaller">75\%</string>
+    <string name="swm_x_smaller">50\%</string>
     <string name="swm_x_the_same">100\%</string>
-    <string name="swm_x_bigger">125\%</string>
+    <string name="swm_x_bigger">150\%</string>
     <string name="swm_x_scale">X scale</string>
     <string name="swm_y_scale">Y scale</string>
-    <string name="swm_y_smaller">75\%</string>
+    <string name="swm_y_smaller">50\%</string>
     <string name="swm_y_the_same">100\%</string>
-    <string name="swm_y_bigger">125\%</string>
+    <string name="swm_y_bigger">150\%</string>
+    <string name="swm_init">Initiating</string>
 </resources>

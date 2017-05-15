@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.swm.stuff.view.PacketLossView
+    <com.swm.stuff.view.PacketView
         android:id="@+id/swm_packet_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -21,16 +21,5 @@
         app:layout_constraintVertical_bias="0.028"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <com.swm.chart.Oscilloscope
-        android:id="@+id/swm_throughput_view"
-        android:layout_width="333dp"
-        android:layout_height="196dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.782"
-        app:layout_constraintHorizontal_bias="0.127" />
 
 </android.support.constraint.ConstraintLayout>
