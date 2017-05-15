@@ -16,8 +16,20 @@ public class SwmService extends Service {
     private static final String LOG_TAG = "SwmService";
     private final IBinder mSwmBinder = new SwmBinder();
     private SwmDevice device;
+    private CaloriePlugin caloriePlugin;
+    private HrvPlugin hrvPlugin;
     private HeartEngine heartEngine;
     private MotionEngine motionEngine;
+    private RunningPlugin runningPlugin;
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        Log.d("Service", "Unbind");
+        heartEngine.stop();
+        motionEngine.stop();
+        device.disconnect();
+        return true;
+    }
 
     @Nullable
     @Override
@@ -28,16 +40,26 @@ public class SwmService extends Service {
         HeartEngineProvider.init(this);
         heartEngine = HeartEngineProvider.newEngine(device);
 
+        caloriePlugin = new CaloriePlugin(this, CaloriePlugin.MALE, 39, 60);
+        heartEngine.addOutput(caloriePlugin);
+        caloriePlugin.on();
+
+        hrvPlugin = new HrvPlugin(this, 39);
+        heartEngine.addOutput(hrvPlugin);
+        hrvPlugin.on();
+
+        heartEngine.start();
+
         MotionEngineProvider.init();
         motionEngine = MotionEngineProvider.newEngine(device);
-        return mSwmBinder;
-    }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        heartEngine.stop();
-        device.disconnect();
+        runningPlugin = new RunningPlugin(this);
+        motionEngine.setOutput(runningPlugin);
+        runningPlugin.on();
+
+        motionEngine.start();
+
+        return mSwmBinder;
     }
 
     @Override
