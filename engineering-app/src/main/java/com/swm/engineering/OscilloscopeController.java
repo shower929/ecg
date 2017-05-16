@@ -24,81 +24,36 @@ import java.util.Deque;
 
 public class OscilloscopeController implements Application.ActivityLifecycleCallbacks
                                                 , OscilloscopeDelegate
-                                                , SurfaceHolder.Callback
                                                 , SwmEngineListener {
     private final Oscilloscope oscilloscope;
 
     private Activity myActivity;
 
-    private SurfaceHolder surfaceHolder;
-
-    private volatile boolean running;
-
-    private RenderThread renderThread;
-
     private Deque<SwmFilter> filters;
 
-    private int framePerSecond = 15;
+    private int min = Integer.MAX_VALUE;
+    private int max = Integer.MIN_VALUE;
+    private float scale = 1.0f;
+    private int count = 0;
+    private volatile boolean surfaceDestroyed = false;
 
-    @Override
-    public void scale(double y) {
-        /**
-         * @TODO Zoom in Zoom out while plot out of range
-        for(Double value: buffer) {
-            if (value > max)
-                max = value;
-            if (value < min)
-                min = value;
-        }
+    private void doScale() {
 
         double amplitude = max - min;
 
         // Wave is not out side of window;
-        if(amplitude < height)
+        if(amplitude < oscilloscope.getHeight())
             return;
 
-        scale = (float) (height / amplitude);
+        scale = (float) (oscilloscope.getHeight() / amplitude);
 
-        int size = buffer.size();
-
-        for(int i = 0; i < size; i++) {
-            double value = buffer.get(i) * scale;
-            buffer.set(i, value);
-        }
-         */
-    }
-
-    private class RenderThread extends Thread {
-
-        @Override
-        public void run() {
-            for(;;) {
-                if(!running)
-                    return;
-
-
-                Canvas canvas = surfaceHolder.lockCanvas();
-
-                if (canvas == null)
-                    return;
-
-                oscilloscope.drawOnCanvas(canvas);
-
-                surfaceHolder.unlockCanvasAndPost(canvas);
-                try {
-                    Thread.sleep(1000 / framePerSecond);
-                } catch (InterruptedException e) {
-                    Log.e("Shower", "User interrupted");
-                }
-            }
-        }
+        min = Integer.MAX_VALUE;
+        max = Integer.MIN_VALUE;
 
     }
 
     public OscilloscopeController(Oscilloscope oscilloscope) {
         this.oscilloscope = oscilloscope;
-        surfaceHolder = oscilloscope.getHolder();
-        surfaceHolder.addCallback(this);
         oscilloscope.setDelegate(this);
         filters = new ArrayDeque<>();
     }
@@ -155,47 +110,37 @@ public class OscilloscopeController implements Application.ActivityLifecycleCall
     }
 
     public void stop() {
-        running = false;
+        oscilloscope.setLayerType(View.LAYER_TYPE_NONE, null);
         oscilloscope.setVisibility(View.GONE);
-        surfaceHolder.removeCallback(this);
     }
 
     public void start() {
-        running = true;
+        oscilloscope.setLayerType(View.LAYER_TYPE_HARDWARE, null);
         oscilloscope.setVisibility(View.VISIBLE);
-    }
-
-    private void startRender() {
-        renderThread = new RenderThread();
-        renderThread.start();
-    }
-
-    @Override
-    public void surfaceCreated(SurfaceHolder holder) {
-        Log.d("Shower", "Surfaced created");
-        startRender();
-    }
-
-    @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        Log.d("Shower", "Surface changed: " + height);
-        oscilloscope.initBackground();
-
-    }
-
-    @Override
-    public void surfaceDestroyed(SurfaceHolder holder) {
-        Log.e("Shower", "Surface destroyed");
-        surfaceHolder.lockCanvas();
-        running = false;
-        renderThread.interrupt();
-        oscilloscope.clean();
     }
 
     @Override
     public void onEcgDataAvailable(EcgData data) {
+        if (surfaceDestroyed)
+            return;
+
         filter(data);
-        oscilloscope.bufferDrawing(data.samples);
+
+        int length = data.samples.length;
+
+        for(int i = 0; i < length; i++)
+            data.samples[i] = data.samples[i] * scale;
+
+        oscilloscope.plotting(data.samples);
+        oscilloscope.postInvalidate();
+
+        count += length;
+
+        if(count == 1500) {
+            doScale();
+            count = 0;
+        }
+
     }
 
     private void filter(EcgData data) {
