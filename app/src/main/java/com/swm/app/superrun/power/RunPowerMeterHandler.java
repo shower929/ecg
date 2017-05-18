@@ -62,6 +62,8 @@ public class RunPowerMeterHandler extends Handler implements MeterListener {
                 int value = data.getInt(KEY_VALUE);
                 mMeter.setRunPower(power);
                 mMeter.invalidate();
+                if(mMeterValue == null)
+                    return;
                 mMeterValue.setText(String.valueOf(value));
                 if (value >= excellentLevel)
                     setMeterValueColor(mMeterValue.getResources().getColor(R.color.swm_run_power_excellent));
@@ -95,6 +97,7 @@ public class RunPowerMeterHandler extends Handler implements MeterListener {
         final int sign = (newValue - currentValue) > 0 ? 1 : -1;
         int newStep = currentValue;
 
+
         for (int i = 0; i < len; i++) {
             currentFraction = currentFraction + fractionStep * sign;
             newStep = newStep + sign;
@@ -105,6 +108,7 @@ public class RunPowerMeterHandler extends Handler implements MeterListener {
             msg.setData(data);
             sendMessageDelayed(msg, i * Math.round(CLOCK));
         }
+
         currentValue = newValue;
     }
 

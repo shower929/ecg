@@ -24,9 +24,6 @@ class MenuController {
             case R.id.swm_menu_ecg:
                 startEcgActivity();
                 break;
-            case R.id.swm_menu_hrv:
-                startHrvActivity();
-                break;
             case R.id.swm_menu_motion:
                 startMotionActivity();
                 break;
@@ -38,11 +35,6 @@ class MenuController {
 
     void startEcgActivity() {
         Intent intent = new Intent(mContext, CompositeActivity.class);
-        mContext.startActivity(intent);
-    }
-
-    void startHrvActivity() {
-        Intent intent = new Intent(mContext, HrvActivity.class);
         mContext.startActivity(intent);
     }
 
