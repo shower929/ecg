@@ -71,6 +71,7 @@ public class SuperRunActivity extends SwmBaseActivity
             Log.i(LOG_TAG, "Connected to heart rate service");
             try {
                 mSwmBinder.registerHeartRateListener(SuperRunActivity.this);
+                mSwmBinder.registerHeartRateListener(mHeartBeatHandler);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -204,7 +205,7 @@ public class SuperRunActivity extends SwmBaseActivity
             mSwmBinder.setDeviceListener(this);
             mSwmBinder.setBatteryListener(this);
         }
-        mMeterHandler.setMainValue(60);
+
     }
 
     @Override
@@ -233,7 +234,7 @@ public class SuperRunActivity extends SwmBaseActivity
                 mMeterHandler.setHeartRate(heartRateData.heartRate);
 
                 mHeartBeatSound.onHeartRateDataAvailable(heartRateData);
-                mHeartBeatHandler.onHeartBeat(heartRateData.heartRate);
+
                 if (mBtnAnimRunnable == null) {
                     mBtnAnimRunnable = new Runnable() {
                         @Override

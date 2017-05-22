@@ -40,8 +40,8 @@
             android:layout_below="@id/swm_heart_layout"
             android:layout_marginTop="10dp"
             >
-            <com.swm.app.superrun.power.SwmMeter
-                android:id="@+id/swm_run_power_meter"
+            <com.swm.view.IntensityMeter
+                android:id="@+id/swm_intensity_meter"
                 android:layout_width="match_parent"
                 android:layout_height="300dp"
                 android:elevation="1dp"
@@ -74,7 +74,7 @@
                 android:layout_marginTop="55dp"
                 android:elevation="1dp"
                 android:translationZ="2dp"/>
-            <TextView
+            <com.swm.view.IntensityView
                 android:id="@+id/swm_intensity_value"
                 android:layout_gravity="center_horizontal"
                 android:layout_width="wrap_content"

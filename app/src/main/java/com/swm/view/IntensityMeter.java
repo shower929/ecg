@@ -1,4 +1,4 @@
-package com.swm.app.superrun.power;
+package com.swm.view;
 
 import android.animation.Animator;
 import android.animation.ArgbEvaluator;
@@ -12,25 +12,29 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.SweepGradient;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
+import android.view.animation.OvershootInterpolator;
 
+import com.swm.app.superrun.power.MeterListener;
+import com.swm.app.superrun.power.SwmMeter;
 import com.swm.heart.R;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Created by yangzhenyu on 2016/10/11.
  */
 
-public class SwmMeter extends View {
-    private static final String LOG_TAG = "SwmMeter";
+public class IntensityMeter extends View {
 
     private Paint mInnerPaint;
     private Paint mDefaultPaint;
 
-    private static final Object MAIN_VALUE = new Object();
-    private List<Integer> mBuffer;
+    private List<Float> mBuffer;
     private RectF mOuterBase;
     private RectF mInnerBase;
     private RectF mSecondBase;
@@ -55,15 +59,15 @@ public class SwmMeter extends View {
     private String mSecondCircleText;
     private String mSecondValue = "00";
 
+    private int[] mSweepColors;
+    private Paint mOuterSweepPaint;
 
-    private int mCurrentPower;
-    private MeterListener mMeterListener;
     private Animator mRunPowerColorAnim;
     private int mPowerColor;
     private float mOuterStart = 91;
     public final static int MAX_DEGREE = 300;
     private Bitmap mPointer;
-    private int mType;
+
     private float mPointerLeft;
     private float mPointerTop;
 
@@ -71,15 +75,26 @@ public class SwmMeter extends View {
     private int goodLevel;
     private int poorLevel;
 
-    public SwmMeter(Context context) {
+    private int max;
+    private float currentValue;
+    private int mMeterValueColor;
+    private Animator mMeterValueColorAnim;
+    private volatile boolean init;
+    private long previous;
+    private static final int FPS = 60;
+    private OvershootInterpolator overshootInterpolator;
+
+    private static final ReentrantLock LOCK = new ReentrantLock();
+
+    public IntensityMeter(Context context) {
         this(context, null);
     }
 
-    public SwmMeter(Context context, AttributeSet attrs) {
+    public IntensityMeter(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public SwmMeter(Context context, AttributeSet attrs, int defStyleAttr) {
+    public IntensityMeter(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
         mBuffer = new ArrayList<>();
@@ -125,6 +140,8 @@ public class SwmMeter extends View {
             mOuterPaint.setColor(a.getColor(R.styleable.SwmMeter_outerCircleColor, 0xffffff));
             mOuterRadius = a.getDimension(R.styleable.SwmMeter_outerCircleRadius, 50);
 
+            initOuterType(a);
+
             mDefaultPaint.setStrokeWidth(mOuterWidth);
             mDefaultPaint.setColor(getResources().getColor(R.color.swm_power_default));
 
@@ -137,10 +154,22 @@ public class SwmMeter extends View {
             mSecondCircleTextPaint.setTextSize(mSecondCircleTextSize);
             mSecondCircleText = a.getString(R.styleable.SwmMeter_secondText);
             mPointer = BitmapFactory.decodeResource(getResources(), a.getResourceId(R.styleable.SwmMeter_pointer, R.drawable.swm_arrow));
-            mType = a.getInt(R.styleable.SwmMeter_meterType, 1);
+
         } finally {
             a.recycle();
         }
+
+        overshootInterpolator = new OvershootInterpolator(0.2f);
+    }
+
+    private void initOuterType(TypedArray a) {
+        mOuterSweepPaint = new Paint();
+        mOuterSweepPaint.setStyle(Paint.Style.STROKE);
+        mOuterSweepPaint.setStrokeWidth(mOuterWidth);
+        mOuterSweepPaint.setAntiAlias(true);
+        int sweepColorRes = a.getResourceId(R.styleable.SwmMeter_sweepColors, 0);
+        if (sweepColorRes != 0)
+            mSweepColors = getResources().getIntArray(sweepColorRes);
     }
 
     @Override
@@ -170,6 +199,9 @@ public class SwmMeter extends View {
         mOuterBase.top = mInnerCircleY - mOuterRadius;
         mOuterBase.right = mInnerCircleX + mOuterRadius;
         mOuterBase.bottom = mInnerCircleY + mOuterRadius;
+
+        applyOuterType();
+
         mSecondX = mInnerCircleX + mInnerRadius - mInnerWidth;
         mSecondY = mInnerCircleY + mOuterRadius + mOuterWidth;
         mSecondBase = new RectF();
@@ -178,80 +210,76 @@ public class SwmMeter extends View {
         mSecondBase.right = mSecondX + mSecondCircleRadius;
         mSecondBase.bottom = mSecondY + mSecondCircleRadius;
 
+        layoutMeter(left, top, right, bottom);
     }
 
-    public void setRunPower(int power) {
-        synchronized (MAIN_VALUE) {
-            mBuffer.add(Integer.valueOf(power));
+    private void layoutMeter(int left, int top, int right, int bottom) {
+        mPointerLeft = mInnerCircleX - mPointer.getWidth() / 2;
+        mPointerTop = mInnerCircleY + mInnerRadius - mInnerWidth - 5;
+    }
+
+    private void applyOuterType() {
+        int len = mSweepColors.length;
+
+        float[] positions = new float[len];
+        float position = 1f / len;
+        for (int i = 0; i < len; i++) {
+            positions[i] = i * position;
         }
+
+        mOuterSweepPaint.setShader(new SweepGradient(mInnerCircleX, mInnerCircleY, mSweepColors, positions));
     }
 
-    private void drawMeter(Canvas canvas, int power) {
-        if(power >= excellentLevel)
-            setRunPowerColor(getResources().getColor(R.color.swm_run_power_excellent));
-        else if (power >= goodLevel && power < excellentLevel)
-            setRunPowerColor(getResources().getColor(R.color.swm_run_power_good));
-        else if (power < goodLevel)
-            setRunPowerColor(getResources().getColor(R.color.swm_run_power_poor));
+    private void drawOuter(Canvas canvas) {
+        canvas.drawArc(mOuterBase, 91, 300, false, mOuterSweepPaint);
+    }
 
-        canvas.drawArc(mOuterBase, 91, power, false, mOuterPaint);
+    private void drawMeter(Canvas canvas, float degree) {
+        canvas.rotate(degree, mInnerCircleX, mInnerCircleY);
+        canvas.drawBitmap(mPointer, mPointerLeft, mPointerTop, null);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+        drawScene(canvas);
+
+        LOCK.lock();
+        try {
+            if (mBuffer.size() == 0) {
+                drawMeter(canvas, toDegree(currentValue));
+                return;
+            }
+            Float value = mBuffer.remove(0);
+            Log.d("Shower", "Value: " + value);
+            drawMeter(canvas, value);
+
+            if(mBuffer.size() > 0)
+                postInvalidate();
+
+        } finally {
+            LOCK.unlock();
+        }
+    }
+
+    private void drawScene(Canvas canvas) {
         canvas.drawArc(mInnerBase, 91, 300, false, mInnerPaint);
+        drawOuter(canvas);
         canvas.drawArc(mOuterBase, 91, 300, false, mDefaultPaint);
         canvas.drawArc(mSecondBase, 92, 358, false, mDefaultPaint);
         canvas.drawText(mSecondValue, mSecondX, mSecondY, mSecondCircleValuePaint);
         canvas.drawText(mSecondCircleText, mSecondX, mSecondY + mSecondCircleTextSize + 10, mSecondCircleTextPaint);
-
-        synchronized (MAIN_VALUE) {
-            if (mBuffer.size() == 0) {
-                drawMeter(canvas, mCurrentPower);
-            } else {
-
-                for(Integer power : mBuffer) {
-
-                    drawMeter(canvas, power);
-                    mCurrentPower = power;
-
-                }
-                mBuffer.clear();
-            }
-        }
     }
 
-    private void setRunPowerColor(int color) {
-        if (color == mPowerColor)
-            return;
-
-        mPowerColor = color;
-
-        if (mRunPowerColorAnim != null && mRunPowerColorAnim.isStarted())
-            mRunPowerColorAnim.cancel();
-
-        ArgbEvaluator evaluator = new ArgbEvaluator();
-        mRunPowerColorAnim = ObjectAnimator.ofObject(this, "powerColor", evaluator, mOuterPaint.getColor(), color);
-        mRunPowerColorAnim.setDuration(500);
-        mRunPowerColorAnim.start();
-    }
-
-    public void setPowerColor(int color) {
-        mOuterPaint.setColor(color);
-        invalidate();
-    }
-
-    public void turnon() {
+    public void on() {
         setDeviceStatusColor(getResources().getColor(R.color.swm_device_status_connected));
     }
 
-    public void turnoff() {
+    public void off() {
         setDeviceStatusColor(getResources().getColor(R.color.swm_device_status_unconnect));
     }
 
     private void setDeviceStatusColor(int color) {
-
         ArgbEvaluator evaluator = new ArgbEvaluator();
         ObjectAnimator animator = ObjectAnimator.ofObject(this, "color", evaluator, mInnerPaint.getColor(), color);
         animator.setDuration(1000);
@@ -263,13 +291,14 @@ public class SwmMeter extends View {
         invalidate();
     }
 
-    public void setCallback(MeterListener listener) {
-        this.mMeterListener = listener;
-    }
-
-    public void setSecondValue(int secondValue) {
-        mSecondValue = String.valueOf(secondValue);
-        invalidate();
+    public void setSecondValue(final int secondValue) {
+        post(new Runnable() {
+            @Override
+            public void run() {
+                mSecondValue = String.valueOf(secondValue);
+                invalidate();
+            }
+        });
     }
 
     public void updateSecondCircleColor(int color) {
@@ -295,4 +324,38 @@ public class SwmMeter extends View {
     public void setPoorLevel(int level) {
         poorLevel = level;
     }
+
+    public void setValue(final int target) {
+        float interpolation = currentValue;
+        float base = target - currentValue;
+        float step = base / FPS;
+        int sign = (target - currentValue) > 0 ? 1 : -1;
+
+        LOCK.lock();
+
+        try {
+            for (int i = 0; i < FPS; i++) {
+                interpolation  +=  step * sign;
+                float degree = toDegree(interpolation);
+                mBuffer.add(degree);
+            }
+        } finally {
+            LOCK.unlock();
+        }
+
+        currentValue = target;
+
+        invalidate();
+
+    }
+
+    private float toDegree(float digit) {
+        return digit * MAX_DEGREE / max;
+    }
+
+    public void setMax(int max) {
+        this.max = max;
+    }
+
+
 }

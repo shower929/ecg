@@ -7,16 +7,18 @@ import android.os.Handler;
 import android.view.View;
 import android.widget.TextView;
 
+import com.swm.core.HeartRateData;
+
 /**
  * Created by yangzhenyu on 2016/10/12.
  */
 
-public class HeartBeatHandler {
+public class HeartBeatHandler implements HeartRateListener{
     private Handler mHandler;
     private View mHeart;
     private long mTime;
 
-    AnimatorSet mHeartBeatAnim;
+    private AnimatorSet mHeartBeatAnim;
     private Runnable mBeat;
     private static final float TOTAL = 50f + 50f + 80f;
     private float mEnlargeXFactor = 80f / TOTAL;
@@ -41,17 +43,20 @@ public class HeartBeatHandler {
         Animator heartOriXAnim = ObjectAnimator.ofFloat(mHeart, "scaleX", 0.8f, 1f);
         Animator heartOriYAnim = ObjectAnimator.ofFloat(mHeart, "scaleY", 0.8f, 1f);
         heartEnlargeXAnim.setDuration((long) (totalDuration * mEnlargeXFactor));
+
         AnimatorSet r = new AnimatorSet();
         r.playTogether(heartShrinkXAnim, heartEnlargeYAnim);
         r.setDuration((long) (totalDuration * mShrinkXFactor));
+
         AnimatorSet t = new AnimatorSet();
         t.playTogether(heartOriXAnim, heartOriYAnim);
         t.setDuration((long) (totalDuration * mOriXFactor));
+
         mHeartBeatAnim = new AnimatorSet();
         mHeartBeatAnim.playSequentially(heartEnlargeXAnim,r, t);
     }
 
-    public void onHeartBeat(int heartRate) {
+    private void onHeartBeat(int heartRate) {
         if (heartRate == 0)
             return;
 
@@ -61,10 +66,12 @@ public class HeartBeatHandler {
         }
 
         mTime = time;
+
         if (mHeartBeatAnim != null && mHeartBeatAnim.isStarted())
             mHeartBeatAnim.cancel();
+
         initHeartBeatAnim(mTime);
-        //mHeartBeatHandler.removeCallbacks(mBeat);
+
         if (mBeat == null) {
             mBeat  = new Runnable() {
                 @Override
@@ -78,5 +85,15 @@ public class HeartBeatHandler {
         if (mHeartRate != null)
             mHeartRate.setText(String.valueOf(heartRate));
 
+    }
+
+    @Override
+    public void onHeartRateDataAvailable(final HeartRateData heartRateData) {
+        mHeart.post(new Runnable() {
+            @Override
+            public void run() {
+                onHeartBeat(heartRateData.heartRate);
+            }
+        });
     }
 }

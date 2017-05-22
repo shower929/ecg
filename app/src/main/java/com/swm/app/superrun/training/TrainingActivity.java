@@ -1,8 +1,5 @@
 package com.swm.app.superrun.training;
 
-import android.animation.Animator;
-import android.animation.ArgbEvaluator;
-import android.animation.ObjectAnimator;
 import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -18,32 +15,26 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.swm.app.superrun.power.RunPowerMeterHandler;
+import com.swm.view.IntensityMeter;
+import com.swm.view.IntensityView;
 import com.swm.app.superrun.power.SwmMeter;
-import com.swm.core.HeartRateData;
 import com.swm.core.MyLocationService;
 import com.swm.core.SwmBinder;
 import com.swm.core.SwmService;
-import com.swm.device.SwmDeviceListener;
 import com.swm.heart.R;
 import com.swm.heart.SwmBaseActivity;
 import com.swm.heartbeat.HeartBeatHandler;
-import com.swm.heartbeat.HeartRateListener;
 import com.swm.report.Reporter;
 import com.swm.training.SwmBar;
-import com.swm.training.TrainingListener;
+
 import com.swm.training.TrainingModel;
 
 import static com.swm.app.superrun.training.TrainingModelActivity.KEY_TRAINING_MODEL;
 
 public class TrainingActivity extends SwmBaseActivity implements MyLocationService.LocationListener
-                                                    , HeartRateListener
-                                                    , SwmDeviceListener
-                                                    , View.OnClickListener
-                                                    , TrainingListener{
-    private static final String LOG_TAG = "Training";
+                                                    , View.OnClickListener {
+
     private SwmBar mDistanceBar;
     private SwmBar mElapseBar;
     private SwmBar mPaceBar;
@@ -55,7 +46,7 @@ public class TrainingActivity extends SwmBaseActivity implements MyLocationServi
     private SwmBinder mSwmBinder;
 
     private MyLocationService mLocationService;
-    private HeartBeatHandler mHeartBeatHandler;
+
     private static final int ONE_MINUTE = 60 * 1000;
     private AlertDialog mGpsDialog;
     private Handler mHandler;
@@ -65,13 +56,13 @@ public class TrainingActivity extends SwmBaseActivity implements MyLocationServi
     private Runnable mCountDown;
     private View mCover;
     private View mMain;
-    private RunPowerMeterHandler mMeterHandler;
+    private TrainingIntensityPresenter trainingIntensityPresenter;
     private View mPauseCover;
     private ImageView mPauseView;
-    private TextView mIntensity;
+    private IntensityView mIntensity;
     private boolean mPausing = false;
     private boolean mShowingPauseCover = false;
-    private Animator mIntensityColorAnimator;
+    private HeartBeatHandler mHeartBeatHandler;
 
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
@@ -79,12 +70,12 @@ public class TrainingActivity extends SwmBaseActivity implements MyLocationServi
             mSwmBinder = (SwmBinder) service;
 
             try {
-                mSwmBinder.registerHeartRateListener(TrainingActivity.this);
+                mSwmBinder.registerHeartRateListener(trainingIntensityPresenter);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            mSwmBinder.setDeviceListener(TrainingActivity.this);
-            mSwmBinder.setTrainingListener(TrainingActivity.this);
+            mSwmBinder.setDeviceListener(trainingIntensityPresenter);
+            mSwmBinder.setTrainingListener(trainingIntensityPresenter);
         }
 
         @Override
@@ -124,7 +115,7 @@ public class TrainingActivity extends SwmBaseActivity implements MyLocationServi
         boolean success = bindService(locationIntent, mLocationConnection, BIND_AUTO_CREATE);
 
         setContentView(R.layout.activity_coach);
-        mIntensity = (TextView) findViewById(R.id.swm_intensity_value);
+        mIntensity = (IntensityView) findViewById(R.id.swm_intensity_value);
         mMain = findViewById(R.id.activity_coach);
         mMain.setOnClickListener(this);
         mCountDownView = (TextView) findViewById(R.id.swm_timer);
@@ -162,11 +153,15 @@ public class TrainingActivity extends SwmBaseActivity implements MyLocationServi
         TextView stepView = (TextView) findViewById(R.id.swm_step);
         mPaceBar = (SwmBar) findViewById(R.id.swm_speed_bar);
         mStepBar = (SwmBar) findViewById(R.id.swm_step_bar);
-        SwmMeter meter = (SwmMeter) findViewById(R.id.swm_run_power_meter);
-        mMeterHandler = new RunPowerMeterHandler(meter, null);
-        mMeterHandler.setMax(8);
+        IntensityMeter meter = (IntensityMeter) findViewById(R.id.swm_intensity_meter);
+        meter.setMax(8);
+
         View heart = findViewById(R.id.swm_heart);
         mHeartBeatHandler = new HeartBeatHandler(heart);
+
+        trainingIntensityPresenter = new TrainingIntensityPresenter(meter, mIntensity);
+
+
         if (model.distance > 0) {
             TextView distanceView = (TextView) findViewById(R.id.swm_distance);
             distanceView.setText(String.valueOf(model.distance));
@@ -268,46 +263,13 @@ public class TrainingActivity extends SwmBaseActivity implements MyLocationServi
             unbindService(mLocationConnection);
         }
         if (mSwmBinder != null) {
-            mSwmBinder.removeHeartRateListener(this);
+            mSwmBinder.removeHeartRateListener(trainingIntensityPresenter);
             mSwmBinder.removeTrainingListener();
             mSwmBinder.stopSport();
             unbindService(mConnection);
         }
         mHandler.removeCallbacks(mTimer);
         mHandler.removeCallbacks(mCountDown);
-    }
-
-    @Override
-    public void onHeartRateDataAvailable(final HeartRateData heartRateData) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mMeterHandler.setHeartRate(heartRateData.heartRate);
-                mHeartBeatHandler.onHeartBeat(heartRateData.heartRate);
-            }
-        });
-    }
-
-    @Override
-    public void onConnectStateChanged(int state) {
-        if (state == SwmDeviceListener.CONNECTED){
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    mMeterHandler.sendEmptyMessage(RunPowerMeterHandler.MSG_TURNON);
-                }
-            });
-        }
-
-        if (state == SwmDeviceListener.DISCONNECTED){
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    mMeterHandler.sendEmptyMessage(RunPowerMeterHandler.MSG_TURNOFF);
-                    Toast.makeText(TrainingActivity.this, getString(R.string.swm_disconnect_msg), Toast.LENGTH_LONG).show();
-                }
-            });
-        }
     }
 
     @Override
@@ -428,53 +390,5 @@ public class TrainingActivity extends SwmBaseActivity implements MyLocationServi
     private void hidePauseCover() {
         mPauseCover.setVisibility(View.GONE);
         mShowingPauseCover = false;
-    }
-
-    @Override
-    public void onTrainingIntensityChanged(final int newIntensity) {
-
-        mMeterHandler.setMainValue(newIntensity);
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-
-                if (mIntensityColorAnimator != null && mIntensityColorAnimator.isStarted()) {
-                    mIntensityColorAnimator.cancel();
-                }
-                ArgbEvaluator evaluator = new ArgbEvaluator();
-
-                if (newIntensity == INTENSITY_NONE) {
-                    mIntensity.setText(getString(R.string.swm_intensity_none));
-                    mIntensityColorAnimator = ObjectAnimator.ofObject(mIntensity, "textColor", evaluator, mIntensity.getCurrentTextColor(), getResources().getColor(R.color.swm_white));
-                } else if (newIntensity == INTENSITY_E) {
-                    mIntensity.setText(getString(R.string.swm_intensity_easy));
-                    mIntensityColorAnimator = ObjectAnimator.ofObject(mIntensity, "textColor", evaluator, mIntensity.getCurrentTextColor(), getResources().getColor(R.color.swm_intensity_easy));
-                } else if (newIntensity == INTENSITY_M) {
-                    mIntensity.setText(getString(R.string.swm_intensity_normal));
-                    mIntensityColorAnimator = ObjectAnimator.ofObject(mIntensity, "textColor", evaluator, mIntensity.getCurrentTextColor(), getResources().getColor(R.color.swm_intensity_normal));
-                } else if (newIntensity == INTENSITY_T) {
-                    mIntensity.setText(getString(R.string.swm_intensity_strong));
-                    mIntensityColorAnimator = ObjectAnimator.ofObject(mIntensity, "textColor", evaluator, mIntensity.getCurrentTextColor(), getResources().getColor(R.color.swm_intensity_strong));
-                } else if (newIntensity == INTENSITY_I) {
-                    mIntensity.setText(getString(R.string.swm_intensity_heavy));
-                    mIntensityColorAnimator = ObjectAnimator.ofObject(mIntensity, "textColor", evaluator, mIntensity.getCurrentTextColor(), getResources().getColor(R.color.swm_intensity_heavy));
-                } else if (newIntensity == INTENSITY_10K) {
-                    mIntensity.setText(getString(R.string.swm_intensity_heavy));
-                    mIntensityColorAnimator = ObjectAnimator.ofObject(mIntensity, "textColor", evaluator, mIntensity.getCurrentTextColor(), getResources().getColor(R.color.swm_intensity_heavy));
-                } else if (newIntensity == INTENSITY_R) {
-                    mIntensity.setText(getString(R.string.swm_intensity_hard));
-                    mIntensityColorAnimator = ObjectAnimator.ofObject(mIntensity, "textColor", evaluator, mIntensity.getCurrentTextColor(), getResources().getColor(R.color.swm_intensity_hard));
-                } else if (newIntensity == DANGER) {
-                    mIntensity.setText(getString(R.string.swm_danger));
-                    mIntensityColorAnimator = ObjectAnimator.ofObject(mIntensity, "textColor", evaluator, mIntensity.getCurrentTextColor(), getResources().getColor(R.color.swm_intensity_danger));
-                }
-
-                if (mIntensityColorAnimator != null) {
-                    mIntensityColorAnimator.setDuration(500);
-                    mIntensityColorAnimator.start();
-                }
-            }
-        });
-
     }
 }
