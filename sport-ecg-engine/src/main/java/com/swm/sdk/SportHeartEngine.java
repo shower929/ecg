@@ -29,8 +29,8 @@ class SportHeartEngine extends HeartEngine {
     private HeartRateWorker mHeartRateWorker;
     private boolean beating = false;
 
-    private Vector<Integer> mFirstLevelBuffer;
-    private Vector<Integer> mSecondLevelBuffer;
+    private Vector<Double> mFirstLevelBuffer;
+    private Vector<Double> mSecondLevelBuffer;
 
     private static final int CAL_TIME_BUF = 6;
     private static final int ECG_SAMPLE_RATE = 250;
@@ -43,8 +43,7 @@ class SportHeartEngine extends HeartEngine {
     private Runnable mCheckQueueSize;
 
     private Handler mProfillingHandler;
-    private Thread mCallbackWorker;
-    static final int clock = Math.round(1f/ECG_SAMPLE_RATE * 1000);
+    private Thread listenerSender;
 
     private class HeartRateWorker extends Thread{
 
@@ -67,10 +66,10 @@ class SportHeartEngine extends HeartEngine {
                         mSecondLevelBuffer.clear();
                     }
 
-                    Integer[] ecgData = new Integer[g_i32CalcultedLength];
+                    Double[] ecgData = new Double[g_i32CalcultedLength];
                     int[] data = new int[g_i32CalcultedLength];
 
-                    List<Integer> tmp = mFirstLevelBuffer.subList(0, g_i32CalcultedLength);
+                    List<Double> tmp = mFirstLevelBuffer.subList(0, g_i32CalcultedLength);
                     tmp.toArray(ecgData);
                     int len = ecgData.length;
 
@@ -97,7 +96,7 @@ class SportHeartEngine extends HeartEngine {
                     }
                     logHeartData(heartData);
                 } catch (InterruptedException e) {
-                    Log.d(LOG_TAG, e.getMessage(), e);
+
                 }
             }
         }
@@ -108,7 +107,7 @@ class SportHeartEngine extends HeartEngine {
 
         mSecondLevelBuffer = new Vector<>();
 
-        mHeartRateWorker = new HeartRateWorker();
+
 
         mCallbackDataQueue = new LinkedBlockingQueue<>();
 
@@ -125,7 +124,16 @@ class SportHeartEngine extends HeartEngine {
             }
         };
 
-        mCallbackWorker = new Thread(new Runnable() {
+        monitor = new SwmEcgMonitor();
+    }
+
+    private void startHeartBeat() {
+        mHeartRateWorker = new HeartRateWorker();
+        mHeartRateWorker.start();
+    }
+
+    private void startListenerSender() {
+        listenerSender = new Thread(new Runnable() {
             @Override
             public void run() {
                 for (;;) {
@@ -140,13 +148,12 @@ class SportHeartEngine extends HeartEngine {
                             }
                         }
                     } catch (InterruptedException e) {
-                        e.printStackTrace();
                     }
 
                 }
             }
         });
-
+        listenerSender.start();
     }
 
     @Override
@@ -154,9 +161,8 @@ class SportHeartEngine extends HeartEngine {
         super.start();
         running = true;
         InitialForModeChange(1);
-        mHeartRateWorker.start();
-        mCallbackWorker.start();
-
+        startHeartBeat();
+        startListenerSender();
     }
 
     @Override
@@ -165,28 +171,37 @@ class SportHeartEngine extends HeartEngine {
         running = false;
         InitialForModeChange(0);
 
-        mCallbackWorker.interrupt();
+        listenerSender.interrupt();
         mHeartRateWorker.interrupt();
         mSecondLevelBuffer.clear();
-
+        monitor.off();
     }
 
-    @Override
-    synchronized void onFuel(BleData data) {
-        super.onFuel(data);
+    private void heartRate(BleData data) {
+        EcgData ecgData = EcgData.fromBle(data);
 
-        int len = data.rawData.length;
-
-        for(int i = 10; i < len - 1; i = i + 2) {
-            Integer value = ((data.rawData[i+1] << 8) & 0xFF00) | (data.rawData[i] & 0xFF);
-            mSecondLevelBuffer.add(value);
-            EcgDataStore.getIns().putData(value);
+        for (double value : ecgData.samples) {
+            mSecondLevelBuffer.add(Double.valueOf(value));
         }
 
         if (!beating) {
             beating = true;
             mProfillingHandler.postDelayed(mCheckQueueSize, 1000);
         }
+
     }
 
+    private void ecg(BleData data) {
+        EcgData ecgData = EcgData.fromBle(data);
+        monitor.offer(ecgData);
+    }
+
+    @Override
+    synchronized void onFuel(BleData data) {
+        super.onFuel(data);
+
+        heartRate(data);
+        ecg(data);
+
+    }
 }
