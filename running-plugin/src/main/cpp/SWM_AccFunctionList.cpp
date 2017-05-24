@@ -539,3 +539,37 @@ void GT_ACC_Motion_SuperRun_VelocityByPDR(double* d64Output, double* d64AccDataX
   d64Output[4] = f_d64StepLength;
   d64Output[5] = f_d64StepSpeed;
 }
+
+long SuperMarie_Jump(double* d64AccDataX, double* d64AccDataY, double* d64AccDataZ)
+{
+    double* jupm_peak;
+    long i, count, jump;
+    ACC_ALGO_NewBuffer_SlideWindow_AccXYZC();
+    ACC_ALGO_InitialBuffer_SlideWindow_AccXYZC();
+    AccFinalTypeOf4Axis(g_d64SlideWindowBuffer_AccX, g_d64SlideWindowBuffer_AccY, g_d64SlideWindowBuffer_AccZ, g_d64SlideWindowBuffer_AccC, d64AccDataX, d64AccDataY, d64AccDataZ, com_SlideWindow);
+    ACC_ALGO_NewBuffer(com_SlideWindow);
+    ACC_Algorithm_Initial();
+
+    count = 0;
+    if ((g_d64SlideWindowBuffer_AccY[25] < -27) && (g_d64SlideWindowBuffer_AccY[32] > 3))
+    {
+        for (i = 0; i < 7 ; i++)
+        {
+            if (g_d64SlideWindowBuffer_AccY[25+i+1] > g_d64SlideWindowBuffer_AccY[25+i])
+            {
+                count++;
+            }
+        }
+    }
+
+    if (count >= 6)
+    {
+        jump = 1;
+    }
+    else
+    {
+        jump = 0;
+    }
+
+    return jump;
+}

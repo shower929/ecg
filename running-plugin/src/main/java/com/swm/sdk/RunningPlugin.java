@@ -1,14 +1,10 @@
 package com.swm.sdk;
 
 import android.content.Context;
-import android.content.Intent;
-
-import com.swm.running.RunningPluginListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Created by yangzhenyu on 2017/3/28.
@@ -17,8 +13,11 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class RunningPlugin extends SwmPlugin implements HeartEngineOutput, MotionEngineOutput {
     public static final String ACTION_STEP = "action_step";
     public static final String EXTRA_STEP = "extra_step";
-
-    private static final int WINDOW = 6 * 50; // 300 samples
+    public static final String ACTION_JUMP = "action_jump";
+    public static final String EXTRA_JUMP = "extra_jump";
+    public static final int NONE = 0;
+    public static final int JUMP = 1;
+    private static final int WINDOW = 1 * 50; // 300 samples
 
     private List<Double> accX;
     private List<Double> accY;
@@ -30,7 +29,8 @@ public class RunningPlugin extends SwmPlugin implements HeartEngineOutput, Motio
         System.loadLibrary("swm_running_algo");
     }
 
-    static native int GetStep(double[] accX, double[] accY, double[] accZ);
+    private static native int GetStep(double[] accX, double[] accY, double[] accZ);
+    private static native int IsJump(double[] accX, double[] accY, double[] accZ);
 
     public RunningPlugin(Context context) {
         super(context);
@@ -49,12 +49,11 @@ public class RunningPlugin extends SwmPlugin implements HeartEngineOutput, Motio
 
     @Override
     public void onHeartDataAvailable(HeartData heartData) {
-
+        
     }
 
     @Override
-    public void onAcceleratorDataAvailale(MotionData.Accelerator accelerator) {
-
+    public void onAcceleratorDataAvailable(AcceleratorData accelerator) {
 
         if(accX == null)
             accX = new ArrayList<>();
@@ -63,9 +62,9 @@ public class RunningPlugin extends SwmPlugin implements HeartEngineOutput, Motio
         if(accZ == null)
             accZ = new ArrayList<>();
 
-        accX.add((double) accelerator.x);
-        accY.add((double) accelerator.y);
-        accZ.add((double) accelerator.z);
+        accX.add(accelerator.x);
+        accY.add(accelerator.y);
+        accZ.add(accelerator.z);
 
         if(accX.size() >= WINDOW && accY.size() >= WINDOW && accZ.size() >= WINDOW) {
 
@@ -76,6 +75,9 @@ public class RunningPlugin extends SwmPlugin implements HeartEngineOutput, Motio
             int step = GetStep(dataX, dataY, dataZ);
             broadcast(ACTION_STEP, EXTRA_STEP, step);
 
+            int jump = IsJump(dataX, dataY, dataZ);
+            broadcast(ACTION_JUMP, EXTRA_JUMP, jump == 1 ? JUMP : NONE);
+
             accX.remove(0);
             accY.remove(0);
             accZ.remove(0);
@@ -84,12 +86,12 @@ public class RunningPlugin extends SwmPlugin implements HeartEngineOutput, Motio
     }
 
     @Override
-    public void onGyroDataAvailable(MotionData.Gyro gyro) {
+    public void onGyroDataAvailable(GyroData gyro) {
 
     }
 
     @Override
-    public void onMagneticDataAvailable(MotionData.Magnetic magnetic) {
+    public void onMagneticDataAvailable(MagneticData magnetic) {
 
     }
 

@@ -56,3 +56,5 @@ void GT_ACC_Motion_SuperRun_VelocityByPDR(double* d64Output, double* d64AccDataX
 //             3. d64AccDataY => ACC raw data of axis-Y.
 //             4. d64AccDataZ => ACC raw data of axis-Z.
 //
+
+long SuperMarie_Jump(double* d64AccDataX, double* d64AccDataY, double* d64AccDataZ);
