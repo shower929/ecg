@@ -2,6 +2,7 @@ package com.swm.engineering;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.widget.RadioGroup;
@@ -30,10 +31,12 @@ public class MainPresenter implements RadioGroup.OnCheckedChangeListener
     @Override
     public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
         if(checkedId == R.id.swm_ecg_mode_button) {
+            myActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
             heartPresenter.show();
             motionPresenter.hide();
             currentPresenter = heartPresenter;
         } else if (checkedId == R.id.swm_motion_mode_button) {
+            myActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
             heartPresenter.hide();
             motionPresenter.show();
             currentPresenter = motionPresenter;

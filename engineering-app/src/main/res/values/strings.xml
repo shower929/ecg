@@ -45,4 +45,6 @@
     <string name="swm_y_the_same">100\%</string>
     <string name="swm_y_bigger">150\%</string>
     <string name="swm_init">Initiating</string>
+    <string name="swm_jump">I jump</string>
+    <string name="swm_steady">I stay</string>
 </resources>

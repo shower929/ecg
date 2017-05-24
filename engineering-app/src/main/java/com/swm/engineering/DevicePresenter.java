@@ -3,9 +3,7 @@ package com.swm.engineering;
 import android.app.Activity;
 import android.view.View;
 
-import com.swm.chart.Oscilloscope;
 import com.swm.engineering.app.R;
-import com.swm.sdk.BleDataSource;
 import com.swm.stuff.view.PacketView;
 
 /**
@@ -15,35 +13,29 @@ import com.swm.stuff.view.PacketView;
 public class DevicePresenter extends Presenter {
     private final Activity myActivity;
     private final PacketView packetView;
-    private BleDataSource bleDataSource;
-    private final Oscilloscope throughputView;
 
     public DevicePresenter(Activity activity, View view) {
         myActivity = activity;
         packetView = (PacketView) view.findViewById(R.id.swm_packet_view);
-        throughputView = (Oscilloscope) view.findViewById(R.id.swm_throughput_view);
+
     }
 
 
     @Override
-    void onStart() {
-        bleDataSource = new BleDataSource();
-        throughputView.addDataSource(bleDataSource, myActivity.getResources().getColor(R.color.swm_white));
-
+    public void onStart() {
     }
 
     @Override
-    void onStop() {
-        throughputView.removeDataSource(bleDataSource);
+    public void onStop() {
     }
 
     @Override
-    void show() {
+    public void show() {
         onStart();
     }
 
     @Override
-    void hide() {
+    public void hide() {
         onStop();
     }
 }

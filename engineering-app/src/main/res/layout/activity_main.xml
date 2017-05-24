@@ -71,7 +71,8 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="@+id/swm_motion_view"
         android:layout_marginTop="8dp"
-        app:layout_constraintVertical_bias="0.955" />
+        app:layout_constraintVertical_bias="0.955"
+        android:visibility="gone"/>
 
     <RadioGroup
         android:id="@+id/swm_switch_engine"
