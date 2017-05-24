@@ -26,6 +26,8 @@ public abstract class HeartEngine extends SwmEngine{
 
     private volatile boolean logging;
 
+    protected SwmEcgMonitor monitor;
+
     @NonNull
     private final Context context;
 
@@ -101,5 +103,12 @@ public abstract class HeartEngine extends SwmEngine{
 
     protected void logHeartData(HeartData heartData) {
         mDump.putData(heartData);
+    }
+
+    public void setListener(SwmEngineListener listener) {
+        if (monitor == null)
+            throw new RuntimeException("No monitor");
+
+        monitor.setListener(listener);
     }
 }

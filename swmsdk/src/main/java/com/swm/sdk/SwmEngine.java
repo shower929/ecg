@@ -5,5 +5,7 @@ package com.swm.sdk;
  */
 
 abstract class SwmEngine implements GenericEngine {
+
     abstract void onFuel(BleData data);
+
 }

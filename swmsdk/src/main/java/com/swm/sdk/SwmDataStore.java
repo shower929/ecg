@@ -5,42 +5,52 @@ import android.util.Log;
 
 import java.nio.ByteBuffer;
 import java.nio.DoubleBuffer;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.locks.ReadWriteLock;
 
 /**
  * Created by yangzhenyu on 2017/5/1.
  */
 
 public class SwmDataStore {
-    private List<Double> data;
-    private static final int SAMPLE = 250;
+
+    private Deque<Double> data;
+    private static final int DOUBLE_SIZE = Double.SIZE / Byte.SIZE;
 
     synchronized void putData(double value) {
         if (data == null)
-            data = new ArrayList<>();
+            data = new ArrayDeque<>();
 
-        data.add(Double.valueOf(value));
+        synchronized (data) {
+            data.add(Double.valueOf(value));
+            while(data.size() > 2048)
+                data.remove();
 
+        }
     }
 
     synchronized int read(ByteBuffer dst) {
         if(data == null)
             return 0;
 
-        int size = 0;
-        int limit = data.size();
-        List<Double> red = new ArrayList<>();
-        int bufferCapacity = dst.capacity();
+        synchronized (data) {
+            int count;
+            int limit = data.size();
 
-        for(int i = 0; i < limit && (bufferCapacity - dst.position() > 8); i++) {
-            Double value = data.get(i);
-            red.add(value);
+            int bufferCapacity = dst.capacity() / DOUBLE_SIZE;
 
-            dst.putDouble(value);
-            size++;
+            for(count = 0; count < limit && dst.position() / DOUBLE_SIZE < bufferCapacity; count++) {
+                Double value = data.poll();
+
+                dst.putDouble(value);
+            }
+
+            return count;
         }
-        data.removeAll(red);
-        return size;
     }
 }

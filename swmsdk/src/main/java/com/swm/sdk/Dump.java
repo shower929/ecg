@@ -83,7 +83,6 @@ public class Dump<T extends DumpData> {
                     }
                     mWriteBuffer.clear();
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
