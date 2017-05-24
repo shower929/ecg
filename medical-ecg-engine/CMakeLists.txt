@@ -11,15 +11,15 @@ cmake_minimum_required(VERSION 3.4.1)
 # automatically packages shared libraries with your APK.
 
 add_library( # Specifies the name of the library.
-             swm_motion_algo
+             swm_medical_ecg_algo
 
              # Sets the library as a shared library.
              SHARED
 
              # Provides a relative path to your source file(s).
-             src/main/cpp/swm_motion_algo_jni.cpp
-             src/main/cpp/SWM_AccFunctionList.cpp
-             src/main/cpp/SWM_GTFilter.cpp
+             src/main/cpp/swm_medical_ecg_algo_jni.cpp
+             src/main/cpp/SWM_Algo_HeartBeatClassification.cpp
+             src/main/cpp/SWM_algo_Medical_RpeakDetection.cpp
             )
 
 find_library( # Defines the name of the path variable that stores the
@@ -30,4 +30,4 @@ find_library( # Defines the name of the path variable that stores the
               # CMake needs to locate.
               log )
 
-target_link_libraries(swm_motion_algo ${log-lib})
+target_link_libraries(swm_medical_ecg_algo ${log-lib})
