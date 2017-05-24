@@ -1,24 +1,27 @@
 package com.swm.sdk;
 
+import android.content.Context;
+
 /**
  * Created by yangzhenyu on 2017/4/26.
  */
 
-public class HrvPlugin implements HeartEngineOutput{
+public class HrvPlugin extends SwmPlugin implements HeartEngineOutput{
     public static final String ACTION_STRESS_CHANGED = "action_stress_changed";
     public static final String ACTION_PHYSICAL_AGE_CHANGED = "action_physical_age_changed";
     public static final String EXTRA_STRESS = "extra_stress";
     public static final String EXTRA_PHYSICAL_AGE = "extra_physical_age";
 
-    public enum Stress {NORMAL, BAD, GOOD, HAPPY}
+    public static final int STRESS_NORMAL = 1;
+    public static final int STRESS_BAD = 2;
+    public static final int STRESS_GOOD = 3;
+    public static final int STRESS_HAPPY = 4;
     private final double goodLevel;
     private final double normalLevel;
     private final double badLevel;
-    private Stress preStress;
+    private int preStress;
     private int prePhyAge;
     private volatile boolean on;
-
-    private HrvListener hrvListener;
 
     private static final int	g_fSDNNToAge_Formula[] = {	76,	//SDNN	23
             67,	//SDNN	24
@@ -57,7 +60,8 @@ public class HrvPlugin implements HeartEngineOutput{
      *
      * @param age user's real age
      */
-    public HrvPlugin(int age) {
+    public HrvPlugin(Context context, int age) {
+        super(context);
         goodLevel = age * -1.3549 + 108.74;
         normalLevel = age * -1.0582 + 79.791;
         badLevel = age * -0.756 + 52.78;
@@ -66,31 +70,29 @@ public class HrvPlugin implements HeartEngineOutput{
 
     @Override
     public void onHeartDataAvailable(HeartData heartData) {
-        if (hrvListener == null)
-            return;
 
         if(!on)
             return;
 
-        Stress stress = APPS_HRV_GetStressStatus(heartData.sdnn);
+        int stress = APPS_HRV_GetStressStatus(heartData.sdnn);
 
         if (stress != preStress) {
-            hrvListener.onStressChanged(stress);
+            broadcast(ACTION_STRESS_CHANGED, EXTRA_STRESS, stress);
             preStress = stress;
         }
 
         int phyAge = APPS_HRV_GetAge((int) heartData.rmssd);
 
         if (phyAge != prePhyAge) {
-            hrvListener.onPhyAgeChanged(phyAge);
+            broadcast(ACTION_PHYSICAL_AGE_CHANGED, EXTRA_PHYSICAL_AGE, phyAge);
             prePhyAge = phyAge;
         }
     }
 
-    private Stress  APPS_HRV_GetStressStatus(float i16SDNN) {
+    private int APPS_HRV_GetStressStatus(float i16SDNN) {
 
         if (i16SDNN == 0)
-            return Stress.NORMAL;
+            return STRESS_NORMAL;
 
         //protection SDNN range
         if(i16SDNN < 2)
@@ -103,13 +105,13 @@ public class HrvPlugin implements HeartEngineOutput{
 
 
         if (i16SDNN <= badLevel)
-            return Stress.BAD;
+            return STRESS_BAD;
         else if (i16SDNN <= normalLevel && i16SDNN > badLevel)
-            return Stress.NORMAL;
+            return STRESS_NORMAL;
         else if (i16SDNN <= goodLevel && i16SDNN > normalLevel)
-            return Stress.GOOD;
+            return STRESS_GOOD;
         else
-            return Stress.HAPPY;
+            return STRESS_HAPPY;
 
     }
 
@@ -129,10 +131,6 @@ public class HrvPlugin implements HeartEngineOutput{
             return 999;
         else
             return (int)g_fSDNNToAge_Formula[(i16RMSSD - 23)];
-    }
-
-    public void setHrvListener(HrvListener hrvListener) {
-        this.hrvListener = hrvListener;
     }
 
     public void on() {
