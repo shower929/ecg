@@ -35,7 +35,7 @@ public class LocationView extends AppCompatTextView {
         post(new Runnable() {
             @Override
             public void run() {
-                setText(String.format((String)text, location.getLongitude(), location.getLatitude(), location.getAccuracy()));
+                setText(String.format((String)text, location.getLongitude(), location.getLatitude(), location.getAccuracy(), location.getTime()));
             }
         });
     }

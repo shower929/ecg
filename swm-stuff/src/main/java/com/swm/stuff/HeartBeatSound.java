@@ -12,7 +12,7 @@ import android.util.Log;
  */
 
 public class HeartBeatSound {
-    private Long mLen = 1000L;
+    private volatile long mLen = 1000L;
     private Handler mSoundHandler;
     private BeatSound mBeatSoundRunnable;
     private ToneGenerator mBeatSound;
@@ -32,13 +32,14 @@ public class HeartBeatSound {
 
         this.heartRate = heartRate;
 
+        mLen = 60 * 1000 / heartRate;
+
         if (mBeatSoundRunnable == null) {
             mBeatSound = new ToneGenerator(AudioManager.STREAM_RING, mCurrentVolume);
             mBeatSoundRunnable = new BeatSound();
-            synchronized (mLen) {
-                mSoundHandler.postDelayed(mBeatSoundRunnable, mLen);
-            }
+            mSoundHandler.postDelayed(mBeatSoundRunnable, mLen);
         }
+
     }
 
     private class BeatSound implements Runnable {
@@ -48,9 +49,7 @@ public class HeartBeatSound {
             if(mReleased)
                 return;
             mBeatSound.startTone(ToneGenerator.TONE_PROP_BEEP, 50);
-            synchronized (mLen) {
-                mSoundHandler.postDelayed(this, mLen);
-            }
+            mSoundHandler.postDelayed(this, mLen);
         }
     }
 

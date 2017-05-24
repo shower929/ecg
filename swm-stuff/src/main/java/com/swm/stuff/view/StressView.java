@@ -10,8 +10,7 @@ import android.widget.TextView;
  * Created by yangzhenyu on 2017/4/26.
  */
 
-public class StressView extends AppCompatTextView {
-    private CharSequence text;
+public class StressView extends SwmTextView {
 
     public StressView(Context context) {
         super(context);
@@ -25,17 +24,12 @@ public class StressView extends AppCompatTextView {
         super(context, attrs, defStyleAttr);
     }
 
-    @Override
-    public void setText(CharSequence text, BufferType type) {
-        super.setText(text, type);
-        this.text = text;
-    }
 
     public void setStress(final String stress) {
         post(new Runnable() {
             @Override
             public void run() {
-                setText(String.format((String)text, stress));
+                setText(String.format(getFormatString(), stress));
             }
         });
     }

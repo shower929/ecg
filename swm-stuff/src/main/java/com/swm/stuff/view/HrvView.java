@@ -2,15 +2,14 @@ package com.swm.stuff.view;
 
 import android.content.Context;
 import android.support.v7.widget.AppCompatTextView;
+import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.widget.TextView;
 
 /**
  * Created by yangzhenyu on 2017/4/29.
  */
 
-public class HrvView extends AppCompatTextView {
-    private CharSequence text;
+public class HrvView extends SwmTextView {
     private float sdnn;
     private float rmssd;
 
@@ -26,18 +25,13 @@ public class HrvView extends AppCompatTextView {
         super(context, attrs, defStyleAttr);
     }
 
-    @Override
-    public void setText(CharSequence text, BufferType type) {
-        super.setText(text, type);
-        this.text = text;
-    }
-
     public void setSdnn(final float sdnn) {
         this.sdnn = sdnn;
+
         post(new Runnable() {
             @Override
             public void run() {
-                setText(String.format((String)text, sdnn, rmssd));
+                setText(String.format(getFormatString(), sdnn, rmssd));
             }
         });
 
@@ -45,10 +39,11 @@ public class HrvView extends AppCompatTextView {
 
     public void setRmssd(final float rmssd) {
         this.rmssd = rmssd;
+
         post(new Runnable() {
             @Override
             public void run() {
-                setText(String.format((String)text, sdnn, rmssd));
+                setText(String.format(getFormatString(), sdnn, rmssd));
             }
         });
 

@@ -9,8 +9,7 @@ import android.widget.TextView;
  * Created by yangzhenyu on 2017/4/26.
  */
 
-public class CalorieView extends AppCompatTextView {
-    private CharSequence text;
+public class CalorieView extends SwmTextView {
 
     public CalorieView(Context context) {
         super(context);
@@ -28,14 +27,9 @@ public class CalorieView extends AppCompatTextView {
         post(new Runnable() {
             @Override
             public void run() {
-                setText(String.format((String)text, calorie));
+                setText(String.format(getFormatString(), calorie));
             }
         });
     }
 
-    @Override
-    public void setText(CharSequence text, BufferType type) {
-        super.setText(text, type);
-        this.text = text;
-    }
 }

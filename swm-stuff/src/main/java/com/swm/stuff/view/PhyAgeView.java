@@ -9,8 +9,7 @@ import android.widget.TextView;
  * Created by yangzhenyu on 2017/4/26.
  */
 
-public class PhyAgeView extends AppCompatTextView {
-    private CharSequence text;
+public class PhyAgeView extends SwmTextView {
 
     public PhyAgeView(Context context) {
         super(context);
@@ -24,17 +23,12 @@ public class PhyAgeView extends AppCompatTextView {
         super(context, attrs, defStyleAttr);
     }
 
-    @Override
-    public void setText(CharSequence text, BufferType type) {
-        super.setText(text, type);
-        this.text = text;
-    }
 
     public void setPhyAge(final int phyAge) {
         post(new Runnable() {
             @Override
             public void run() {
-                setText(String.format((String)text, phyAge));
+                setText(String.format(getFormatString(), phyAge));
             }
         });
     }
