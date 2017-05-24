@@ -79,14 +79,14 @@ public class MainActivity extends AppCompatActivity {
         ecg = (Oscilloscope) findViewById(R.id.swm_ecg_breath_view);
         oscilloscopeController = new OscilloscopeController(ecg);
 
+        //iirFilter = new IirFilter(0.992);
+        //oscilloscopeController.addFilter(iirFilter);
+
         notchFilter = new NotchFilter(ECG_SAMPLE_RATE);
         oscilloscopeController.addFilter(notchFilter);
 
-        iirFilter = new IirFilter(0.992);
-        oscilloscopeController.addFilter(iirFilter);
-
-        //firFilter = new FirFilter(ECG_SAMPLE_RATE);
-        //oscilloscopeController.addFilter(firFilter);
+        firFilter = new FirFilter(ECG_SAMPLE_RATE);
+        oscilloscopeController.addFilter(firFilter);
 
         removeBaselineWander = new RemoveBaselineWander(ECG_SAMPLE_RATE);
         oscilloscopeController.addFilter(removeBaselineWander);
