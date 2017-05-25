@@ -1,5 +1,7 @@
 package com.swm.core;
 
+import com.swm.sdk.DumpData;
+
 /**
  * Created by yangzhenyu on 2016/12/7.
  */

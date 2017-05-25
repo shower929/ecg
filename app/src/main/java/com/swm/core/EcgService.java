@@ -1,13 +1,14 @@
 package com.swm.core;
 
-import android.os.Handler;
 import android.util.Log;
+
+import com.swm.sdk.Dump;
+import com.swm.sdk.EcgRawData;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
@@ -30,13 +31,6 @@ class EcgService {
     }
 
     synchronized void onSwmDataAvailable(SwmData swmData) {
-
-        int len = swmData.value.length;
-        List<Short> values = new ArrayList<>();
-
-        for(int i = 10; i < len - 1; i = i + 2) {
-            values.add((short) (((swmData.value[i+1] & 0xFF) << 8) | (swmData.value[i] & 0xFF)));
-        }
 
         EcgRawData ecgRawData = new EcgRawData(values);
 

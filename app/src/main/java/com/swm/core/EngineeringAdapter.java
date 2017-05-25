@@ -7,6 +7,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.swm.heart.R;
+import com.swm.sdk.HeartActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +21,7 @@ class EngineeringAdapter extends BaseAdapter {
 
     EngineeringAdapter() {
         mEngineeringModels = new ArrayList<>();
-        mEngineeringModels.add(new EngineeringModel("ECG", CompositeActivity.class));
+        mEngineeringModels.add(new EngineeringModel("ECG", HeartActivity.class));
         mEngineeringModels.add(new EngineeringModel("Motion", MotionActivity.class));
     }
 

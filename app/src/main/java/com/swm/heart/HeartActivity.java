@@ -13,8 +13,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
-import com.swm.core.HeartRateData;
-import com.swm.core.SwmBinder;
+import com.swm.sdk.HeartRateData;
 import com.swm.core.SwmService;
 import com.swm.heartbeat.HeartRateListener;
 
@@ -23,12 +22,12 @@ import com.swm.heartbeat.HeartRateListener;
  * status bar and navigation/system bar) with user interaction.
  */
 public class HeartActivity extends AppCompatActivity implements HeartRateListener {
-    private SwmBinder mSwmBinder;
+    private SwmService.SwmBinder mSwmBinder;
 
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            mSwmBinder = (SwmBinder) service;
+            mSwmBinder = (SwmService.SwmBinder) service;
             try {
                 mSwmBinder.registerHeartRateListener(HeartActivity.this);
             } catch (Exception e) {
@@ -91,7 +90,7 @@ public class HeartActivity extends AppCompatActivity implements HeartRateListene
     private final Runnable mShowPart2Runnable = new Runnable() {
         @Override
         public void run() {
-            // Delayed display of UI elements
+            // Delayed bufferDrawing of UI elements
             ActionBar actionBar = getSupportActionBar();
             if (actionBar != null) {
                 actionBar.show();
@@ -193,7 +192,7 @@ public class HeartActivity extends AppCompatActivity implements HeartRateListene
                 | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
         mVisible = true;
 
-        // Schedule a runnable to display UI elements after a delay
+        // Schedule a runnable to bufferDrawing UI elements after a delay
         mHideHandler.removeCallbacks(mHidePart2Runnable);
         mHideHandler.postDelayed(mShowPart2Runnable, UI_ANIMATION_DELAY);
     }

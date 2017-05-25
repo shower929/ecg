@@ -14,7 +14,7 @@
         android:layout_height="match_parent"
         android:keepScreenOn="true"
         >
-        <com.swm.core.CompositeView
+        <com.swm.core.view.CompositeView
             android:id="@+id/swm_ecg"
             android:layout_width="match_parent"
             android:layout_height="300dp"

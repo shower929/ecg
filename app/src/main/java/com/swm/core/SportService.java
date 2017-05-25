@@ -2,6 +2,7 @@ package com.swm.core;
 
 import com.swm.body.PersonalModule;
 import com.swm.heartbeat.HeartRateListener;
+import com.swm.sdk.HeartRateData;
 import com.swm.training.TrainingListener;
 
 import static com.swm.training.TrainingListener.DANGER;

@@ -31,9 +31,8 @@ import com.swm.app.superrun.power.RunPowerMeterHandler;
 import com.swm.app.superrun.power.SwmMeter;
 import com.swm.battery.BatteryListener;
 import com.swm.core.BatteryData;
-import com.swm.core.CompositeActivity;
-import com.swm.core.HeartRateData;
-import com.swm.core.SwmBinder;
+import com.swm.sdk.HeartActivity;
+import com.swm.sdk.HeartRateData;
 import com.swm.core.SwmService;
 import com.swm.device.SwmDeviceListener;
 import com.swm.heart.BuildConfig;
@@ -41,7 +40,7 @@ import com.swm.heart.R;
 import com.swm.heart.SwmBaseActivity;
 import com.swm.heartbeat.HeartBeatHandler;
 import com.swm.heartbeat.HeartRateListener;
-import com.swm.heartbeat.HeartRateSound;
+import com.swm.stuff.HeartRateSound;
 
 public class SuperRunActivity extends SwmBaseActivity
         implements NavigationView.OnNavigationItemSelectedListener
@@ -52,7 +51,7 @@ public class SuperRunActivity extends SwmBaseActivity
 
     private static final String LOG_TAG = "SuperRun";
 
-    private SwmBinder mSwmBinder;
+    private SwmService.SwmBinder mSwmBinder;
     private HeartRateSound mHeartBeatSound;
     private HeartBeatHandler mHeartBeatHandler;
     private Handler mAniHandler;
@@ -67,7 +66,7 @@ public class SuperRunActivity extends SwmBaseActivity
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            mSwmBinder = (SwmBinder) service;
+            mSwmBinder = (SwmService.SwmBinder) service;
             Log.i(LOG_TAG, "Connected to heart rate service");
             try {
                 mSwmBinder.registerHeartRateListener(SuperRunActivity.this);
@@ -174,7 +173,7 @@ public class SuperRunActivity extends SwmBaseActivity
             Intent intent = new Intent(this, MarathonActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_manage) {
-            Intent intent = new Intent(this, CompositeActivity.class);
+            Intent intent = new Intent(this, HeartActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_setting) {
             Intent intent = new Intent(this, SettingsActivity.class);

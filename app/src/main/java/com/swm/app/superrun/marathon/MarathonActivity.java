@@ -1,9 +1,7 @@
 package com.swm.app.superrun.marathon;
 
 import android.annotation.SuppressLint;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.MotionEvent;
@@ -61,7 +59,7 @@ public class MarathonActivity extends SwmBaseActivity implements MarathonCallbac
     private final Runnable mShowPart2Runnable = new Runnable() {
         @Override
         public void run() {
-            // Delayed display of UI elements
+            // Delayed bufferDrawing of UI elements
             ActionBar actionBar = getSupportActionBar();
             if (actionBar != null) {
                 actionBar.show();
@@ -163,7 +161,7 @@ public class MarathonActivity extends SwmBaseActivity implements MarathonCallbac
                 | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
         mVisible = true;
 
-        // Schedule a runnable to display UI elements after a delay
+        // Schedule a runnable to bufferDrawing UI elements after a delay
         mHideHandler.removeCallbacks(mHidePart2Runnable);
         mHideHandler.postDelayed(mShowPart2Runnable, UI_ANIMATION_DELAY);
     }

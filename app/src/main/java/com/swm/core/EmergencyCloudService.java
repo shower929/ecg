@@ -8,6 +8,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.swm.emergency.UserQueryCallback;
+import com.swm.sdk.HeartRateData;
 
 /**
  * Created by yangzhenyu on 2016/11/1.

@@ -10,18 +10,17 @@ import android.util.Log;
 
 import com.swm.accelerator.AcceleratorData;
 import com.swm.accelerator.AcceleratorListener;
-import com.swm.core.SwmBinder;
 import com.swm.core.SwmService;
 import com.swm.heart.R;
 
 public class AcceleratorActivity extends AppCompatActivity implements AcceleratorListener {
-    private SwmBinder mSwmBinder;
+    private SwmService.SwmBinder mSwmBinder;
     private static final String LOG_TAG = "Accelerator";
 
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            mSwmBinder = (SwmBinder) service;
+            mSwmBinder = (SwmService.SwmBinder) service;
             Log.i(LOG_TAG, "Connected to ECG service");
             mSwmBinder.setAcceleratorListener(AcceleratorActivity.this);
         }

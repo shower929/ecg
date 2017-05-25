@@ -5,4 +5,5 @@ package com.swm.core;
  */
 
 public interface ServiceListener {
+    void onHeartRateAvailable(int heartRate);
 }

@@ -22,9 +22,8 @@ import android.widget.Toast;
 
 import com.swm.app.superrun.power.RunPowerMeterHandler;
 import com.swm.app.superrun.power.SwmMeter;
-import com.swm.core.HeartRateData;
+import com.swm.sdk.HeartRateData;
 import com.swm.core.MyLocationService;
-import com.swm.core.SwmBinder;
 import com.swm.core.SwmService;
 import com.swm.device.SwmDeviceListener;
 import com.swm.heart.R;
@@ -52,7 +51,7 @@ public class TrainingActivity extends SwmBaseActivity implements MyLocationServi
     private float mDistance = 0;
     private Location mCurrentLocation;
     private long mElapseTime;
-    private SwmBinder mSwmBinder;
+    private SwmService.SwmBinder mSwmBinder;
 
     private MyLocationService mLocationService;
     private HeartBeatHandler mHeartBeatHandler;
@@ -76,7 +75,7 @@ public class TrainingActivity extends SwmBaseActivity implements MyLocationServi
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            mSwmBinder = (SwmBinder) service;
+            mSwmBinder = (SwmService.SwmBinder) service;
 
             try {
                 mSwmBinder.registerHeartRateListener(TrainingActivity.this);

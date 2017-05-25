@@ -10,6 +10,7 @@ public class SwmPref {
     public static final String SWM_SIGN_IN = "swm_sign_in";
     public static final String SWM_GENDER = "swm_gender";
     public static final String SWM_AGE = "swm_age";
+    public static final String SWM_WEIGHT = "swm_weight";
     public static final String SWM_SYSTEM_ID = "swm_system_id";
     public static final String SWM_FIRMWARE = "swm_firmware";
     public static final String SWM_HARDWARE_REVISION = "swm_hardware_revision";

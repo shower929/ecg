@@ -1,6 +1,7 @@
 package com.swm.core;
 
 import com.swm.heartbeat.HeartRateListener;
+import com.swm.sdk.HeartRateData;
 
 import static com.swm.core.SWM_COM_HEADER.HRV_RRI_LIMIT_BUF;
 

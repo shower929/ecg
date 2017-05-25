@@ -4,24 +4,25 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
 import com.swm.chart.RealtimeHistogram;
 import com.swm.chart.RealtimeLineChart;
-import com.swm.chart.RealtimeSingleLineChart;
+import com.swm.chart.Oscilloscope;
 import com.swm.chart.SignalGenerator;
 import com.swm.heart.R;
 import com.swm.heart.SwmBaseActivity;
 import com.swm.heartbeat.HeartBeatHandler;
 import com.swm.heartbeat.HeartRateListener;
-import com.swm.heartbeat.HeartRateSound;
+import com.swm.stuff.HeartRateSound;
 import com.swm.hrv.RmssdListener;
 import com.swm.hrv.RriDistributionListener;
 import com.swm.hrv.RriFrequencyListener;
 import com.swm.hrv.SdnnListener;
+import com.swm.sdk.HeartRateData;
+import com.swm.sdk.MenuController;
 
 public class HrvActivity extends SwmBaseActivity implements SdnnListener
                                                     , RmssdListener
@@ -29,7 +30,7 @@ public class HrvActivity extends SwmBaseActivity implements SdnnListener
                                                     , RriDistributionListener
                                                     , RriFrequencyListener
                                                     , View.OnClickListener{
-    SwmBinder mSwmBinder;
+    SwmService.SwmBinder mSwmBinder;
     SwitchController mSwitchController;
     private HeartRateSound mHeartBeatSound;
     private HeartBeatHandler mHeartBeatHandler;
@@ -38,9 +39,9 @@ public class HrvActivity extends SwmBaseActivity implements SdnnListener
     private RealtimeHistogram mRriDistributionHistogram;
 
     private View mSdnnAndRmssdLayout;
-    private RealtimeSingleLineChart mSdnnLineChart;
+    private Oscilloscope mSdnnOscilloscope;
     private TextView mSdnnValue;
-    private RealtimeSingleLineChart mRmssdLineChart;
+    private Oscilloscope mRmssdOscilloscope;
     private TextView mRmssdValue;
 
     private View mRriFreqLayout;
@@ -57,7 +58,7 @@ public class HrvActivity extends SwmBaseActivity implements SdnnListener
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            mSwmBinder = (SwmBinder) service;
+            mSwmBinder = (SwmService.SwmBinder) service;
             mSwmBinder.startMonitorHrv();
             try {
                 mSwmBinder.registerHeartRateListener(HrvActivity.this);
@@ -88,9 +89,9 @@ public class HrvActivity extends SwmBaseActivity implements SdnnListener
         mRriDistributionHistogram = (RealtimeHistogram) findViewById(R.id.swm_rri_distribution);
 
         mSdnnAndRmssdLayout = findViewById(R.id.swm_sdnn_and_rmssd_layout);
-        mSdnnLineChart = (RealtimeSingleLineChart) findViewById(R.id.swm_sdnn);
+        mSdnnOscilloscope = (Oscilloscope) findViewById(R.id.swm_sdnn);
         mSdnnValue = (TextView) findViewById(R.id.swm_sdnn_value);
-        mRmssdLineChart = (RealtimeSingleLineChart) findViewById(R.id.swm_rmssd);
+        mRmssdOscilloscope = (Oscilloscope) findViewById(R.id.swm_rmssd);
         mRmssdValue = (TextView) findViewById(R.id.swm_rmssd_value);
 
         // Frequency
@@ -121,7 +122,7 @@ public class HrvActivity extends SwmBaseActivity implements SdnnListener
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mSdnnLineChart.offerData(sdnn);
+                mSdnnOscilloscope.line(sdnn);
                 mSdnnValue.setText(String.valueOf(sdnn) + " ms");
             }
         });
@@ -133,7 +134,7 @@ public class HrvActivity extends SwmBaseActivity implements SdnnListener
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mRmssdLineChart.offerData(rmssd);
+                mRmssdOscilloscope.line(rmssd);
                 mRmssdValue.setText(String.valueOf(rmssd) + " ms");
             }
         });

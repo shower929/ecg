@@ -1,10 +1,12 @@
 package com.swm.core;
 
+import com.swm.sdk.DumpData;
+
 /**
  * Created by yangzhenyu on 2016/10/2.
  */
 
-public class BreathData extends DumpData{
+public class BreathData extends DumpData {
     public final int breathRate;
 
     BreathData (int breathRate) {

@@ -4,6 +4,7 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.swm.motion.MotionListener;
+import com.swm.sdk.MotionData;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -116,18 +117,7 @@ import java.util.concurrent.LinkedBlockingQueue;
     }
 
     void onSwmDataAvailable(SwmData swmData) {
-        MotionData motionData = new MotionData(
-                swmData.value[1] & 0xFF << 8 | swmData.value[0] & 0xFF
-                , swmData.value[3] & 0xFF << 8 | swmData.value[2] & 0xFF
-                , swmData.value[5] & 0xFF << 8 | swmData.value[4] & 0xFF
-                , swmData.value[7] & 0xFF << 8 | swmData.value[6] & 0xFF
-                , swmData.value[9] & 0xFF << 8 | swmData.value[8] & 0xFF
-                , swmData.value[11] & 0xFF << 8 | swmData.value[10] & 0xFF
-                , swmData.value[13] & 0xFF << 8 | swmData.value[12] & 0xFF
-                , swmData.value[15] & 0xFF << 8 | swmData.value[14] & 0xFF
-                , swmData.value[17] & 0xFF << 8 | swmData.value[16] & 0xFF
-                , swmData.value[18]
-        );
+
         mMotionDataQueue.offer(motionData);
         if (mRecording) {
             mDumpQueue.offer(swmData);

@@ -1,29 +1,18 @@
 package com.swm.heart;
 
 import android.annotation.SuppressLint;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.RemoteViews;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
@@ -41,13 +30,10 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.swm.app.superrun.GenderAndAgeActivity;
 import com.swm.app.superrun.SuperRunActivity;
-import com.swm.body.PersonalModule;
 import com.swm.core.SwmDeviceController;
 import com.swm.core.SwmService;
 import com.swm.core.TurnOnSwmDeviceGuide;
 import com.swm.heart.pref.SwmPref;
-import com.swm.power.PowerModule;
-import com.swm.training.TrainingModule;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -102,7 +88,7 @@ public class SplashActivity extends SwmBaseActivity implements View.OnClickListe
     private final Runnable mShowPart2Runnable = new Runnable() {
         @Override
         public void run() {
-            // Delayed display of UI elements
+            // Delayed bufferDrawing of UI elements
             ActionBar actionBar = getSupportActionBar();
             if (actionBar != null) {
                 actionBar.show();
@@ -234,7 +220,7 @@ public class SplashActivity extends SwmBaseActivity implements View.OnClickListe
                 | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
         mVisible = true;
 
-        // Schedule a runnable to display UI elements after a delay
+        // Schedule a runnable to bufferDrawing UI elements after a delay
         mHideHandler.removeCallbacks(mHidePart2Runnable);
         mHideHandler.postDelayed(mShowPart2Runnable, UI_ANIMATION_DELAY);
     }

@@ -1,12 +1,14 @@
 package com.swm.core;
 
+import com.swm.sdk.DumpData;
+
 import java.util.Arrays;
 
 /**
  * Created by yangzhenyu on 2016/9/27.
  */
 
-class SwmData extends DumpData{
+class SwmData extends DumpData {
     static final int MOTION = 1;
     static final int ECG = 2;
     static final int ACC = 3;

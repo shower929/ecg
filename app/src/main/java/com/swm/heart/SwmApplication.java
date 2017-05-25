@@ -27,7 +27,7 @@ import com.swm.training.TrainingModule;
 
 public class SwmApplication extends Application {
 
-    public static final String CLOSE_APP_ACTION = "com.swm.heart.CLOSE_APP";
+
 
     @Override
     public void onCreate() {

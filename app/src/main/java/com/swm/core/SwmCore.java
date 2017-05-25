@@ -5,9 +5,8 @@ import android.os.Handler;
 import android.util.Log;
 
 import com.swm.heart.BuildConfig;
+import com.swm.sdk.Dump;
 
-import java.util.Arrays;
-import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -20,15 +19,10 @@ public class SwmCore {
     private static final String LOG_TAG = "SWM";
     private static SwmCore SWM_CORE;
     private static final float CLOCK = 50f; //Hz
-    private static final float EXPECTED_TIME = 1f/CLOCK * 1000; //ms
 
     private static MotionService mMotionService;
     private static LinkedBlockingDeque<SwmData> mMotionDataQueue;
     private static Thread mMotionWorker;
-
-    private EcgService mEcgService;
-    private LinkedBlockingDeque<SwmData> mEcgServiceQueue;
-    private Thread mEcgWorker;
 
     private static AcceleratorService mAcceleratorService;
     private static LinkedBlockingQueue<SwmData> mAccDataQueue;
@@ -49,7 +43,6 @@ public class SwmCore {
     private Thread mInformationWorker;
 
     private HrvService mHrvService;
-    private EcgProvider mEcgProvider;
 
     private static final long TIME_FRAME = 1000;
 
@@ -88,9 +81,11 @@ public class SwmCore {
 
     private SwmCore(Context context) {
         mContext = context;
+
+
+
         initMotionService();
-        initEcgService();
-        initHeartBeatService();
+
         initAcceleratorService();
         initBreathService();
         initHrvService();
@@ -104,17 +99,8 @@ public class SwmCore {
             @Override
             public void run() {
 
-                Log.v("Profiling", "ECG service queue: " + mEcgServiceQueue.size());
                 Log.v("Profiling", "Accelerator service queue: " + mAccDataQueue.size());
                 Log.v("Profiling", "Breath service queue: " + mBreathDataQueue.size());
-
-                if (mEcgService.mDump != null) {
-                    Log.v("Profiling", "ECG dump queue: " + mEcgService.mDump.mBuffer.size());
-                }
-
-                if (mHeartRateService.mDump != null) {
-                    Log.v("Profiling", "Heart beat dump queue: " + mHeartRateService.mDump.mBuffer.size());
-                }
 
                 synchronized (PROFILING_LOCK) {
                     Log.v("Profiling", "bps: " + mRxSize);
@@ -205,7 +191,6 @@ public class SwmCore {
 
         if (data.uuid.equals(EcgBleProfile.DATA)) {
 
-            onEcgBleDataAvailable(data);
             onAccDataAvailable(data);
             onBreathDataAvailable(data);
 
@@ -255,11 +240,6 @@ public class SwmCore {
         mBatteryServiceQueue.offer(SwmData.batteryDataFrom(bleData));
     }
 
-    private void onEcgBleDataAvailable(BleData bleData) {
-        SwmData rawData = SwmData.ecgDataFrom(bleData);
-        mEcgServiceQueue.offer(rawData);
-    }
-
     private void onMotionBleDataAvailable(BleData bleData){
         mMotionDataQueue.offer(SwmData.motionDataFrom(bleData));
     }
@@ -270,41 +250,6 @@ public class SwmCore {
 
     private void onBreathDataAvailable(BleData bleData) {
         mBreathDataQueue.offer(SwmData.breathDataFrom(bleData));
-    }
-
-    private void initEcgService() {
-        mEcgService = new EcgService();
-        mEcgServiceQueue = new LinkedBlockingDeque<SwmData>();
-        mEcgWorker = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                for (;;) {
-                    if (sRunning) {
-                        try {
-                            SwmData swmData = mEcgServiceQueue.take();
-                            mEcgService.onSwmDataAvailable(swmData);
-                        } catch (InterruptedException e) {
-                            Log.e(LOG_TAG, e.getMessage(), e);
-                        }
-                    }
-                }
-            }
-        });
-        mEcgWorker.start();
-    }
-
-    private void initHeartBeatService() {
-        if (mHeartRateService == null) {
-            mHeartRateService = new HeartRateService();
-            EcgProvider.Builder builder = new EcgProvider.Builder();
-            mEcgProvider = builder.build();
-            try {
-                getEcgService().registerListener(mEcgProvider);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            mEcgProvider.addClient(mHeartRateService);
-        }
     }
 
     synchronized SuperRunCloudService getSuperRunCloudService() {
@@ -440,10 +385,6 @@ public class SwmCore {
         }
     }
 
-    EcgService getEcgService() {
-        return mEcgService;
-    }
-
     MotionService getMotionService() {
         return mMotionService;
     }
@@ -479,7 +420,6 @@ public class SwmCore {
 
     void stop() {
         sRunning = false;
-        getEcgService().stop();
         getHeartRateService().stop();
         getMotionService().stop();
         getBreathService().stop();
@@ -490,11 +430,7 @@ public class SwmCore {
             return;
 
         mRecording = true;
-        if (mDump == null)
-            mDump = new Dump("BLE");
 
-        mDump.start();
-        getEcgService().startRecord();
         getHeartRateService().startRecord();
         getMotionService().startRecord();
 
@@ -528,10 +464,10 @@ public class SwmCore {
         mRecording = false;
         mHandler.removeCallbacks(mTimer);
         mElapse = 0;
-        getEcgService().stopRecord();
+
         getHeartRateService().stopRecord();
         getMotionService().stopRecord();
-        mDump.stop();
+
     }
 
     void setTimerListener(TimerListener listener) {

@@ -1,6 +1,5 @@
 package com.swm.app.superrun.training;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.swm.heart.R;

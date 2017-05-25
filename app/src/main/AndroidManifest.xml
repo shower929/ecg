@@ -54,7 +54,7 @@
 
         <activity android:name=".accelerator.AcceleratorActivity" />
         <activity
-            android:name="com.swm.core.CompositeActivity"
+            android:name="com.swm.sdk.HeartActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize"
             android:exported="false"
             android:screenOrientation="landscape"
@@ -69,7 +69,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Fullscreen" />
         <activity
-            android:name="com.swm.core.MotionActivity"
+            android:name="com.swm.sdk.MotionActivity"
             android:exported="false"
             android:label="@string/swm_title_motion"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -112,7 +112,7 @@
             <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
         </service>
         <service
-            android:name="com.swm.core.MyLocationService"
+            android:name="com.swm.engineering.MyLocationService"
             android:enabled="true"
             android:exported="false" />
 
@@ -121,7 +121,7 @@
             android:resource="@drawable/swm_logo" />
 
         <receiver
-            android:name="com.swm.core.MyLocationService$LocationBroadcastReceiver"
+            android:name="com.swm.engineering.MyLocationService$LocationBroadcastReceiver"
             android:enabled="true"
             android:exported="true" />
 

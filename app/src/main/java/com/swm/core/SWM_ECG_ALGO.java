@@ -11,6 +11,6 @@ import static java.lang.Math.sqrt;
 
 class SWM_ECG_ALGO {
 
-    static final int  g_i32CalcultedLength = CAL_TIME_BUF * ECG_SAMPLE_RATE;
+
 
 }

@@ -1,10 +1,6 @@
 package com.swm.app.superrun.training;
 
-import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.swm.heart.R;
@@ -12,7 +8,6 @@ import com.swm.heart.SwmBaseActivity;
 import com.swm.training.TrainingModel;
 import com.swm.training.TrainingModule;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class TrainingModelActivity extends SwmBaseActivity {

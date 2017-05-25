@@ -15,7 +15,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1">
 
-            <com.swm.chart.RealtimeSingleLineChart
+            <com.swm.chart.Oscilloscope
                 android:id="@+id/swm_sdnn"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -52,7 +52,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1">
 
-            <com.swm.chart.RealtimeSingleLineChart
+            <com.swm.chart.Oscilloscope
                 android:id="@+id/swm_rmssd"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
